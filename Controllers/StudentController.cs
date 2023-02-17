@@ -5,14 +5,12 @@ namespace instock_server_application.Controllers;
 
 [ApiController]
 [Route("/student")]
-public class StudentController : ControllerBase
-{
+public class StudentController : ControllerBase {
     private static readonly StudentService _studentService = new StudentService();
     
     [HttpGet]
     [Route("all")]
-    public IEnumerable<Student> GetAllStudents()
-    {
+    public IEnumerable<Student> GetAllStudents() {
         return _studentService.getAllStudents();
     }
 }
