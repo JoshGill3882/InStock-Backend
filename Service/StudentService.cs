@@ -1,4 +1,6 @@
-﻿namespace a;
+﻿using instock_server_application.Models;
+
+namespace instock_server_application.Service;
 
 public class StudentService {
     private List<Student> listAllStudents = new List<Student>();
