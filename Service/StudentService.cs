@@ -1,5 +1,5 @@
-using instock_server_application.Data.MockData;
 using instock_server_application.Data.Models;
+using instock_server_application.tests.MockData;
 
 namespace instock_server_application.Service;
 

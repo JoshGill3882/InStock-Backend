@@ -1,6 +1,6 @@
 ﻿using instock_server_application.Data.Models;
 
-namespace instock_server_application.Data.MockData; 
+namespace instock_server_application.tests.MockData; 
 
 public static class MockStudents {
     public static List<Student> MockStudentData() {
