@@ -1,4 +1,4 @@
-﻿namespace instock_server_application.Models;
+namespace instock_server_application.Data.Models;
 
 /// <summary>
 /// Basic Model for a Student
