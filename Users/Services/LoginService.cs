@@ -1,7 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Amazon;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using AWSServerlessBlogApi.Models;
 using instock_server_application.Users.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -12,11 +15,21 @@ namespace instock_server_application.Users.Services;
 public class LoginService {
     private readonly IConfiguration? _config;
     private readonly IDynamoDBContext _context;
+    
+    // public LoginService(IConfiguration? config, IDynamoDBContext context) {
+    //     _config = config;
+    //     _context = context;
+    // }
 
-    public LoginService(IConfiguration? config, IDynamoDBContext context) {
-        _config = config;
-        _context = context;
+    
+    IDynamoDBContext DDBContext { get; set; }
+    
+    public LoginService(IDynamoDBContext context) {
+        var config = new DynamoDBContextConfig { Conversion = DynamoDBEntryConversion.V2 };
+        this.DDBContext = new DynamoDBContext(
+            new AmazonDynamoDBClient("access key", "secret key", RegionEndpoint.EUWest2), config);
     }
+    
 
     /// <summary>
     /// Method which will be ran on a successful authentication
@@ -60,10 +73,17 @@ public class LoginService {
         return user;
     }
 
-    public async Task<List<User>> GetAllUsers() {
-        Console.Write("IN SERVICE");
-        var users = await _context.ScanAsync<User>(default).GetRemainingAsync();
-        Console.Write(users);
-        return users;
+    // public async Task<List<User>> GetAllUsers() {
+    //     Console.Write("IN SERVICE");
+    //     var users = await _context.ScanAsync<User>(default).GetRemainingAsync();
+    //     Console.Write(users);
+    //     return users;
+    // }
+    
+    public async Task<IEnumerable<AWSServerlessBlogApi.Models.Users>> GetAllUsers()
+    {
+        var search = DDBContext.ScanAsync<AWSServerlessBlogApi.Models.Users>(null);
+        var allUsers = await search.GetNextSetAsync();
+        return allUsers;
     }
 }

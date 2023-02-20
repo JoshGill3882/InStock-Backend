@@ -29,14 +29,17 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddAuthorization();
 
 // AWS DynamoDB Credential Setup
-var credentials = new BasicAWSCredentials(
-    builder.Configuration["AWS_DYNAMO_DB_ACCESS_KEY"],
-    builder.Configuration["AWS_DYNAMO_DB_SECRET_KEY"]
-);
-var config = new AmazonDynamoDBConfig() { RegionEndpoint = RegionEndpoint.EUWest2 };
-var client = new AmazonDynamoDBClient(credentials, config);
-builder.Services.AddSingleton<IAmazonDynamoDB>(client);
-builder.Services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
+// var credentials = new BasicAWSCredentials(
+//     "access key",
+//     "secret key"
+// );
+//
+// builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+// var config = new AmazonDynamoDBConfig() { RegionEndpoint = RegionEndpoint.EUWest2 };
+// var client = new AmazonDynamoDBClient(credentials, config);
+// builder.Services.AddSingleton<IAmazonDynamoDB>(client);
+// builder.Services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
+// builder.Services.AddAWSService<IAmazonDynamoDB>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

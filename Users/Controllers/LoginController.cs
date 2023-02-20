@@ -10,7 +10,7 @@ namespace instock_server_application.Users.Controllers;
 public class LoginController : ControllerBase {
     private static readonly IConfiguration? Config;
     private static readonly IDynamoDBContext? Context;
-    private static readonly LoginService? LoginService = new(Config, Context);
+    private static readonly LoginService? LoginService = new(Context);
 
     /// <summary>
     /// Method for logging into the system
