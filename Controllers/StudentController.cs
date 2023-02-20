@@ -1,5 +1,5 @@
 using instock_server_application.Data.Models;
-using instock_server_application.Service;
+using instock_server_application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace instock_server_application.Controllers;

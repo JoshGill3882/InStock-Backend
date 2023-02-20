@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using instock_server_application.Controllers;
-using instock_server_application.Service;
+using instock_server_application.Services;
 using instock_server_application.tests.MockData;
 using Moq;
 using Xunit;
