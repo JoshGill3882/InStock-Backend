@@ -1,4 +1,4 @@
-﻿using instock_server_application.Data.MockData;
+using instock_server_application.Data.MockData;
 using instock_server_application.Data.Models;
 
 namespace instock_server_application.Service;
