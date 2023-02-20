@@ -1,15 +1,12 @@
-﻿namespace a;
+﻿using instock_server_application.Data.MockData;
+using instock_server_application.Data.Models;
 
-public class StudentService {
-    private List<Student> listAllStudents = new List<Student>();
+namespace instock_server_application.Service;
 
-    public StudentService() {
-        listAllStudents.Add(new Student(1, "Abdul", "Full Stack", 20));
-        listAllStudents.Add(new Student(2, "Sam", "DevOps", 20));
-        listAllStudents.Add(new Student(3, "Josh", "Backend", 21));
-    }
+public class StudentService : IStudentService {
+    private readonly MockStudent _mockData = new MockStudent();
 
-    public List<Student> getAllStudents() {
-        return listAllStudents;
+    public List<Student> GetAllStudents() {
+        return _mockData.MockStudentData();
     }
 }

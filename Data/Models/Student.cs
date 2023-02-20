@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace a;
+﻿namespace instock_server_application.Data.Models;
 
 public class Student {
     public int Id { get; set; }
