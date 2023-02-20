@@ -1,6 +1,42 @@
-var builder = WebApplication.CreateBuilder(args);
+using System.Text;
+using Amazon;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.Runtime;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o => {
+    o.TokenValidationParameters = new TokenValidationParameters {
+        ValidIssuer = builder.Configuration["JWT:ISSUER"],
+        ValidAudience = builder.Configuration["JWT:AUDIENCE"],
+        IssuerSigningKey = new SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes(builder.Configuration["JWT_KEY"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = false,
+        ValidateIssuerSigningKey = true
+    };
+});
+builder.Services.AddAuthorization();
+
+// AWS DynamoDB Credential Setup
+var credentials = new BasicAWSCredentials(
+    builder.Configuration["AWS_DYNAMO_DB_ACCESS_KEY"],
+    builder.Configuration["AWS_DYNAMO_DB_SECRET_KEY"]
+);
+var config = new AmazonDynamoDBConfig() { RegionEndpoint = RegionEndpoint.EUWest2 };
+var client = new AmazonDynamoDBClient(credentials, config);
+builder.Services.AddSingleton<IAmazonDynamoDB>(client);
+builder.Services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -17,6 +53,7 @@ if (app.Environment.IsDevelopment()) {
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
