@@ -2,8 +2,8 @@
 
 namespace instock_server_application.Data.MockData; 
 
-public class MockStudent {
-    public List<Student> MockStudentData() {
+public static class MockStudents {
+    public static List<Student> MockStudentData() {
         return new List<Student> {
             {
                 new Student(1, "Abdul", "Software Engineering", 20)
