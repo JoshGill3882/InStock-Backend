@@ -4,32 +4,24 @@ using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using AWSServerlessBlogApi.Models;
+using Amazon.DynamoDBv2.Model;
 using instock_server_application.Users.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace instock_server_application.Users.Services; 
 
 public class LoginService {
-    private readonly IConfiguration? _config;
-    private readonly IDynamoDBContext _context;
-    
-    // public LoginService(IConfiguration? config, IDynamoDBContext context) {
-    //     _config = config;
-    //     _context = context;
-    // }
-
-    
-    IDynamoDBContext DDBContext { get; set; }
-    
-    public LoginService(IDynamoDBContext context) {
-        var config = new DynamoDBContextConfig { Conversion = DynamoDBEntryConversion.V2 };
-        this.DDBContext = new DynamoDBContext(
-            new AmazonDynamoDBClient("access key", "secret key", RegionEndpoint.EUWest2), config);
+    private readonly WebApplicationBuilder _builder = WebApplication.CreateBuilder();
+    private readonly AmazonDynamoDBClient _client;
+    public LoginService() {
+        _client = new AmazonDynamoDBClient(
+            _builder.Configuration["AWS_DYNAMO_DB_ACCESS_KEY"],
+            _builder.Configuration["AWS_DYNAMO_DB_SECRET_KEY"],
+            RegionEndpoint.EUWest2
+        );
     }
-    
+
 
     /// <summary>
     /// Method which will be ran on a successful authentication
@@ -38,9 +30,9 @@ public class LoginService {
     /// <param name="email"> User's Email </param>
     /// <returns> JWT Token </returns>
     public string CreateToken(string email) {
-        var issuer = _config.GetValue<string>("JWT:ISSUER");
-        var audience = _config.GetValue<string>("JWT:AUDIENCE");
-        var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!);
+        string issuer = _builder.Configuration["JWT:ISSUER"]!;
+        string audience = _builder.Configuration["JWT:AUDIENCE"]!;
+        byte[] key = Encoding.ASCII.GetBytes(_builder.Configuration["JWT_KEY"]!);
 
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new[] {
@@ -62,28 +54,28 @@ public class LoginService {
         return tokenHandler.WriteToken(token);
     }
 
+    
     /// <summary>
     /// Function for getting a User's data, given an email
     /// </summary>
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
-    public async Task<User?> FindUserByEmail(string email) {
-        var user = await _context.LoadAsync<User>(email);
-        if (user == null) return null;
-        return user;
-    }
-
-    // public async Task<List<User>> GetAllUsers() {
-    //     Console.Write("IN SERVICE");
-    //     var users = await _context.ScanAsync<User>(default).GetRemainingAsync();
-    //     Console.Write(users);
-    //     return users;
-    // }
-    
-    public async Task<IEnumerable<AWSServerlessBlogApi.Models.Users>> GetAllUsers()
-    {
-        var search = DDBContext.ScanAsync<AWSServerlessBlogApi.Models.Users>(null);
-        var allUsers = await search.GetNextSetAsync();
-        return allUsers;
+    public async Task<Models.Users> FindUserByEmail(string email) {
+        var request = new GetItemRequest {
+            Key = new Dictionary<string, AttributeValue> { ["Email"] = new (email) },
+            TableName = "Users"
+        };
+        var response = await _client.GetItemAsync(request);
+        var result = response.Item;
+        var userDetails = new Models.Users(
+            result["Email"].S,
+            result["AccountStatus"].S,
+            int.Parse(result["CreationDate"].N),
+            result["FirstName"].S,
+            result["LastName"].S,
+            result["Password"].S,
+            result["Role"].S
+        );
+        return userDetails;
     }
 }

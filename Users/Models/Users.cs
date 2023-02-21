@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Amazon.DynamoDBv2.DataModel;
 
-namespace AWSServerlessBlogApi.Models
+namespace instock_server_application.Users.Models
 {
-    public class Users
-    {
+    public class Users {
+        [DynamoDBHashKey]
         public string Email { get; set; }
         public string AccountStatus { get; set; }
         public int CreationDate { get; set; }
@@ -14,5 +11,15 @@ namespace AWSServerlessBlogApi.Models
         public string LastName { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
+
+        public Users(string email, string accountStatus, int creationDate, string firstName, string lastName, string password, string role) {
+            Email = email;
+            AccountStatus = accountStatus;
+            CreationDate = creationDate;
+            FirstName = firstName;
+            LastName = lastName;
+            Password = password;
+            Role = role;
+        }
     }
 }
