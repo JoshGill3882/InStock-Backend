@@ -1,8 +1,8 @@
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.Runtime;
+using instock_server_application.Users.Services;
+using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -34,6 +34,7 @@ var client = new AmazonDynamoDBClient(
     RegionEndpoint.EUWest2
 );
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
+builder.Services.AddScoped<ILoginService, LoginService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

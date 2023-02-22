@@ -12,8 +12,8 @@ namespace instock_server_application.Users.Services;
 public class LoginService : ILoginService {
     private readonly WebApplicationBuilder _builder = WebApplication.CreateBuilder();
     private readonly IAmazonDynamoDB _client;
-    public LoginService(IAmazonDynamoDB client)
-    {
+    
+    public LoginService(IAmazonDynamoDB client) {
         _client = client;
     }
     
