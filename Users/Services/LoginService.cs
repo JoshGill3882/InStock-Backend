@@ -13,16 +13,12 @@ namespace instock_server_application.Users.Services;
 
 public class LoginService {
     private readonly WebApplicationBuilder _builder = WebApplication.CreateBuilder();
-    private readonly AmazonDynamoDBClient _client;
-    public LoginService() {
-        _client = new AmazonDynamoDBClient(
-            _builder.Configuration["AWS_DYNAMO_DB_ACCESS_KEY"],
-            _builder.Configuration["AWS_DYNAMO_DB_SECRET_KEY"],
-            RegionEndpoint.EUWest2
-        );
+    private readonly IAmazonDynamoDB _client;
+    public LoginService(IAmazonDynamoDB client)
+    {
+        _client = client;
     }
-
-
+    
     /// <summary>
     /// Method which will be ran on a successful authentication
     /// Creates a JWT token which is then passed back
@@ -53,7 +49,6 @@ public class LoginService {
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
-
     
     /// <summary>
     /// Function for getting a User's data, given an email

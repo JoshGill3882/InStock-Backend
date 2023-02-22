@@ -6,10 +6,9 @@ using Amazon.Runtime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -29,12 +28,12 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddAuthorization();
 
 // AWS DynamoDB Credential Setup
-// var client = new AmazonDynamoDBClient(
-//     builder.Configuration["AWS_DYNAMO_DB_ACCESS_KEY"],
-//     builder.Configuration["AWS_DYNAMO_DB_SECRET_KEY"],
-//     RegionEndpoint.EUWest2
-// );
-// builder.Services.AddSingleton<IAmazonDynamoDB>(client);
+var client = new AmazonDynamoDBClient(
+    builder.Configuration["AWS_DYNAMO_DB_ACCESS_KEY"],
+    builder.Configuration["AWS_DYNAMO_DB_SECRET_KEY"],
+    RegionEndpoint.EUWest2
+);
+builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
