@@ -1,41 +1,34 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DataModel;
 
-namespace instock_server_application.Users.Models; 
+namespace instock_server_application.Users.Models;
 
-[DynamoDBTable("Users")]
 public class User {
-    [DynamoDBHashKey("Email")]
-    private string UserEmail { get; set; }
-    [DynamoDBProperty("AccountStatus")]
-    private string UserAccountStatus { get; set; }
-    [DynamoDBProperty("CreationDate")]
-    private int UserCreationDate { get; set; }
-    [DynamoDBProperty("FirstName")]
-    private string UserFirstName { get; set; }
-    [DynamoDBProperty("LastName")]
-    private string UserLastName { get; set; }
-    [DynamoDBProperty("Password")]
-    private string UserPassword { get; set; }
-    [DynamoDBProperty("Role")]
-    private string UserRole { get; set; }
+    [DynamoDBHashKey]
+    public string Email { get; set; }
+    public string AccountStatus { get; set; }
+    public int CreationDate { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Password { get; set; }
+    public string Role { get; set; }
 
     /// <summary>
     /// All Args Constructor
     /// </summary>
-    /// <param name="userEmail"> User's Email </param>
-    /// <param name="userAccountStatus"> User's Account Status </param>
-    /// <param name="userCreationDate"> User's Creation Date </param>
-    /// <param name="userFirstName"> User's First Name </param>
-    /// <param name="userLastName"> User's Last Name </param>
-    /// <param name="userPassword"> User's Password </param>
-    /// <param name="userRole"> User's Role </param>
-    public User(string userEmail, string userAccountStatus, int userCreationDate, string userFirstName, string userLastName, string userPassword, string userRole) {
-        UserEmail = userEmail;
-        UserAccountStatus = userAccountStatus;
-        UserCreationDate = userCreationDate;
-        UserFirstName = userFirstName;
-        UserLastName = userLastName;
-        UserPassword = userPassword;
-        UserRole = userRole;
+    /// <param name="email"> User's Email </param>
+    /// <param name="accountStatus"> User's Account </param>
+    /// <param name="creationDate"> User's Creation </param>
+    /// <param name="firstName"> User's First Name </param>
+    /// <param name="lastName"> User's Last Name </param>
+    /// <param name="password"> User's Password </param>
+    /// <param name="role"> User's Role </param>
+    public User(string email, string accountStatus, int creationDate, string firstName, string lastName, string password, string role) {
+        Email = email;
+        AccountStatus = accountStatus;
+        CreationDate = creationDate;
+        FirstName = firstName;
+        LastName = lastName;
+        Password = password;
+        Role = role;
     }
 }

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.Users.Models;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -53,14 +54,14 @@ public class LoginService : ILoginService {
     /// </summary>
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
-    public async Task<Models.Users> FindUserByEmail(string email) {
+    public async Task<User> FindUserByEmail(string email) {
         var request = new GetItemRequest {
             Key = new Dictionary<string, AttributeValue> { ["Email"] = new (email) },
             TableName = "Users"
         };
         var response = await _client.GetItemAsync(request);
         var result = response.Item;
-        var userDetails = new Models.Users(
+        var userDetails = new User(
             result["Email"].S,
             result["AccountStatus"].S,
             int.Parse(result["CreationDate"].N),
