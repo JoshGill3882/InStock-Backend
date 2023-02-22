@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using instock_server_application.Users.Services;
+using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,7 @@ namespace instock_server_application.Users.Controllers;
 
 [ApiController]
 public class LoginController : ControllerBase {
-    private readonly LoginService? _loginService;
+    private readonly ILoginService? _loginService;
     private static readonly PasswordService PasswordService = new();
     private readonly IAmazonDynamoDB _client;
     

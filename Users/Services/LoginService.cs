@@ -1,17 +1,15 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Amazon;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using instock_server_application.Users.Models;
+using instock_server_application.Users.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace instock_server_application.Users.Services; 
 
-public class LoginService {
+public class LoginService : ILoginService {
     private readonly WebApplicationBuilder _builder = WebApplication.CreateBuilder();
     private readonly IAmazonDynamoDB _client;
     public LoginService(IAmazonDynamoDB client)
