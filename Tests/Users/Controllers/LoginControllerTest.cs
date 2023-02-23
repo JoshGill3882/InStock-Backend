@@ -4,9 +4,9 @@ using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
-using static instock_server_application.tests.System.Users.MockData.UserMock;
+using static instock_server_application.Tests.Users.MockData.UserMock;
 
-namespace instock_server_application.tests.System.Users.Controllers; 
+namespace instock_server_application.Tests.Users.Controllers; 
 
 public class LoginControllerTest {
 

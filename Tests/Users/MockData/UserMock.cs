@@ -1,6 +1,6 @@
 ﻿using instock_server_application.Users.Models;
 
-namespace instock_server_application.tests.System.Users.MockData; 
+namespace instock_server_application.Tests.Users.MockData; 
 
 public static class UserMock {
     public static User SingleUser() {
