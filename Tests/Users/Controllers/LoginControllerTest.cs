@@ -15,13 +15,18 @@ public class LoginControllerTest {
         // Arrange
         const string token = "jwt-t0k3n";
         const string email = "johnbarnes@gmail.com";
-        var mockService = new Mock<ILoginService>();
-        mockService.Setup(service => service.CreateToken(email)).Returns(token);
-        mockService.Setup(_ => _.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser()));
-        var controller = new LoginController(mockService.Object);
+        const string plainTextPassword = "Test123";
+        
+        var mockLoginService = new Mock<ILoginService>();
+        var mockPasswordService = new Mock<IPasswordService>();
+        mockLoginService.Setup(service => service.CreateToken(email)).Returns(token);
+        mockLoginService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser()));
+        mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
+        
+        var controller = new LoginController(mockLoginService.Object, mockPasswordService.Object);
 
         // Act
-        var result = controller.Login(email, "Test123");
+        var result = controller.Login(email, plainTextPassword);
         
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
@@ -34,12 +39,10 @@ public class LoginControllerTest {
     [Fact]
     public void Test_Login_ReturnsNotFound() {
         // Arrange
-        const string token = "jwt-t0k3n";
-        const string email = "johnbarnes@gmail.com";
-        var mockService = new Mock<ILoginService>();
-        mockService.Setup(service => service.CreateToken(email)).Returns(token);
-        mockService.Setup(_ => _.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser()));
-        var controller = new LoginController(mockService.Object);
+        var mockLoginService = new Mock<ILoginService>();
+        var mockPasswordService = new Mock<IPasswordService>();
+        
+        var controller = new LoginController(mockLoginService.Object, mockPasswordService.Object);
 
         // Act
         var result = controller.Login("","Test123");
@@ -49,6 +52,6 @@ public class LoginControllerTest {
         
         var notFoundObjectResult = result.Result as NotFoundObjectResult;
         notFoundObjectResult.StatusCode.Should().Be(404);
-        notFoundObjectResult.Value.Should().Be("User Not Found");
+        notFoundObjectResult.Value.Should().Be("Invalid Credentials");
     }
 }

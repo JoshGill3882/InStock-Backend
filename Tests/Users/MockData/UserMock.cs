@@ -10,7 +10,7 @@ public static class UserMock {
             1676904523, 
             "John", 
             "Barnes", 
-            "Test123", 
+            "s0m3encrypt3dpa55w0rd", 
             "StandardUser"
         );
     }

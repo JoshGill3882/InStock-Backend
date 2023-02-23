@@ -31,7 +31,7 @@ public class LoginController : ControllerBase {
         // If a user is not found, return a "not found" error
         if (userDetails == null) {
             Console.WriteLine("INVALID CREDENTIALS");
-            return NotFound("INVALID CREDENTIALS");
+            return NotFound("Invalid Credentials");
         }
         
         Console.WriteLine("USER FOUND");
@@ -45,6 +45,6 @@ public class LoginController : ControllerBase {
         
         // If password does not match, return a "not found" error
         Console.WriteLine("INVALID CREDENTIALS");
-        return NotFound("INVALID CREDENTIALS");
+        return NotFound("Invalid Credentials");
     }
 }
