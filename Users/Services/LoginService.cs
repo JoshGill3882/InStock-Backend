@@ -54,13 +54,20 @@ public class LoginService : ILoginService {
     /// </summary>
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
-    public async Task<User> FindUserByEmail(string email) {
+    public async Task<User?> FindUserByEmail(string email) {
         var request = new GetItemRequest {
             Key = new Dictionary<string, AttributeValue> { ["Email"] = new (email) },
             TableName = "Users"
         };
         var response = await _client.GetItemAsync(request);
         var result = response.Item;
+        
+        // If the Email does not contain the key "Email", return null
+        // Means the given email was not found in the Database
+        if (!result.ContainsKey("Email")) {
+            return null;
+        }
+        
         var userDetails = new User(
             result["Email"].S,
             result["AccountStatus"].S,

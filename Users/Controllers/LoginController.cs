@@ -1,4 +1,4 @@
-﻿using instock_server_application.Users.Services;
+﻿using instock_server_application.Users.Models;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,11 +7,12 @@ namespace instock_server_application.Users.Controllers;
 
 [ApiController]
 public class LoginController : ControllerBase {
-    private readonly ILoginService? _loginService;
-    private static readonly PasswordService PasswordService = new();
+    private readonly ILoginService _loginService;
+    private readonly IPasswordService _passwordService;
     
-    public LoginController(ILoginService? loginService) {
+    public LoginController(ILoginService loginService, IPasswordService passwordService) {
         _loginService = loginService;
+        _passwordService = passwordService;
     }
 
     /// <summary>
@@ -24,26 +25,26 @@ public class LoginController : ControllerBase {
     [Route("/login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login(string email, string password) {
-        
-        var userDetails = _loginService.FindUserByEmail(email).Result;
+        // Get the User's Details based on the entered email
+        User? userDetails = _loginService.FindUserByEmail(email).Result;
         
         // If a user is not found, return a "not found" error
         if (userDetails == null) {
-            Console.WriteLine("USER NOT FOUND");
-            return NotFound("User Not Found");
+            Console.WriteLine("INVALID CREDENTIALS");
+            return NotFound("INVALID CREDENTIALS");
         }
         
         Console.WriteLine("USER FOUND");
-        // // If password matches, make a token and pass it back
-        if (password == "Test123") {
+        // If password matches, make a token and pass it back
+        if (_passwordService.Verify(password, userDetails.Password)) {
             Console.WriteLine("PASSWORD MATCHES");
-            string JWTToken = _loginService.CreateToken(email);
+            string jwtToken = _loginService.CreateToken(email);
             Console.WriteLine("TOKEN MADE");
-            return Ok(JWTToken);
+            return Ok(jwtToken);
         }
         
-        // // If password does not match, return a "not found" error
-        Console.WriteLine("PASSWORD DOES NOT MATCH");
-        return NotFound("Incorrect Password");
+        // If password does not match, return a "not found" error
+        Console.WriteLine("INVALID CREDENTIALS");
+        return NotFound("INVALID CREDENTIALS");
     }
 }

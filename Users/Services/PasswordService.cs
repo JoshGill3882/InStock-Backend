@@ -1,10 +1,13 @@
-﻿namespace instock_server_application.Users.Services; 
+﻿using instock_server_application.Users.Services.Interfaces;
+
+namespace instock_server_application.Users.Services; 
 
 /// <summary>
 /// Service for everything to do with Password Security
 /// Methods used provided by BCrypt for .NET - https://github.com/BcryptNet/bcrypt.net
 /// </summary>
-public class PasswordService {
+public class PasswordService : IPasswordService {
+
     /// <summary>
     /// Method for verifying that a entered String matches a given Hash
     /// </summary>

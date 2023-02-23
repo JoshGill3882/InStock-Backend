@@ -35,6 +35,7 @@ var client = new AmazonDynamoDBClient(
 );
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
