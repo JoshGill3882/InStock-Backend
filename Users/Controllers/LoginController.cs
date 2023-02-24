@@ -1,4 +1,5 @@
 ﻿using instock_server_application.Users.Models;
+using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,12 @@ namespace instock_server_application.Users.Controllers;
 public class LoginController : ControllerBase {
     private readonly ILoginService _loginService;
     private readonly IPasswordService _passwordService;
+    private readonly IJwtService _jwtService;
     
-    public LoginController(ILoginService loginService, IPasswordService passwordService) {
+    public LoginController(ILoginService loginService, IPasswordService passwordService, IJwtService jwtService) {
         _loginService = loginService;
         _passwordService = passwordService;
+        _jwtService = jwtService;
     }
 
     /// <summary>
@@ -35,7 +38,7 @@ public class LoginController : ControllerBase {
         
         // If password matches, make a token and pass it back
         if (_passwordService.Verify(password, userDetails.Password)) {
-            string jwtToken = _loginService.CreateToken(email);
+            string jwtToken = _jwtService.CreateToken(email);
             return Ok(jwtToken);
         }
         

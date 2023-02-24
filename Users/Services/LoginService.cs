@@ -11,42 +11,10 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 namespace instock_server_application.Users.Services; 
 
 public class LoginService : ILoginService {
-    private readonly WebApplicationBuilder _builder = WebApplication.CreateBuilder();
     private readonly IAmazonDynamoDB _client;
     
     public LoginService(IAmazonDynamoDB client) {
         _client = client;
-    }
-    
-    /// <summary>
-    /// Method which will be ran on a successful authentication
-    /// Creates a JWT token which is then passed back
-    /// </summary>
-    /// <param name="email"> User's Email </param>
-    /// <returns> JWT Token </returns>
-    public string CreateToken(string email) {
-        string issuer = _builder.Configuration["JWT:ISSUER"]!;
-        string audience = _builder.Configuration["JWT:AUDIENCE"]!;
-        byte[] key = Encoding.ASCII.GetBytes(_builder.Configuration["JWT_KEY"]!);
-
-        var tokenDescriptor = new SecurityTokenDescriptor {
-            Subject = new ClaimsIdentity(new[] {
-                new Claim("Id", Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            }),
-            Expires = DateTime.UtcNow.AddHours(1),
-            Issuer = issuer,
-            Audience = audience,
-            SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256)
-        };
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
     }
     
     /// <summary>
