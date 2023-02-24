@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using instock_server_application.Users.Controllers;
+using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -19,11 +20,15 @@ public class LoginControllerTest {
         
         var mockLoginService = new Mock<ILoginService>();
         var mockPasswordService = new Mock<IPasswordService>();
-        mockLoginService.Setup(service => service.CreateToken(email)).Returns(token);
-        mockLoginService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser()));
-        mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
+        var mockJwtService = new Mock<IJwtService>();
+        var mockUserService = new Mock<IUserService>();
         
-        var controller = new LoginController(mockLoginService.Object, mockPasswordService.Object);
+        mockLoginService.Setup(service => service.Login(email, plainTextPassword)).Returns(Task.FromResult(token));
+        mockUserService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser())!);
+        mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
+        mockJwtService.Setup(service => service.CreateToken(email)).Returns(token);
+
+        var controller = new LoginController(mockLoginService.Object);
 
         // Act
         var result = controller.Login(email, plainTextPassword);
@@ -45,12 +50,16 @@ public class LoginControllerTest {
         
         var mockLoginService = new Mock<ILoginService>();
         var mockPasswordService = new Mock<IPasswordService>();
-        mockLoginService.Setup(service => service.CreateToken(email)).Returns(token);
-        mockLoginService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser()));
-        mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
+        var mockJwtService = new Mock<IJwtService>();
+        var mockUserService = new Mock<IUserService>();
         
-        var controller = new LoginController(mockLoginService.Object, mockPasswordService.Object);
+        mockLoginService.Setup(service => service.Login(email, plainTextPassword)).Returns(Task.FromResult(token));
+        mockUserService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser())!);
+        mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
+        mockJwtService.Setup(service => service.CreateToken(email)).Returns(token);
 
+        var controller = new LoginController(mockLoginService.Object);
+    
         // Act
         var result = controller.Login("test@test.com", plainTextPassword);
         
@@ -71,12 +80,16 @@ public class LoginControllerTest {
         
         var mockLoginService = new Mock<ILoginService>();
         var mockPasswordService = new Mock<IPasswordService>();
-        mockLoginService.Setup(service => service.CreateToken(email)).Returns(token);
-        mockLoginService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser()));
-        mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
+        var mockJwtService = new Mock<IJwtService>();
+        var mockUserService = new Mock<IUserService>();
         
-        var controller = new LoginController(mockLoginService.Object, mockPasswordService.Object);
+        mockLoginService.Setup(service => service.Login(email, plainTextPassword)).Returns(Task.FromResult(token));
+        mockUserService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser())!);
+        mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
+        mockJwtService.Setup(service => service.CreateToken(email)).Returns(token);
 
+        var controller = new LoginController(mockLoginService.Object);
+    
         // Act
         var result = controller.Login(email, "incorrectPassword");
         
