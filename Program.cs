@@ -9,15 +9,10 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: false)
-    .AddEnvironmentVariables()
-    .Build();
-
 // Add services to the container.
-string jwtSecretKey = config.GetSection(JwtKey.EnvironmentKeyIndex + ":SecretKey").Value;
-string jwtIssuer = config.GetSection(JwtKey.EnvironmentKeyIndex + ":Issuer").Value;
-string jwtAudience = config.GetSection(JwtKey.EnvironmentKeyIndex + ":Audience").Value;
+string jwtSecretKey = builder.Configuration[JwtKey.EnvironmentKeyIndex + ":SecretKey"];
+string jwtIssuer = builder.Configuration[JwtKey.EnvironmentKeyIndex + ":Issuer"];
+string jwtAudience = builder.Configuration[JwtKey.EnvironmentKeyIndex + ":Audience"];
 
 // JWT Bearer tokens
 builder.Services.AddAuthentication(options => {
