@@ -18,7 +18,7 @@ public class ItemController : ControllerBase {
         List<Dictionary<string, string>>? items = _itemService.GetItems(businessId).Result;
         
         if (items == null) {
-            return NotFound("NO ITEMS FOUND");
+            return NotFound("No Items Found");
         }
 
         return Ok(items);
