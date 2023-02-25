@@ -1,4 +1,5 @@
-﻿using instock_server_application.Users.Services.Interfaces;
+﻿using instock_server_application.Users.Models;
+using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,13 +17,13 @@ public class LoginController : ControllerBase {
     /// Method for logging into the system
     /// Passes back a JWT token on success or an error message on failure
     /// </summary>
-    /// <param name="email"> User's Email </param>
-    /// <param name="password"> User's Password </param>
+    /// <param name="login"> Login model containing users login and password </param>
     [HttpPost]
     [Route("/login")]
     [AllowAnonymous]
-    public async Task<IActionResult> Login(string email, string password) {
-        var res = _loginService.Login(email, password).Result;
+    public async Task<IActionResult> Login([FromBody] Login login) {
+        Console.WriteLine(login);
+        var res = await _loginService.Login(login.Email, login.Password);
         if (res == null) {
             return NotFound("Invalid Credentials");
         }
