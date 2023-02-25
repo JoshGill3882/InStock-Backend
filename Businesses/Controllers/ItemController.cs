@@ -15,6 +15,8 @@ public class ItemController : ControllerBase {
     [HttpGet]
     [Route("/getAllItems")]
     public async Task<IActionResult> GetAllItems(string businessId) {
+        
+        
         List<Dictionary<string, string>>? items = _itemService.GetItems(businessId).Result;
         
         if (items == null) {
