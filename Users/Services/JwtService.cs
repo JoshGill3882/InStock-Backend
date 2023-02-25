@@ -24,14 +24,15 @@ public class JwtService : IJwtService {
     /// </summary>
     /// <param name="email"> User's Email </param>
     /// <returns> JWT Token </returns>
-    public string CreateToken(string email) {
+    public string CreateToken(User user) {
 
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new[] {
-                new Claim("Id", Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim("Id", user.UserId),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("BusinessIds", user.Businesses.ToString()!)
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             Issuer = _jwtIssuer,
