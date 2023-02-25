@@ -18,27 +18,40 @@ public class UserService : IUserService {
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
     public async Task<User?> FindUserByEmail(string email) {
-        var request = new GetItemRequest {
-            Key = new Dictionary<string, AttributeValue> { ["Email"] = new (email) },
-            TableName = "Users"
+        var request = new QueryRequest {
+            TableName = "Users",
+            IndexName = "Email",
+            KeyConditionExpression = "Email = :Email",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                {":Email", new AttributeValue(email)}
+            }
         };
-        var response = await _client.GetItemAsync(request);
-        var result = response.Item;
+        var response = await _client.QueryAsync(request);
+        var result = response.Items[0];
         
         // If the Email does not contain the key "Email", return null
         // Means the given email was not found in the Database
         if (!result.ContainsKey("Email")) {
             return null;
         }
+
+        List<AttributeValue> AWSBusinesses = result["Businesses"].L;
+        List<string> businesses = new();
+        foreach (var item in AWSBusinesses) {
+            businesses.Add(item.S);
+        }
+        
         
         var userDetails = new User(
+            result["UserId"].S,
             result["Email"].S,
             result["AccountStatus"].S,
             int.Parse(result["CreationDate"].N),
             result["FirstName"].S,
             result["LastName"].S,
             result["Password"].S,
-            result["Role"].S
+            result["Role"].S,
+            businesses
         );
         return userDetails;
     }

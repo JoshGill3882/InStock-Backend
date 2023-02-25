@@ -1,0 +1,63 @@
+stages:
+  - Build
+  - Test
+  - Deliver
+
+image: mcr.microsoft.com/dotnet/sdk:6.0
+
+initial_build:
+  stage: Build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - "dotnet build"
+
+unit_testing:
+  stage: Test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  needs:
+    - job: initial_build
+  script:
+    - "dotnet test"
+  
+# See: https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html#create-a-release-when-a-commit-is-merged-to-the-default-branch
+automatic_release:
+  stage: Deliver
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never                                  # Do not run this job when a tag is created manually
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
+  script:
+    - echo "running release_job for $TAG"
+  release:                                         # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
+    tag_name: 'v0.$CI_PIPELINE_IID'                # The version is incremented per pipeline.
+    description: 'v0.$CI_PIPELINE_IID'
+    ref: '$CI_COMMIT_SHA'                          # The tag is created from the pipeline SHA.
+    
+image_build_push:
+  stage: Deliver
+  image: alpine:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never                                  # Do not run this job when a tag is created manually
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
+  needs:
+    - job: automatic_release
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+    - eval $(ssh-agent -s)
+    - echo "$CONTAINER_BUILDER_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $CONTAINER_BUILDER_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $CONTAINER_BUILDER_HOSTNAME "rm -f -r instock-backend/"
+    - ssh $CONTAINER_BUILDER_HOSTNAME "ssh-agent bash -c 'ssh-add instock-gitlab.key; git clone git@git.cardiff.ac.uk:cm6331-2022-23-1/instock-backend.git'"
+    - ssh $CONTAINER_BUILDER_HOSTNAME "sudo docker build --target final -t '${CI_IMAGE_REPO}:v0.${CI_PIPELINE_IID}' -t '${CI_IMAGE_REPO}' instock-backend/"
+    - ssh $CONTAINER_BUILDER_HOSTNAME "sudo docker push '${CI_IMAGE_REPO}'"
+    - ssh $CONTAINER_BUILDER_HOSTNAME "sudo docker push '${CI_IMAGE_REPO}:v0.${CI_PIPELINE_IID}'"
