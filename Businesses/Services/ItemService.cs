@@ -1,9 +1,8 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using instock_server_application.Items.Models;
-using instock_server_application.Items.Services.Interfaces;
+using instock_server_application.Businesses.Services.Interfaces;
 
-namespace instock_server_application.Items.Services; 
+namespace instock_server_application.Businesses.Services; 
 
 public class ItemService : IItemService {
     private readonly IAmazonDynamoDB _client;

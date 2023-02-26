@@ -1,6 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 
-namespace instock_server_application.Items.Models; 
+namespace instock_server_application.Businesses.Models; 
 
 public class Item {
     [DynamoDBHashKey]

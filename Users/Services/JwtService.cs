@@ -25,6 +25,12 @@ public class JwtService : IJwtService {
     /// <param name="email"> User's Email </param>
     /// <returns> JWT Token </returns>
     public string CreateToken(User user) {
+        // Alter the BusinessIds stored into a string seperated by commas
+        string businessIds = "";
+        foreach (string id in user.Businesses) {
+            businessIds += id + ",";
+        }
+        businessIds.Remove(businessIds.Length - 1, 1);
 
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new[] {
@@ -32,7 +38,7 @@ public class JwtService : IJwtService {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("BusinessIds", user.Businesses.ToString()!)
+                new Claim("BusinessIds", businessIds)
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             Issuer = _jwtIssuer,

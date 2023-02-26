@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using instock_server_application.Items.Controllers;
-using instock_server_application.Items.Services.Interfaces;
+using instock_server_application.Businesses.Controllers;
+using instock_server_application.Businesses.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -16,8 +16,9 @@ public class ItemControllerTest {
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
         List<Dictionary<string, string>> expected = ItemsList();
         var mockItemService = new Mock<IItemService>();
+        var mockBusinessService = new Mock<IBusinessService>();
         mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(expected));
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
 
         // Act
         var result = controller.GetAllItems(businessId);
@@ -34,8 +35,9 @@ public class ItemControllerTest {
         // Arrange
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
         var mockItemService = new Mock<IItemService>();
+        var mockBusinessService = new Mock<IBusinessService>();
         mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(ItemsList()));
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
 
         // Act
         var result = controller.GetAllItems("test123");

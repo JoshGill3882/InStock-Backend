@@ -1,9 +1,9 @@
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
+using instock_server_application.Businesses.Services;
+using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Users.Models;
-using instock_server_application.Items.Services;
-using instock_server_application.Items.Services.Interfaces;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -52,6 +52,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
 
 builder.Services.AddControllers();
 
