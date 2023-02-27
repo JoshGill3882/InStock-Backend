@@ -23,7 +23,7 @@ public class ItemController : ControllerBase {
     [Route("/getAllItems")]
     public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
         if (_businessService.CheckBusinessIdInJWT(User, businessIdModel.BusinessId)) {
-            List<Dictionary<string, string>>? items = _itemService.GetItems(businessIdModel.BusinessId).Result;
+            List<Item>? items = _itemService.GetItems(businessIdModel.BusinessId).Result;
 
             if (items == null) {
                 return NotFound("No Items Found");
@@ -32,6 +32,6 @@ public class ItemController : ControllerBase {
             return Ok(items);
         }
 
-        return NotFound("User Not In Business");
+        return Unauthorized();
     }
 }

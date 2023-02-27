@@ -16,7 +16,7 @@ public class ItemControllerTest {
         // Arrange
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
         BusinessIdModel businessIdModel = new BusinessIdModel(businessId);
-        List<Dictionary<string, string>> expected = ItemsList();
+        List<Item> expected = ItemsList();
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
         mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
@@ -70,8 +70,7 @@ public class ItemControllerTest {
         
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
-        var okResult = result.Result as NotFoundObjectResult;
-        okResult.StatusCode.Should().Be(404);
-        okResult.Value.Should().Be("User Not In Business");
+        var unauthorizedResult = result.Result as UnauthorizedResult;
+        unauthorizedResult.StatusCode.Should().Be(401);
     }
 }

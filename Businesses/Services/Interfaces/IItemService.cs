@@ -1,5 +1,7 @@
-﻿namespace instock_server_application.Businesses.Services.Interfaces;
+﻿using instock_server_application.Businesses.Models;
+
+namespace instock_server_application.Businesses.Services.Interfaces;
 
 public interface IItemService {
-    public Task<List<Dictionary<string, string>>?> GetItems(string businessId);
+    public Task<List<Item>?> GetItems(string businessId);
 }

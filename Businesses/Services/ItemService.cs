@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
@@ -11,7 +12,7 @@ public class ItemService : IItemService {
         _client = client;
     }
 
-    public async Task<List<Dictionary<string, string>>?> GetItems(string businessId) {
+    public async Task<List<Item>?> GetItems(string businessId) {
         var request = new QueryRequest {
             TableName = "Items",
             IndexName = "BusinessId",
@@ -27,17 +28,17 @@ public class ItemService : IItemService {
             return null;
         }
 
-        List<Dictionary<string, string>> items = new();
+        List<Item> items = new();
 
         foreach (Dictionary<string, AttributeValue> item in responseItems) {
             items.Add(
-                new Dictionary<string, string> {
-                    { "SKU", item["SKU"].S }, 
-                    { "BusinessId", item["BusinessId"].S },
-                    { "Category", item["Category"].S},
-                    { "Name", item["Name"].S},
-                    { "Stock", item["Stock"].N}
-                }
+                new (
+                    item["SKU"].S, 
+                    item["BusinessId"].S,
+                    item["Category"].S,
+                    item["Name"].S,
+                    Int32.Parse(item["Stock"].N)
+                )
             );
         }
 
