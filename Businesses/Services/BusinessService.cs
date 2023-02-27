@@ -7,6 +7,8 @@ public class BusinessService : IBusinessService {
 
     public bool CreateBusiness(string userId, CreateBusinessDto newBusiness) {
         
+        // Business Logic Validation?
+        
         return true;
     }
     

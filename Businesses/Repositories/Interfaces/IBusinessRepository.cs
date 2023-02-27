@@ -4,5 +4,5 @@ using instock_server_application.Businesses.Models;
 namespace instock_server_application.Businesses.Repositories.Interfaces; 
 
 public interface IBusinessRepository {
-    Task<Dictionary<string, AttributeValue>> CreateBusiness(BusinessModel newBusiness);
+    bool CreateBusiness(BusinessModel newBusiness);
 }
