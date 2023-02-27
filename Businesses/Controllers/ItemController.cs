@@ -1,4 +1,5 @@
-﻿using instock_server_application.Businesses.Services.Interfaces;
+﻿using instock_server_application.Businesses.Models;
+using instock_server_application.Businesses.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace instock_server_application.Businesses.Controllers; 
@@ -20,9 +21,10 @@ public class ItemController : ControllerBase {
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
     [Route("/getAllItems")]
-    public async Task<IActionResult> GetAllItems(string businessId) {
-        if (_businessService.CheckBusinessIdInJWT(User, businessId)) {
-            List<Dictionary<string, string>>? items = _itemService.GetItems(businessId).Result;
+    public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
+        
+        if (_businessService.CheckBusinessIdInJWT(User, businessIdModel.BusinessId)) {
+            List<Dictionary<string, string>>? items = _itemService.GetItems(businessIdModel.BusinessId).Result;
 
             if (items == null) {
                 return NotFound("No Items Found");
