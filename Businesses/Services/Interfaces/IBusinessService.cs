@@ -4,5 +4,5 @@ using instock_server_application.Businesses.Models;
 namespace instock_server_application.Businesses.Services; 
 
 public interface IBusinessService {
-    bool CreateBusiness(string userId, CreateBusinessDto newBusiness);
+    bool CreateBusiness(UserDTO userDto, CreateBusinessDto newBusiness);
 }

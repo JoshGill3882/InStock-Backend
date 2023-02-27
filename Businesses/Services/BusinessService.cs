@@ -5,10 +5,8 @@ namespace instock_server_application.Businesses.Services;
 
 public class BusinessService : IBusinessService {
 
-    public bool CreateBusiness(string userId, CreateBusinessDto newBusiness) {
-        
-        // Business Logic Validation?
-        
+    public bool CreateBusiness(UserDTO userDto, CreateBusinessDto newBusiness) {
+
         return true;
     }
     

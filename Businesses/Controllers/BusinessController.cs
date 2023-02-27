@@ -19,18 +19,22 @@ public class BusinessController : ControllerBase {
 
     [Route("create")]
     [HttpPost]
-    public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessDto newBusiness) {
+    public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessDto newBusinessDto) {
 
-        // Get our current UserId to pass to the business service
+        // Get our current UserId and BusinessId to validate and pass to the business service
         string currentUserId = User.FindFirstValue("Id");
+        string currentUserBusinessId = User.FindFirstValue("BusinessId");
 
         // Check there are no issues with the userId
         if (string.IsNullOrEmpty(currentUserId)) {
             return Unauthorized();
         }
-        
+
+        // Creating new userDto to pass into service
+        UserDTO currentUserDto = new UserDTO(currentUserId, currentUserBusinessId);
+
         // Attempting to create new business, it returns success of failure
-        bool serviceResponse = _businessService.CreateBusiness(currentUserId, newBusiness);
+        bool serviceResponse = _businessService.CreateBusiness(currentUserDto, newBusinessDto);
 
         // If Success, return 200
         if (serviceResponse) {
