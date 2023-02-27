@@ -17,6 +17,7 @@ public class ItemControllerTest {
         List<Dictionary<string, string>> expected = ItemsList();
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
+        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
         mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(expected));
         var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
 
@@ -36,6 +37,7 @@ public class ItemControllerTest {
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
+        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, "test123")).Returns(true);
         mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(ItemsList()));
         var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
 
@@ -47,5 +49,25 @@ public class ItemControllerTest {
         var okResult = result.Result as NotFoundObjectResult;
         okResult.StatusCode.Should().Be(404);
         okResult.Value.Should().Be("No Items Found");
+    }
+
+    [Fact]
+    public void Test_GetItem_NoAccessForBusinessID() {
+        // Arrange
+        const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
+        var mockItemService = new Mock<IItemService>();
+        var mockBusinessService = new Mock<IBusinessService>();
+        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
+        mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(ItemsList()));
+        var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
+
+        // Act
+        var result = controller.GetAllItems("test123");
+        
+        // Assert
+        Assert.IsAssignableFrom<Task<IActionResult>>(result);
+        var okResult = result.Result as NotFoundObjectResult;
+        okResult.StatusCode.Should().Be(404);
+        okResult.Value.Should().Be("User Not In Business");
     }
 }
