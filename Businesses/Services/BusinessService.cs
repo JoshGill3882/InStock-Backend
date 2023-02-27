@@ -11,7 +11,7 @@ public class BusinessService : IBusinessService {
     /// <param name="idToCheck"> The ID to check for </param>
     /// <returns> True/False depending if the ID is found </returns>
     public bool CheckBusinessIdInJWT(ClaimsPrincipal User, string idToCheck) {
-        // Get the claims of a User, and seperate the BusinessIds into an array of stringe
+        // Get the claims of a User, and seperate the BusinessIds into an array of string
         string businessIds = User.FindFirstValue("BusinessIds");
         string[] ids = businessIds.Split(",");
         
