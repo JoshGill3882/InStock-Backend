@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 
 namespace instock_server_application.Businesses.Repositories; 
@@ -12,7 +13,7 @@ public class ItemRepo : IItemRepo{
     }
     public async Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId) {
         var request = new QueryRequest {
-            TableName = "Items",
+            TableName = Item.TableName,
             IndexName = "BusinessId",
             KeyConditionExpression = "BusinessId = :Id",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
