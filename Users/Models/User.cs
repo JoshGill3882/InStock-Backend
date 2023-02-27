@@ -4,6 +4,8 @@ using Amazon.DynamoDBv2.Model;
 namespace instock_server_application.Users.Models;
 
 public class User {
+    public static string TableName = "Users";
+    
     [DynamoDBHashKey]
     public string UserId { get; set; }
     public string Email { get; set; }

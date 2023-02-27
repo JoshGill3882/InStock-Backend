@@ -1,15 +1,16 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Users.Models;
+using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services.Interfaces;
 
 namespace instock_server_application.Users.Services; 
 
 public class UserService : IUserService {
-    private readonly IAmazonDynamoDB _client;
-    
-    public UserService(IAmazonDynamoDB client) {
-        _client = client;
+    private readonly IUserRepo _userRepo;
+
+    public UserService(IUserRepo userRepo) {
+        _userRepo = userRepo;
     }
     
     /// <summary>
@@ -18,20 +19,11 @@ public class UserService : IUserService {
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
     public async Task<User?> FindUserByEmail(string email) {
-        var request = new QueryRequest {
-            TableName = "Users",
-            IndexName = "Email",
-            KeyConditionExpression = "Email = :Email",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Email", new AttributeValue(email)}
-            }
-        };
-        var response = await _client.QueryAsync(request);
-        var result = response.Items[0];
+        var result = _userRepo.GetUser(email).Result;
         
         // If the Email does not contain the key "Email", return null
         // Means the given email was not found in the Database
-        if (!result.ContainsKey("Email")) {
+        if (result == null) {
             return null;
         }
 
