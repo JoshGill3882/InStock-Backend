@@ -1,8 +1,8 @@
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
-using instock_server_application.Businesses.Models.Repositories;
-using instock_server_application.Businesses.Models.Repositories.Interfaces;
+using instock_server_application.Businesses.Repositories;
+using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Users.Models;

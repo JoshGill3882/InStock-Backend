@@ -1,8 +1,8 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using instock_server_application.Businesses.Models.Repositories.Interfaces;
+using instock_server_application.Businesses.Repositories.Interfaces;
 
-namespace instock_server_application.Businesses.Models.Repositories; 
+namespace instock_server_application.Businesses.Repositories; 
 
 public class ItemRepo : IItemRepo{
     private readonly IAmazonDynamoDB _client;

@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Models;
-using instock_server_application.Businesses.Models.Repositories.Interfaces;
+using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
