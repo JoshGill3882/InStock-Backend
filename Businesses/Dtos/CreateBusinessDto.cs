@@ -7,5 +7,5 @@ public class CreateBusinessDto {
         BusinessName = businessName;
     }
 
-    public string BusinessName { get; }
+    private string BusinessName { get; }
 }
