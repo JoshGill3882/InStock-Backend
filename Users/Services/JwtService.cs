@@ -32,7 +32,7 @@ public class JwtService : IJwtService {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("BusinessIds", user.Businesses.ToString()!)
+                new Claim("BusinessId", user.BusinessId)
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             Issuer = _jwtIssuer,
