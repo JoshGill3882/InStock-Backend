@@ -31,7 +31,7 @@ public class BusinessController : ControllerBase {
         }
 
         // Creating new userDto to pass into service
-        UserDTO currentUserDto = new UserDTO(currentUserId, currentUserBusinessId);
+        UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
 
         // Attempting to create new business, it returns success of failure
         bool serviceResponse = _businessService.CreateBusiness(currentUserDto, newBusinessDto);
