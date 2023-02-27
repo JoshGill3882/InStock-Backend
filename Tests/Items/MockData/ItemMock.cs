@@ -35,4 +35,8 @@ public static class ItemMock {
             )
         };
     }
+
+    public static List<Item> EmptyList() {
+        return new();
+    }
 }

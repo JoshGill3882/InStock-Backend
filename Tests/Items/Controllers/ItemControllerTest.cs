@@ -20,8 +20,8 @@ public class ItemControllerTest {
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
         mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
-        mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(expected));
-        var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
+        mockItemService.Setup(service => service.GetItems(null, businessId)).Returns(Task.FromResult(expected));
+        var controller = new ItemController(mockItemService.Object);
 
         // Act
         var result = controller.GetAllItems(businessIdModel);
@@ -36,22 +36,21 @@ public class ItemControllerTest {
     [Fact]
     public void Test_GetItem_CorrectItemsForIncorrectBusinessId() {
         // Arrange
-        const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
+        List<Item> expected = EmptyList();
         BusinessIdModel businessIdModel = new BusinessIdModel("test123");
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
         mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, "test123")).Returns(true);
-        mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(ItemsList()));
-        var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
+        mockItemService.Setup(service => service.GetItems(null, "test123")).Returns(Task.FromResult(expected));
+        var controller = new ItemController(mockItemService.Object);
 
         // Act
         var result = controller.GetAllItems(businessIdModel);
         
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
-        var okResult = result.Result as NotFoundObjectResult;
-        okResult.StatusCode.Should().Be(404);
-        okResult.Value.Should().Be("No Items Found");
+        var notFoundResult = result.Result as NotFoundResult;
+        notFoundResult.StatusCode.Should().Be(404);
     }
 
     [Fact]
@@ -62,8 +61,8 @@ public class ItemControllerTest {
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
         mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
-        mockItemService.Setup(service => service.GetItems(businessId)).Returns(Task.FromResult(ItemsList()));
-        var controller = new ItemController(mockItemService.Object, mockBusinessService.Object);
+        mockItemService.Setup(service => service.GetItems(null, businessId)).Returns(Task.FromResult(ItemsList()));
+        var controller = new ItemController(mockItemService.Object);
 
         // Act
         var result = controller.GetAllItems(businessIdModel);

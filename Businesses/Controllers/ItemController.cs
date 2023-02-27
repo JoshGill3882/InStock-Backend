@@ -7,11 +7,9 @@ namespace instock_server_application.Businesses.Controllers;
 [ApiController]
 public class ItemController : ControllerBase {
     private readonly IItemService _itemService;
-    private readonly IBusinessService _businessService;
-
-    public ItemController(IItemService itemService, IBusinessService businessService) {
+    
+    public ItemController(IItemService itemService) {
         _itemService = itemService;
-        _businessService = businessService;
     }
 
     /// <summary>
@@ -22,16 +20,14 @@ public class ItemController : ControllerBase {
     [HttpGet]
     [Route("/getAllItems")]
     public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
-        if (_businessService.CheckBusinessIdInJWT(User, businessIdModel.BusinessId)) {
-            List<Item>? items = _itemService.GetItems(businessIdModel.BusinessId).Result;
-
-            if (items == null) {
-                return NotFound("No Items Found");
-            }
-
-            return Ok(items);
+        List<Item>? items = _itemService.GetItems(User, businessIdModel.BusinessId).Result;
+        
+        if (items == null) {
+            return Unauthorized();
+        } if (items.Count == 0) {
+            return NotFound();
         }
 
-        return Unauthorized();
+        return Ok(items);
     }
 }
