@@ -1,28 +1,19 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
+﻿using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Models;
+using instock_server_application.Businesses.Models.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemService : IItemService {
-    private readonly IAmazonDynamoDB _client;
+    private readonly IItemRepo _itemRepo;
 
-    public ItemService(IAmazonDynamoDB client) {
-        _client = client;
+    public ItemService(IItemRepo itemRepo) {
+        _itemRepo = itemRepo;
     }
 
     public async Task<List<Item>?> GetItems(string businessId) {
-        var request = new QueryRequest {
-            TableName = "Items",
-            IndexName = "BusinessId",
-            KeyConditionExpression = "BusinessId = :Id",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Id", new AttributeValue(businessId)}
-            }
-        };
-        var response = await _client.QueryAsync(request);
-        var responseItems = response.Items;
+        List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
 
         if (responseItems.Count == 0) {
             return null;

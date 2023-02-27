@@ -1,6 +1,8 @@
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
+using instock_server_application.Businesses.Models.Repositories;
+using instock_server_application.Businesses.Models.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Users.Models;
@@ -53,6 +55,7 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IItemRepo, ItemRepo>();
 
 builder.Services.AddControllers();
 
