@@ -9,6 +9,7 @@ public class Item {
     private string Category { get; set; }
     private string Name { get; set; }
     private int Stock { get; set; }
+    private string TableName = "Items";
 
     /// <summary>
     /// All Args Constructor
