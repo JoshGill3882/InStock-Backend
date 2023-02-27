@@ -17,12 +17,11 @@ public class ItemController : ControllerBase {
     /// <summary>
     /// Function for getting all the items for a specific business, providing the currently logged in user has access
     /// </summary>
-    /// <param name="businessId"> The BusinessID to get all the items for </param>
+    /// <param name="businessIdModel"> The BusinessID to get all the items for </param>
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
     [Route("/getAllItems")]
     public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
-        
         if (_businessService.CheckBusinessIdInJWT(User, businessIdModel.BusinessId)) {
             List<Dictionary<string, string>>? items = _itemService.GetItems(businessIdModel.BusinessId).Result;
 
