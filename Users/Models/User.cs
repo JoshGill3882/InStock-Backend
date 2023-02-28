@@ -3,17 +3,33 @@ using Amazon.DynamoDBv2.Model;
 
 namespace instock_server_application.Users.Models;
 
+[DynamoDBTable("Users")]
 public class User {
     [DynamoDBHashKey]
     public string UserId { get; set; }
+    
+    [DynamoDBProperty("Email")]
     public string Email { get; set; }
+    
+    [DynamoDBProperty("AccountStatus")]
     public string AccountStatus { get; set; }
+    
+    [DynamoDBProperty("CreationDate")]
     public int CreationDate { get; set; }
+    
+    [DynamoDBProperty("FirstName")]
     public string FirstName { get; set; }
+    
+    [DynamoDBProperty("LastName")]
     public string LastName { get; set; }
+    
+    [DynamoDBProperty("Password")]
     public string Password { get; set; }
+    
+    [DynamoDBProperty("Role")]
     public string Role { get; set; }
-
+    
+    [DynamoDBProperty("BusinessId")]
     public string BusinessId { get; set; }
 
     /// <summary>
