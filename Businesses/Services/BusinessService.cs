@@ -16,7 +16,6 @@ public class BusinessService : IBusinessService {
         if (string.IsNullOrEmpty(businessIds)) {
             return false;
         }
-        Console.WriteLine(businessIds);
         string[] ids = businessIds.Split(",");
         
         // If the array contains the search param, return true
