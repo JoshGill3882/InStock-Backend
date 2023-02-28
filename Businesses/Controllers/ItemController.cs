@@ -19,7 +19,6 @@ public class ItemController : ControllerBase {
     /// <param name="businessIdModel"> The BusinessID to get all the items for </param>
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
-    [Route("all")]
     public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
         List<Item>? items = _itemService.GetItems(User, businessIdModel.BusinessId).Result;
         
