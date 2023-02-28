@@ -13,6 +13,10 @@ public class BusinessService : IBusinessService {
     public bool CheckBusinessIdInJWT(ClaimsPrincipal User, string idToCheck) {
         // Get the claims of a User, and seperate the BusinessIds into an array of string
         string businessIds = User.FindFirstValue("BusinessIds");
+        if (string.IsNullOrEmpty(businessIds)) {
+            return false;
+        }
+        Console.WriteLine(businessIds);
         string[] ids = businessIds.Split(",");
         
         // If the array contains the search param, return true
