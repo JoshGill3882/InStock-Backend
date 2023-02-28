@@ -34,6 +34,12 @@ public class UserService : IUserService {
         if (!result.ContainsKey("Email")) {
             return null;
         }
+
+        // Setting the business Id depending if it's null or not
+        string businessId = "";
+        if (result.ContainsKey("BusinessId")) {
+            businessId = result["BusinessId"].S;
+        }
         
         var userDetails = new User(
             result["UserId"].S,
@@ -44,7 +50,7 @@ public class UserService : IUserService {
             result["LastName"].S,
             result["Password"].S,
             result["Role"].S,
-            result["BusinessId"].S
+            businessId
         );
         return userDetails;
     }
