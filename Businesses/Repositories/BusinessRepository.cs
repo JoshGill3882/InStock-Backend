@@ -1,23 +1,33 @@
 ﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Users.Models;
 
 namespace instock_server_application.Businesses.Repositories; 
 
 public class BusinessRepository : IBusinessRepository {
 
-    private readonly IAmazonDynamoDB _client;
+    private readonly IDynamoDBContext _context;
 
-    public BusinessRepository(IAmazonDynamoDB client) {
-        _client = client;
+    public BusinessRepository(IDynamoDBContext context) {
+        _context = context;
     }
 
-    public bool CreateBusiness(BusinessModel newBusiness) {
+    public async Task<bool> CreateBusiness(string userId, CreateBusinessDto newBusiness) {
         
-        // Database Validation?
+        // Checking the User Id is valid
+        if (string.IsNullOrEmpty(userId)) {
+            return false; // Invalid userId
+        }
         
-        // TODO We need to look at how we are storing database data
+        // Check if the user already has a business
+        // TODO We need to streamline our database process, get local versions working
+        //User currentDbUser = await _context.LoadAsync<User>(userId);
+
+        
         return true;
     }
     

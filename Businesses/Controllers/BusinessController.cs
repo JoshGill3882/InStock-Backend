@@ -34,7 +34,7 @@ public class BusinessController : ControllerBase {
         UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
 
         // Attempting to create new business, it returns success of failure
-        bool serviceResponse = _businessService.CreateBusiness(currentUserDto, newBusinessDto);
+        bool serviceResponse = await _businessService.CreateBusiness(currentUserDto, newBusinessDto);
 
         // If Success, return 200
         if (serviceResponse) {

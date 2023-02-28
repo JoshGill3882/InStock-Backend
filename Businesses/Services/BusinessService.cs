@@ -12,7 +12,7 @@ public class BusinessService : IBusinessService {
         _businessRepository = businessRepository;
     }
 
-    public bool CreateBusiness(UserDto userDto, CreateBusinessDto newBusiness) {
+    public async Task<bool> CreateBusiness(UserDto userDto, CreateBusinessDto newBusiness) {
         
         // Check if the user Id is valid
         if (string.IsNullOrEmpty(userDto.UserId)) {
@@ -29,9 +29,10 @@ public class BusinessService : IBusinessService {
             return false; // Business Name too long
         }
         
-        
-            
-        return true;
+        // Calling repo to create the business for the user
+        bool saveSuccess = await _businessRepository.CreateBusiness(userDto.UserId, newBusiness);
+
+        return saveSuccess;
     }
     
 }

@@ -1,6 +1,7 @@
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
@@ -46,6 +47,7 @@ var client = new AmazonDynamoDBClient(
     RegionEndpoint.EUWest2
 );
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
+builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
 // User Services
 builder.Services.AddScoped<IJwtService, JwtService>();
