@@ -16,7 +16,7 @@ public class ItemControllerTest {
         // Arrange
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
         BusinessIdModel businessIdModel = new BusinessIdModel(businessId);
-        List<Item> expected = ItemsList();
+        List<Dictionary<string, string>> expected = ItemsList();
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
         mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
@@ -36,7 +36,7 @@ public class ItemControllerTest {
     [Fact]
     public void Test_GetItem_CorrectItemsForIncorrectBusinessId() {
         // Arrange
-        List<Item> expected = EmptyList();
+        List<Dictionary<string, string>> expected = EmptyList();
         BusinessIdModel businessIdModel = new BusinessIdModel("test123");
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();

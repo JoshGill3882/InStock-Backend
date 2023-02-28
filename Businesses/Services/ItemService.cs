@@ -15,10 +15,10 @@ public class ItemService : IItemService {
         _businessService = businessService;
     }
 
-    public async Task<List<Item>?> GetItems(ClaimsPrincipal user, string businessId) {
+    public async Task<List<Dictionary<string, string>>?> GetItems(ClaimsPrincipal user, string businessId) {
         if (_businessService.CheckBusinessIdInJWT(user, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
-            List<Item> items = new();
+            List<Dictionary<string, string>> items = new();
 
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
@@ -28,13 +28,13 @@ public class ItemService : IItemService {
 
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 items.Add(
-                    new(
-                        item["SKU"].S,
-                        item["BusinessId"].S,
-                        item["Category"].S,
-                        item["Name"].S,
-                        Int32.Parse(item["Stock"].N)
-                    )
+                    new () {
+                        {"SKU", item["SKU"].S},
+                        {"BusinessId", item["BusinessId"].S},
+                        {"Category", item["Category"].S},
+                        {"Name", item["Name"].S},
+                        {"Stock", item["Stock"].N}
+                    }
                 );
             }
 

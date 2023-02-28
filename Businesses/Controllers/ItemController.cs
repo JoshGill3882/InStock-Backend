@@ -20,7 +20,7 @@ public class ItemController : ControllerBase {
     [HttpGet]
     [Route("/items")]
     public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
-        List<Item>? items = _itemService.GetItems(User, businessIdModel.BusinessId).Result;
+        List<Dictionary<string, string>>? items = _itemService.GetItems(User, businessIdModel.BusinessId).Result;
         
         if (items == null) {
             return Unauthorized();

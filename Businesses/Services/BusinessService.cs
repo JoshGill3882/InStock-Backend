@@ -18,8 +18,7 @@ public class BusinessService : IBusinessService {
         }
         string[] ids = businessIds.Split(",");
         
-        // If the array contains the search param, return true
-        // Otherwise, return false
+        // If the array contains the search param, return true. Otherwise, return false
         if (ids.Contains(idToCheck)) {
             return true;
         }
