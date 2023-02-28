@@ -1,6 +1,10 @@
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
+using instock_server_application.Businesses.Repositories;
+using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Businesses.Services;
+using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
@@ -48,7 +52,10 @@ builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IItemRepo, ItemRepo>();
 
 builder.Services.AddControllers();
 
