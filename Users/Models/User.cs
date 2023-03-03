@@ -55,4 +55,7 @@ public class User {
         Role = role;
         BusinessId = businessId;
     }
+
+    public User() {
+    }
 }

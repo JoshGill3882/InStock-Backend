@@ -4,22 +4,28 @@ namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Businesses")]
 public class BusinessModel {
-    [DynamoDBHashKey] 
-    public int BusinessId { get; set; }
+    [DynamoDBHashKey]
+    [DynamoDBProperty("BusinessId")]
+    public Guid BusinessId { get; set; }
 
     [DynamoDBProperty("Name")]
     public string BusinessName { get; set; }
     
     [DynamoDBProperty("Owner")] 
     public string OwnerId { get; set; }
+
+    public BusinessModel() {
+    }
+
+    public BusinessModel(string id, string name, string owner) {
+        BusinessId = new Guid(id);
+        BusinessName = name;
+        OwnerId = owner;
+    }
     
-    [DynamoDBProperty("Members")]
-    public List<string> MembersIdList { get; set; }
-    
-    public BusinessModel(int id, string name, string owner, List<string> membersList) {
+    public BusinessModel(Guid id, string name, string owner) {
         BusinessId = id;
         BusinessName = name;
         OwnerId = owner;
-        MembersIdList = membersList;
     }
 }
