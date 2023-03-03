@@ -19,8 +19,8 @@ public class ItemController : ControllerBase {
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
     [Route("/items")]
-    public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
-        List<Dictionary<string, string>>? items = _itemService.GetItems(User, businessIdModel.BusinessId).Result;
+    public async Task<IActionResult> GetAllItems(String businessId) {
+        List<Dictionary<string, string>>? items = _itemService.GetItems(User, businessId).Result;
         
         if (items == null) {
             return Unauthorized();
