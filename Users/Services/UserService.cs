@@ -54,4 +54,8 @@ public class UserService : IUserService {
         );
         return userDetails;
     }
+
+    public string GenerateUUID() {
+        return Guid.NewGuid().ToString();
+    }
 }
