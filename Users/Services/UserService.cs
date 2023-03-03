@@ -36,7 +36,11 @@ public class UserService : IUserService {
         }
 
         // Setting the business Id depending if it's null or not
+        // TODO Changes this when refactoring multiple businessIds to single businessId
         string businessId = "";
+        if (result.ContainsKey("Businesses")) {
+            businessId = result["Businesses"].L[0].S;
+        }
         if (result.ContainsKey("BusinessId")) {
             businessId = result["BusinessId"].S;
         }
