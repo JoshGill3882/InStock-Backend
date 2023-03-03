@@ -14,7 +14,6 @@ public class BusinessService : IBusinessService {
     }
 
     public async Task<bool> CreateBusiness(UserDto userDto, CreateBusinessDto newBusiness) {
-        
         // Check if the user Id is valid
         if (string.IsNullOrEmpty(userDto.UserId)) {
             return false; // Invalid UserId
@@ -35,24 +34,15 @@ public class BusinessService : IBusinessService {
 
         return saveSuccess;
     }
+
     /// <summary>
     /// Function for checking if a given BusinessId is contained within a User's Claims
     /// </summary>
-    /// <param name="User"> The currently logged in User </param>
+    /// <param name="userDto">The users details</param>
     /// <param name="idToCheck"> The ID to check for </param>
     /// <returns> True/False depending if the ID is found </returns>
-    public bool CheckBusinessIdInJWT(ClaimsPrincipal User, string idToCheck) {
-        // Get the claims of a User, and seperate the BusinessIds into an array of string
-        string businessIds = User.FindFirstValue("BusinessIds");
-        if (string.IsNullOrEmpty(businessIds)) {
-            return false;
-        }
-        string[] ids = businessIds.Split(",");
-        
-        // If the array contains the search param, return true. Otherwise, return false
-        if (ids.Contains(idToCheck)) {
-            return true;
-        }
-        return false;
+    public bool CheckBusinessIdInJWT(UserDto userDto, string idToCheck) {
+        // Return if the business Id matches or not
+        return userDto.UserBusinessId.Equals(idToCheck);
     }
 }
