@@ -5,7 +5,7 @@ using instock_server_application.Businesses.Models;
 namespace instock_server_application.Businesses.Services; 
 
 public interface IBusinessService {
-    Task<bool> CreateBusiness(UserDto userDto, CreateBusinessDto newBusiness);
+    Task<bool> CreateBusiness(CreateBusinessRequestDto newBusinessRequest);
     public bool CheckBusinessIdInJWT(UserDto userDto, string idToCheck);
 
 }

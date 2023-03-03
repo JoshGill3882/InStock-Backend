@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Services;
@@ -19,7 +20,7 @@ public class BusinessController : ControllerBase {
 
     [Route("create")]
     [HttpPost]
-    public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessDto newBusinessDto) {
+    public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessForm newBusinessForm) {
 
         // Get our current UserId and BusinessId to validate and pass to the business service
         string currentUserId = User.FindFirstValue("Id");
@@ -30,11 +31,12 @@ public class BusinessController : ControllerBase {
             return Unauthorized();
         }
 
-        // Creating new userDto to pass into service
-        UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
+        // Creating CreateBusinessDto to pass the details to the service for processing
+        CreateBusinessRequestDto businessRequestToCreate = new CreateBusinessRequestDto(newBusinessForm.BusinessName, 
+            currentUserId, currentUserBusinessId);
 
         // Attempting to create new business, it returns success of failure
-        bool serviceResponse = await _businessService.CreateBusiness(currentUserDto, newBusinessDto);
+        bool serviceResponse = await _businessService.CreateBusiness(businessRequestToCreate);
 
         // If Success, return 200
         if (serviceResponse) {

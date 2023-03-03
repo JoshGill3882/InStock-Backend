@@ -16,18 +16,16 @@ public class BusinessRepository : IBusinessRepository {
         _context = context;
     }
 
-    public async Task<bool> CreateBusiness(string userId, CreateBusinessDto newBusiness) {
+    public async Task<bool> CreateBusiness(StoreBusinessDto businessToSave) {
         
         // Checking the User Id is valid
-        if (string.IsNullOrEmpty(userId)) {
+        if (string.IsNullOrEmpty(businessToSave.UserId)) {
             return false; // Invalid userId
         }
         
         // Check if the user already has a business
         // TODO We need to streamline our database process, get local versions working
         //User currentDbUser = await _context.LoadAsync<User>(userId);
-
-        
         return true;
     }
     
