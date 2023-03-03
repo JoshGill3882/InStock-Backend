@@ -24,8 +24,20 @@ public class BusinessRepository : IBusinessRepository {
         }
         
         // Check if the user already has a business
-        // TODO We need to streamline our database process, get local versions working
-        //User currentDbUser = await _context.LoadAsync<User>(userId);
+        // TODO Think this will be better to check the businesses not users by using a composite key when we database refactor
+        User existingUser = await _context.LoadAsync<User>(businessToSave.UserId);
+        if (!string.IsNullOrEmpty(existingUser.BusinessId)) {
+            return false;
+        }
+        
+        // Save the new business
+        BusinessModel businessModel = new BusinessModel(Guid.NewGuid(), businessToSave.BusinessName, businessToSave.UserId);
+        await _context.SaveAsync(businessModel);
+        
+        // Update the user table to include new business
+        existingUser.BusinessId = businessModel.BusinessId.ToString();
+        await _context.SaveAsync(existingUser);
+        
         return true;
     }
     

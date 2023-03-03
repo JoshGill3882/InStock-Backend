@@ -39,6 +39,7 @@ public class BusinessController : ControllerBase {
         bool serviceResponse = await _businessService.CreateBusiness(businessRequestToCreate);
 
         // If Success, return 200
+        // TODO Return 201 Created
         if (serviceResponse) {
             return Ok();
         }
