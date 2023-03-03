@@ -68,6 +68,6 @@ public class ItemControllerTest {
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         var unauthorizedResult = result.Result as UnauthorizedResult;
-        unauthorizedResult.StatusCode.Should().Be(401);
+        unauthorizedResult?.StatusCode.Should().Be(401);
     }
 }
