@@ -3,6 +3,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Shared.Exceptions;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -21,12 +22,13 @@ public class BusinessService : IBusinessService {
         
         // Check if the user has already got a business
         if (!string.IsNullOrEmpty(newBusinessRequest.UserCurrentBusinessId)) {
-            return false; // Already has a business
+            throw new UserAlreadyOwnsBusinessException();
         }
         
         // Check if the business is within the character limit of 20 (same as Etsy & Shopify)
         if (newBusinessRequest.BusinessName.Length > 20) {
             return false; // Business Name too long
+            
         }
         
         // Calling repo to create the business for the user
