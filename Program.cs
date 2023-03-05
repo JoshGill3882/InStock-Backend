@@ -6,6 +6,7 @@ using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Shared.Filters;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
@@ -63,7 +64,9 @@ builder.Services.AddScoped<IItemRepo, ItemRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => {
+    options.Filters.Add<GlobalExceptionFilter>();
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
