@@ -34,12 +34,6 @@ public class UserService : IUserService {
         if (!result.ContainsKey("Email")) {
             return null;
         }
-
-        List<AttributeValue> AWSBusinesses = result["Businesses"].L;
-        List<string> businesses = new();
-        foreach (var item in AWSBusinesses) {
-            businesses.Add(item.S);
-        }
         
         
         var userDetails = new User(
@@ -51,7 +45,7 @@ public class UserService : IUserService {
             result["LastName"].S,
             result["Password"].S,
             result["Role"].S,
-            businesses
+            result["BusinessId"].S
         );
         return userDetails;
     }
