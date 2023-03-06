@@ -16,7 +16,6 @@ public class ItemControllerTest {
     public void Test_GetItem_CorrectItemsForCorrectBusinessId() {
         // Arrange
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
-        BusinessIdModel businessIdModel = new BusinessIdModel(businessId);
         List<Dictionary<string, string>> expected = ItemsList();
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
@@ -25,7 +24,7 @@ public class ItemControllerTest {
         var controller = new ItemController(mockItemService.Object);
 
         // Act
-        var result = controller.GetAllItems(businessIdModel);
+        var result = controller.GetAllItems(businessId);
         
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
@@ -38,7 +37,7 @@ public class ItemControllerTest {
     public void Test_GetItem_CorrectItemsForIncorrectBusinessId() {
         // Arrange
         List<Dictionary<string, string>> expected = EmptyList();
-        BusinessIdModel businessIdModel = new BusinessIdModel("test123");
+        String incorrectBusinessId = "test123";
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
         mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, "test123")).Returns(true);
@@ -46,7 +45,7 @@ public class ItemControllerTest {
         var controller = new ItemController(mockItemService.Object);
 
         // Act
-        var result = controller.GetAllItems(businessIdModel);
+        var result = controller.GetAllItems(incorrectBusinessId);
         
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
@@ -58,7 +57,6 @@ public class ItemControllerTest {
     public void Test_GetItem_NoAccessForBusinessID() {
         // Arrange
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
-        BusinessIdModel businessIdModel = new BusinessIdModel("test123");
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
         mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
@@ -66,11 +64,11 @@ public class ItemControllerTest {
         var controller = new ItemController(mockItemService.Object);
 
         // Act
-        var result = controller.GetAllItems(businessIdModel);
+        var result = controller.GetAllItems(businessId);
         
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         var unauthorizedResult = result.Result as UnauthorizedResult;
-        unauthorizedResult.StatusCode.Should().Be(401);
+        unauthorizedResult?.StatusCode.Should().Be(401);
     }
 }

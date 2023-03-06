@@ -21,7 +21,8 @@ public class ItemController : ControllerBase {
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
     [Route("/items")]
-    public async Task<IActionResult> GetAllItems([FromBody] BusinessIdModel businessIdModel) {
+    public async Task<IActionResult> GetAllItems(String businessId) {
+        
         // Get our current UserId and BusinessId to validate and pass to the business service
         string currentUserId = User.FindFirstValue("Id");
         string currentUserBusinessId = User.FindFirstValue("BusinessId").Split(",")[0];
@@ -30,12 +31,12 @@ public class ItemController : ControllerBase {
         if (string.IsNullOrEmpty(currentUserId)) {
             return Unauthorized();
         }
-
+        
         // Creating new userDto to pass into service
         UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
         
-        List<Dictionary<string, string>>? items = _itemService.GetItems(currentUserDto, businessIdModel.BusinessId).Result;
-        
+        List<Dictionary<string, string>>? items = _itemService.GetItems(currentUserDto, businessId).Result;
+
         if (items == null) {
             return Unauthorized();
         } if (items.Count == 0) {
