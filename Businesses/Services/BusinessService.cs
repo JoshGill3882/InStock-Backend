@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using System.Security.Claims;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
@@ -17,19 +18,22 @@ public class BusinessService : IBusinessService {
     public async Task<bool> CreateBusiness(CreateBusinessRequestDto newBusinessRequest) {
         // Check if the user Id is valid
         if (string.IsNullOrEmpty(newBusinessRequest.UserId)) {
-            return false; // Invalid UserId
+            throw new AuthenticationException();
         }
         
         // Check if the user has already got a business
         if (!string.IsNullOrEmpty(newBusinessRequest.UserCurrentBusinessId)) {
-            // throw new UserAlreadyOwnsBusinessException();
-            return false;
+            throw new UserAlreadyOwnsBusinessException();
         }
         
         // Check if the business is within the character limit of 20 (same as Etsy & Shopify)
         if (newBusinessRequest.BusinessName.Length > 20) {
-            return false; // Business Name too long
-            
+            throw new BusinessNameExceedsMaxLengthException(20);
+        }
+
+        // Check if the business name is empty
+        if (string.IsNullOrEmpty(newBusinessRequest.BusinessName)) {
+            throw new BusinessNameEmptyException();
         }
         
         // Calling repo to create the business for the user
