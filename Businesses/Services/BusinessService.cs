@@ -22,7 +22,8 @@ public class BusinessService : IBusinessService {
         
         // Check if the user has already got a business
         if (!string.IsNullOrEmpty(newBusinessRequest.UserCurrentBusinessId)) {
-            throw new UserAlreadyOwnsBusinessException();
+            // throw new UserAlreadyOwnsBusinessException();
+            return false;
         }
         
         // Check if the business is within the character limit of 20 (same as Etsy & Shopify)
