@@ -39,7 +39,7 @@ public class BusinessService : IBusinessService {
         // Calling repo to create the business for the user
         StoreBusinessDto businessToSave =
             new StoreBusinessDto(newBusinessRequest.BusinessName, newBusinessRequest.UserId);
-        bool saveSuccess = await _businessRepository.CreateBusiness(businessToSave);
+        bool saveSuccess = await _businessRepository.SaveNewBusiness(businessToSave);
 
         return saveSuccess;
     }

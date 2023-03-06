@@ -16,7 +16,7 @@ public class BusinessRepository : IBusinessRepository {
         _context = context;
     }
 
-    public async Task<bool> CreateBusiness(StoreBusinessDto businessToSave) {
+    public async Task<bool> SaveNewBusiness(StoreBusinessDto businessToSave) {
         
         // Checking the User Id is valid
         if (string.IsNullOrEmpty(businessToSave.UserId)) {

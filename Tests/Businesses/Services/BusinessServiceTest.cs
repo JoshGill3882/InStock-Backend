@@ -21,7 +21,7 @@ public class BusinessServiceTest {
         CreateBusinessRequestDto newBusinessRequest = new CreateBusinessRequestDto(newBusinessName, userId, currentBusinessId);
         
         var mockBusinessRepository = new Mock<IBusinessRepository>();
-        mockBusinessRepository.Setup(repo => repo.CreateBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
+        mockBusinessRepository.Setup(repo => repo.SaveNewBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
 
         BusinessService businessService = new BusinessService(mockBusinessRepository.Object);
 
@@ -37,7 +37,7 @@ public class BusinessServiceTest {
         CreateBusinessRequestDto newBusinessRequest = new CreateBusinessRequestDto(newBusinessName, userId, currentBusinessId);
         
         var mockBusinessRepository = new Mock<IBusinessRepository>();
-        mockBusinessRepository.Setup(repo => repo.CreateBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
+        mockBusinessRepository.Setup(repo => repo.SaveNewBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
 
         BusinessService businessService = new BusinessService(mockBusinessRepository.Object);
 
@@ -53,7 +53,7 @@ public class BusinessServiceTest {
         CreateBusinessRequestDto newBusinessRequest = new CreateBusinessRequestDto(newBusinessName, userId, currentBusinessId);
         
         var mockBusinessRepository = new Mock<IBusinessRepository>();
-        mockBusinessRepository.Setup(repo => repo.CreateBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
+        mockBusinessRepository.Setup(repo => repo.SaveNewBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
 
         BusinessService businessService = new BusinessService(mockBusinessRepository.Object);
 
@@ -69,7 +69,7 @@ public class BusinessServiceTest {
         CreateBusinessRequestDto newBusinessRequest = new CreateBusinessRequestDto(newBusinessName, userId, currentBusinessId);
         
         var mockBusinessRepository = new Mock<IBusinessRepository>();
-        mockBusinessRepository.Setup(repo => repo.CreateBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
+        mockBusinessRepository.Setup(repo => repo.SaveNewBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
 
         BusinessService businessService = new BusinessService(mockBusinessRepository.Object);
 
@@ -85,7 +85,7 @@ public class BusinessServiceTest {
         CreateBusinessRequestDto newBusinessRequest = new CreateBusinessRequestDto(newBusinessName, userId, currentBusinessId);
         
         var mockBusinessRepository = new Mock<IBusinessRepository>();
-        mockBusinessRepository.Setup(repo => repo.CreateBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
+        mockBusinessRepository.Setup(repo => repo.SaveNewBusiness(It.IsAny<StoreBusinessDto>())).Returns(Task.FromResult(true));
 
         BusinessService businessService = new BusinessService(mockBusinessRepository.Object);
 
