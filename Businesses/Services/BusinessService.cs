@@ -4,6 +4,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Businesses.Repositories.Validators;
 using instock_server_application.Shared.Exceptions;
 
 namespace instock_server_application.Businesses.Services; 
@@ -26,19 +27,12 @@ public class BusinessService : IBusinessService {
             throw new UserAlreadyOwnsBusinessException();
         }
         
-        // Check if the business is within the character limit of 20 (same as Etsy & Shopify)
-        if (newBusinessRequest.BusinessName.Length > 20) {
-            throw new BusinessNameExceedsMaxLengthException(20);
-        }
-
-        // Check if the business name is empty
-        if (string.IsNullOrEmpty(newBusinessRequest.BusinessName)) {
-            throw new BusinessNameEmptyException();
-        }
+        // Validate and clean the Business Name
+        string businessName = BusinessValidator.ValidateBusinessName(newBusinessRequest.BusinessName);
         
         // Calling repo to create the business for the user
         StoreBusinessDto businessToSave =
-            new StoreBusinessDto(newBusinessRequest.BusinessName, newBusinessRequest.UserId);
+            new StoreBusinessDto(businessName, newBusinessRequest.UserId);
         bool saveSuccess = await _businessRepository.SaveNewBusiness(businessToSave);
 
         return saveSuccess;
