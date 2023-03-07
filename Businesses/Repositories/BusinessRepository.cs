@@ -4,8 +4,8 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
+using instock_server_application.Businesses.Repositories.Exceptions;
 using instock_server_application.Businesses.Repositories.Interfaces;
-using instock_server_application.Shared.Exceptions;
 using instock_server_application.Users.Models;
 
 namespace instock_server_application.Businesses.Repositories; 
@@ -22,14 +22,17 @@ public class BusinessRepository : IBusinessRepository {
         
         // Checking the User Id is valid
         if (string.IsNullOrEmpty(businessToSave.UserId)) {
-            throw new UserIdNullOrEmptyException();
+            throw new NullReferenceException("The UserId cannot be null or empty.");
+        } 
+        
+        // Checking the Business Name is valid
+        if (string.IsNullOrEmpty(businessToSave.BusinessName)) {
+            throw new NullReferenceException("The BusinessName cannot be null or empty.");
         }
         
-        // Check if the user already has a business
+        // Check if the user already has a business, throwing exception if so as we will update an existing business instead of create it
         // TODO Think this will be better to check the businesses not users by using a composite key when we database refactor
         User existingUser = await _context.LoadAsync<User>(businessToSave.UserId);
-        
-        // TODO Think the use of Business Exceptions here are creating a cross cutting concern and should be revisited and reworked
         if (!string.IsNullOrEmpty(existingUser.BusinessId)) {
             throw new UserAlreadyOwnsBusinessException();
         }
