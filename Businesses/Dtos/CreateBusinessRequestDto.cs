@@ -1,6 +1,4 @@
-﻿using instock_server_application.Businesses.Models;
-
-namespace instock_server_application.Businesses.Dtos; 
+﻿namespace instock_server_application.Businesses.Dtos; 
 
 public class CreateBusinessRequestDto {
     public string BusinessName { get; }

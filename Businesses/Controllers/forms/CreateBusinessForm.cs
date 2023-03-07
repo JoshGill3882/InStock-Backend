@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace instock_server_application.Businesses.Controllers.forms; 
+﻿namespace instock_server_application.Businesses.Controllers.forms; 
 
 public class CreateBusinessForm {
     public string BusinessName { get; }

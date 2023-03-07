@@ -1,5 +1,4 @@
-﻿using instock_server_application.Businesses.Models;
-using instock_server_application.Shared.Dto;
+﻿using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Dtos; 
 

@@ -1,9 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
-using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 
 namespace instock_server_application.Shared.Filters; 

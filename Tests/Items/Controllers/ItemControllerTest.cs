@@ -19,7 +19,7 @@ public class ItemControllerTest {
         List<Dictionary<string, string>> expected = ItemsList();
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
-        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
+        mockBusinessService.Setup(service => service.CheckBusinessIdInJwt(null, businessId)).Returns(true);
         mockItemService.Setup(service => service.GetItems(null, businessId)).Returns(Task.FromResult(expected));
         var controller = new ItemController(mockItemService.Object);
 
@@ -40,7 +40,7 @@ public class ItemControllerTest {
         String incorrectBusinessId = "test123";
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
-        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, "test123")).Returns(true);
+        mockBusinessService.Setup(service => service.CheckBusinessIdInJwt(null, "test123")).Returns(true);
         mockItemService.Setup(service => service.GetItems(null, "test123")).Returns(Task.FromResult(expected));
         var controller = new ItemController(mockItemService.Object);
 
@@ -59,7 +59,7 @@ public class ItemControllerTest {
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
         var mockItemService = new Mock<IItemService>();
         var mockBusinessService = new Mock<IBusinessService>();
-        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
+        mockBusinessService.Setup(service => service.CheckBusinessIdInJwt(null, businessId)).Returns(true);
         mockItemService.Setup(service => service.GetItems(null, businessId)).Returns(Task.FromResult(ItemsList()));
         var controller = new ItemController(mockItemService.Object);
 

@@ -1,7 +1,4 @@
-﻿using System.Security.Authentication;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
+﻿using Amazon.DynamoDBv2.DataModel;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Exceptions;

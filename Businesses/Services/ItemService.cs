@@ -1,7 +1,5 @@
-﻿using System.Security.Claims;
-using Amazon.DynamoDBv2.Model;
+﻿using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 
@@ -19,7 +17,7 @@ public class ItemService : IItemService {
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
         
-        if (_businessService.CheckBusinessIdInJWT(userDto, businessId)) {
+        if (_businessService.CheckBusinessIdInJwt(userDto, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<Dictionary<string, string>> items = new();
 

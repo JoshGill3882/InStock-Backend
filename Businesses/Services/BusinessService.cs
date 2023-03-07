@@ -1,11 +1,7 @@
-using System.Security.Authentication;
-using System.Security.Claims;
 using System.Text.RegularExpressions;
-using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
 using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Models;
-using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Services; 
@@ -74,7 +70,7 @@ public class BusinessService : IBusinessService {
     /// <param name="userDto">The users details</param>
     /// <param name="idToCheck"> The ID to check for </param>
     /// <returns> True/False depending if the ID is found </returns>
-    public bool CheckBusinessIdInJWT(UserDto userDto, string idToCheck) {
+    public bool CheckBusinessIdInJwt(UserDto userDto, string idToCheck) {
         // Return if the business Id matches or not
         return userDto.UserBusinessId.Equals(idToCheck);
     }

@@ -1,9 +1,8 @@
 ﻿using System.Security.Claims;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Services;
-using instock_server_application.Shared.Dto;
+using instock_server_application.Businesses.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
