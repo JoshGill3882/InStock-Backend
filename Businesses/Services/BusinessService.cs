@@ -16,7 +16,7 @@ public class BusinessService : IBusinessService {
         _businessRepository = businessRepository;
     }
 
-    public async Task<bool> CreateBusiness(CreateBusinessRequestDto newBusinessRequest) {
+    public async Task<BusinessDto> CreateBusiness(CreateBusinessRequestDto newBusinessRequest) {
         // Check if the user Id is valid
         if (string.IsNullOrEmpty(newBusinessRequest.UserId)) {
             throw new AuthenticationException();
@@ -33,9 +33,10 @@ public class BusinessService : IBusinessService {
         // Calling repo to create the business for the user
         StoreBusinessDto businessToSave =
             new StoreBusinessDto(businessName, newBusinessRequest.UserId);
-        bool saveSuccess = await _businessRepository.SaveNewBusiness(businessToSave);
+        
+        BusinessDto createdBusiness = await _businessRepository.SaveNewBusiness(businessToSave);
 
-        return saveSuccess;
+        return createdBusiness;
     }
 
     /// <summary>

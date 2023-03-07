@@ -1,0 +1,15 @@
+﻿using instock_server_application.Businesses.Models;
+
+namespace instock_server_application.Businesses.Dtos; 
+
+public class BusinessDto {
+    public string BusinessId { get; }
+    public string BusinessName { get; }
+    public string BusinessOwnerId { get; }
+
+    public BusinessDto(string businessId, string businessName, string businessOwnerId) {
+        BusinessId = businessId;
+        BusinessName = businessName;
+        BusinessOwnerId = businessOwnerId;
+    }
+}

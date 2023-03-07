@@ -23,8 +23,8 @@ public class BusinessController : ControllerBase {
     public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessForm newBusinessForm) {
 
         // Get our current UserId and BusinessId to validate and pass to the business service
-        string currentUserId = User.FindFirstValue("Id");
-        string currentUserBusinessId = User.FindFirstValue("BusinessId");
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
 
         // Check there are no issues with the userId
         if (string.IsNullOrEmpty(currentUserId)) {
@@ -36,15 +36,16 @@ public class BusinessController : ControllerBase {
             currentUserId, currentUserBusinessId);
 
         // Attempting to create new business, it returns success of failure
-        bool serviceResponse = await _businessService.CreateBusiness(businessRequestToCreate);
+        BusinessDto createdBusiness = await _businessService.CreateBusiness(businessRequestToCreate);
+        string? createdBusinessUrl = Url.Action(controller: "business", action: nameof(GetBusiness), values:new {businessId=createdBusiness.BusinessId}, protocol:Request.Scheme);
 
-        // If Success, return 200
-        // TODO Return 201 Created
-        if (serviceResponse) {
-            return Ok();
-        }
+        // If Success, return 201
+        return Created(createdBusinessUrl ?? string.Empty, createdBusiness);
+    }
 
-        // If fail, return 400
-        return BadRequest();
+    [Route("{businessId}")]
+    [HttpGet]
+    public async Task<IActionResult> GetBusiness(string businessId) {
+        throw new NotImplementedException();
     }
 }
