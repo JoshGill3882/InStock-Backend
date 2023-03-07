@@ -5,6 +5,12 @@ namespace instock_server_application.Shared.Filters;
 
 public class GlobalExceptionFilter : IExceptionFilter {
 
+    private readonly IHostEnvironment _hostEnvironment;
+
+    public GlobalExceptionFilter(IHostEnvironment hostEnvironment) {
+        _hostEnvironment = hostEnvironment;
+    }
+
     public void OnException(ExceptionContext context) {
         
         string responseTitle = "A server error occurred.";
@@ -24,7 +30,11 @@ public class GlobalExceptionFilter : IExceptionFilter {
         exceptionResponse.ContentLength = responseBodyJson.Length;
         exceptionResponse.WriteAsync(responseBodyJson);
 
-        context.ExceptionHandled = true;
+        // If we are not running it in dev mode then don't continue with the exception
+        // if we are in dev mode then continue throwing the exception to flag it to the developer
+        if (!_hostEnvironment.IsDevelopment()) {
+            context.ExceptionHandled = true;
+        }
     }
     
 }
