@@ -16,7 +16,7 @@ public class BusinessService : IBusinessService {
     private void ValidateBusinessName(ErrorNotification errorNotes, string businessName) {
         // Business Name Variables
         const string errorKey = "businessName";
-        const int businessNameMaxLength = 10;
+        const int businessNameMaxLength = 20;
         Regex businessNameRegex = new Regex(@"^[a-zA-Z0-9]+(\s+[a-zA-Z0-9]+)*$");
 
         if (string.IsNullOrEmpty(businessName)) {
