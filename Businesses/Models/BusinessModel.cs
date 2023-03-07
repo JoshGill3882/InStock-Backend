@@ -12,7 +12,7 @@ public class BusinessModel {
     public string BusinessName { get; set; }
     
     [DynamoDBProperty("Owner")] 
-    public string OwnerId { get; set; }
+    public Guid OwnerId { get; set; }
 
     public BusinessModel() {
     }
@@ -20,10 +20,16 @@ public class BusinessModel {
     public BusinessModel(string id, string name, string owner) {
         BusinessId = new Guid(id);
         BusinessName = name;
-        OwnerId = owner;
+        OwnerId = new Guid(owner);
     }
     
     public BusinessModel(Guid id, string name, string owner) {
+        BusinessId = id;
+        BusinessName = name;
+        OwnerId = new Guid(owner);
+    }
+    
+    public BusinessModel(Guid id, string name, Guid owner) {
         BusinessId = id;
         BusinessName = name;
         OwnerId = owner;
