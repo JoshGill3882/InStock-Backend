@@ -35,7 +35,8 @@ public class BusinessRepository : IBusinessRepository {
         }
         
         // Save the new business
-        BusinessModel businessModel = new BusinessModel(Guid.NewGuid(), businessToSave.BusinessName, businessToSave.UserId);
+        BusinessModel businessModel = new BusinessModel(
+            Guid.NewGuid(), businessToSave.BusinessName, businessToSave.UserId, businessToSave.BusinessDescription);
         await _context.SaveAsync(businessModel);
         
         // Update the user table to include new business
@@ -45,7 +46,8 @@ public class BusinessRepository : IBusinessRepository {
         BusinessDto createdBusiness = new BusinessDto(
             businessModel.BusinessId.ToString(), 
             businessModel.BusinessName, 
-            businessModel.OwnerId.ToString());
+            businessModel.OwnerId.ToString(),
+            businessModel.BusinessDescription);
         
         return createdBusiness;
     }

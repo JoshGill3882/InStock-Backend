@@ -2,7 +2,9 @@
 
 public class CreateBusinessForm {
     public string BusinessName { get; }
-    public CreateBusinessForm(string businessName) {
+    public string BusinessDescription { get; }
+    public CreateBusinessForm(string businessName, string businessDescription) {
         BusinessName = businessName;
+        BusinessDescription = businessDescription;
     }
 }

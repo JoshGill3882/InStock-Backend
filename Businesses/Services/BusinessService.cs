@@ -57,7 +57,7 @@ public class BusinessService : IBusinessService {
         
         // Calling repo to create the business for the user
         StoreBusinessDto businessToSave =
-            new StoreBusinessDto(newBusinessRequest.BusinessName, newBusinessRequest.UserId);
+            new StoreBusinessDto(newBusinessRequest.BusinessName, newBusinessRequest.UserId, newBusinessRequest.BusinessDescription);
         
         BusinessDto createdBusiness = await _businessRepository.SaveNewBusiness(businessToSave);
 

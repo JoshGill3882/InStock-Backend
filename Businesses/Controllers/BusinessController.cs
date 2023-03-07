@@ -31,7 +31,7 @@ public class BusinessController : ControllerBase {
 
         // Creating CreateBusinessDto to pass the details to the service for processing
         CreateBusinessRequestDto businessRequestToCreate = new CreateBusinessRequestDto(newBusinessForm.BusinessName, 
-            currentUserId, currentUserBusinessId);
+            currentUserId, currentUserBusinessId, newBusinessForm.BusinessDescription);
 
         // Attempting to create new business, it returns success of failure
         BusinessDto createdBusiness = await _businessService.CreateBusiness(businessRequestToCreate);
@@ -44,9 +44,10 @@ public class BusinessController : ControllerBase {
         // If not errors then return 201 with the URI and newly created object details
         string? createdBusinessUrl = Url.Action(controller: "business", action: nameof(GetBusiness), values:new {businessId=createdBusiness.BusinessId}, protocol:Request.Scheme);
         return Created(createdBusinessUrl ?? string.Empty, new {
-            BusinessId = createdBusiness.BusinessId,
+            businessId = createdBusiness.BusinessId,
             businessName = createdBusiness.BusinessName,
-            BusinessOwnerId = createdBusiness.BusinessOwnerId
+            businessDescription = createdBusiness.BusinessDescription,
+            businessOwnerId = createdBusiness.BusinessOwnerId
         });
     }
 
