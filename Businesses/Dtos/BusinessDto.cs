@@ -1,8 +1,9 @@
 ﻿using instock_server_application.Businesses.Models;
+using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Dtos; 
 
-public class BusinessDto {
+public class BusinessDto : DataTransferObjectSuperType {
     public string BusinessId { get; }
     public string BusinessName { get; }
     public string BusinessOwnerId { get; }
