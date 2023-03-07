@@ -1,11 +1,12 @@
 using System.Security.Authentication;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
+using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
-using instock_server_application.Businesses.Repositories.Validators;
-using instock_server_application.Shared.Exceptions;
+using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -16,23 +17,51 @@ public class BusinessService : IBusinessService {
         _businessRepository = businessRepository;
     }
 
-    public async Task<BusinessDto> CreateBusiness(CreateBusinessRequestDto newBusinessRequest) {
-        // Check if the user Id is valid
-        if (string.IsNullOrEmpty(newBusinessRequest.UserId)) {
-            throw new AuthenticationException();
+    private void ValidateBusinessName(ErrorNotification errorNotes, string businessName) {
+        // Business Name Variables
+        const string errorKey = "businessName";
+        const int businessNameMaxLength = 10;
+        Regex businessNameRegex = new Regex(@"^[a-zA-Z0-9]+(\s+[a-zA-Z0-9]+)*$");
+
+        if (string.IsNullOrEmpty(businessName)) {
+            errorNotes.AddError(errorKey, "The business name cannot be empty.");
         }
         
-        // Check if the user has already got a business
+        if (businessName.Length > businessNameMaxLength) {
+            errorNotes.AddError(errorKey, $"The business name cannot exceed {businessNameMaxLength} characters.");
+        }
+        
+        if (!businessNameRegex.IsMatch(businessName)) {
+            errorNotes.AddError(errorKey, "The business name can only contain alphanumeric characters.");
+        }
+    }
+
+    public async Task<BusinessDto> CreateBusiness(CreateBusinessRequestDto newBusinessRequest) {
+
+        ErrorNotification errorNotes = new ErrorNotification();
+        
+        // Check if the user Id is valid, they should be validated by this point so throw exception
+        if (string.IsNullOrEmpty(newBusinessRequest.UserId)) {
+            throw new NullReferenceException("The UserId cannot be null or empty.");
+        }
+        
+        // Check if the user has already got a business, this makes the following other validations meaningless so return
         if (!string.IsNullOrEmpty(newBusinessRequest.UserCurrentBusinessId)) {
-            throw new UserAlreadyOwnsBusinessException();
+            errorNotes.AddError("A Business is already associated with your account.");
+            return new BusinessDto(errorNotes);
         }
         
         // Validate and clean the Business Name
-        string businessName = BusinessValidator.ValidateBusinessName(newBusinessRequest.BusinessName);
+        ValidateBusinessName(errorNotes, newBusinessRequest.BusinessName);
+
+        // If we've got errors then return the notes and not make a repo call
+        if (errorNotes.HasErrors) {
+            return new BusinessDto(errorNotes);
+        }
         
         // Calling repo to create the business for the user
         StoreBusinessDto businessToSave =
-            new StoreBusinessDto(businessName, newBusinessRequest.UserId);
+            new StoreBusinessDto(newBusinessRequest.BusinessName, newBusinessRequest.UserId);
         
         BusinessDto createdBusiness = await _businessRepository.SaveNewBusiness(businessToSave);
 

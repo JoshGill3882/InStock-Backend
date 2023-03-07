@@ -3,6 +3,7 @@ using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Services;
+using instock_server_application.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,10 +38,19 @@ public class BusinessController : ControllerBase {
 
         // Attempting to create new business, it returns success of failure
         BusinessDto createdBusiness = await _businessService.CreateBusiness(businessRequestToCreate);
-        string? createdBusinessUrl = Url.Action(controller: "business", action: nameof(GetBusiness), values:new {businessId=createdBusiness.BusinessId}, protocol:Request.Scheme);
 
-        // If Success, return 201
-        return Created(createdBusinessUrl ?? string.Empty, createdBusiness);
+        // If errors then return 401 with the error messages
+        if (createdBusiness.ErrorNotification.HasErrors) {
+            return new BadRequestObjectResult(createdBusiness.ErrorNotification);
+        }
+        
+        // If not errors then return 201 with the URI and newly created object details
+        string? createdBusinessUrl = Url.Action(controller: "business", action: nameof(GetBusiness), values:new {businessId=createdBusiness.BusinessId}, protocol:Request.Scheme);
+        return Created(createdBusinessUrl ?? string.Empty, new {
+            BusinessId = createdBusiness.BusinessId,
+            businessName = createdBusiness.BusinessName,
+            BusinessOwnerId = createdBusiness.BusinessOwnerId
+        });
     }
 
     [Route("{businessId}")]

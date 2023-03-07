@@ -8,6 +8,8 @@ public class BusinessDto : DataTransferObjectSuperType {
     public string BusinessName { get; }
     public string BusinessOwnerId { get; }
 
+    public BusinessDto(ErrorNotification errorNotes) : base(errorNotes) {}
+
     public BusinessDto(string businessId, string businessName, string businessOwnerId) {
         BusinessId = businessId;
         BusinessName = businessName;
