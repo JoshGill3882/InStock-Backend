@@ -3,18 +3,34 @@ using Amazon.DynamoDBv2.Model;
 
 namespace instock_server_application.Users.Models;
 
+[DynamoDBTable("Users")]
 public class User {
     [DynamoDBHashKey]
     public string UserId { get; set; }
+    
+    [DynamoDBProperty("Email")]
     public string Email { get; set; }
+    
+    [DynamoDBProperty("AccountStatus")]
     public string AccountStatus { get; set; }
+    
+    [DynamoDBProperty("CreationDate")]
     public int CreationDate { get; set; }
+    
+    [DynamoDBProperty("FirstName")]
     public string FirstName { get; set; }
+    
+    [DynamoDBProperty("LastName")]
     public string LastName { get; set; }
+    
+    [DynamoDBProperty("Password")]
     public string Password { get; set; }
+    
+    [DynamoDBProperty("Role")]
     public string Role { get; set; }
-
-    public List<string> Businesses { get; set; }
+    
+    [DynamoDBProperty("BusinessId")]
+    public string BusinessId { get; set; }
 
     /// <summary>
     /// All Args Constructor
@@ -27,8 +43,8 @@ public class User {
     /// <param name="lastName"> User's Last Name </param>
     /// <param name="password"> User's Password </param>
     /// <param name="role"> User's Role </param>
-    /// <param name="businesses"> User's Linked Businesses</param>
-    public User(string userId, string email, string accountStatus, int creationDate, string firstName, string lastName, string password, string role, List<string> businesses) {
+    /// <param name="businessId"> User's Linked Businesses</param>
+    public User(string userId, string email, string accountStatus, int creationDate, string firstName, string lastName, string password, string role, string businessId) {
         UserId = userId;
         Email = email;
         AccountStatus = accountStatus;
@@ -37,6 +53,9 @@ public class User {
         LastName = lastName;
         Password = password;
         Role = role;
-        Businesses = businesses;
+        BusinessId = businessId;
+    }
+
+    public User() {
     }
 }

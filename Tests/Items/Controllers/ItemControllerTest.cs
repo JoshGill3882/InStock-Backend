@@ -1,6 +1,9 @@
-﻿using FluentAssertions;
+﻿using System.Security.Claims;
+using FluentAssertions;
 using instock_server_application.Businesses.Controllers;
+using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
+using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -12,22 +15,34 @@ namespace instock_server_application.Tests.Items.Controllers;
 public class ItemControllerTest {
 
     [Fact]
-    public void Test_GetItem_CorrectItemsForCorrectBusinessId() {
+    public async Task Test_GetItem_CorrectItemsForCorrectBusinessId() {
         // Arrange
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
+        const string userId = "UID123";
+        
+        var mockUser = new ClaimsPrincipal(
+            new ClaimsIdentity(
+                new List<Claim>() {
+                    new Claim("Id", userId),
+                    new Claim("BusinessId", businessId)
+                }, "mockUserAuth"));
         List<Dictionary<string, string>> expected = ItemsList();
+        
         var mockItemService = new Mock<IItemService>();
-        var mockBusinessService = new Mock<IBusinessService>();
-        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
-        mockItemService.Setup(service => service.GetItems(null, businessId)).Returns(Task.FromResult(expected));
+        mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(expected)!);
+        
         var controller = new ItemController(mockItemService.Object);
-
+        controller.ControllerContext = new ControllerContext() {
+             HttpContext = new DefaultHttpContext() { User = mockUser }
+         };
+        
         // Act
-        var result = controller.GetAllItems(businessId);
+        var result = await controller.GetAllItems(businessId);
         
         // Assert
-        Assert.IsAssignableFrom<Task<IActionResult>>(result);
-        var okResult = result.Result as OkObjectResult;
+        Assert.IsAssignableFrom<IActionResult>(result);
+        var okResult = result as OkObjectResult;
+        
         okResult.StatusCode.Should().Be(200);
         okResult.Value.Should().Be(expected);
     }
@@ -35,14 +50,24 @@ public class ItemControllerTest {
     [Fact]
     public void Test_GetItem_CorrectItemsForIncorrectBusinessId() {
         // Arrange
-        List<Dictionary<string, string>> expected = EmptyList();
         String incorrectBusinessId = "test123";
-        var mockItemService = new Mock<IItemService>();
-        var mockBusinessService = new Mock<IBusinessService>();
-        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, "test123")).Returns(true);
-        mockItemService.Setup(service => service.GetItems(null, "test123")).Returns(Task.FromResult(expected));
-        var controller = new ItemController(mockItemService.Object);
+        const string userId = "UID123";
 
+        List<Dictionary<string, string>> expected = EmptyList();
+        var mockUser = new ClaimsPrincipal(
+            new ClaimsIdentity(
+                new List<Claim>() {
+                    new Claim("Id", userId),
+                    new Claim("BusinessId", incorrectBusinessId)
+                }, "mockUserAuth"));
+        var mockItemService = new Mock<IItemService>();
+        mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), incorrectBusinessId)).Returns(Task.FromResult(expected)!);
+        
+        var controller = new ItemController(mockItemService.Object);
+        controller.ControllerContext = new ControllerContext() {
+            HttpContext = new DefaultHttpContext() { User = mockUser }
+        };
+        
         // Act
         var result = controller.GetAllItems(incorrectBusinessId);
         
@@ -56,11 +81,22 @@ public class ItemControllerTest {
     public void Test_GetItem_NoAccessForBusinessID() {
         // Arrange
         const string businessId = "2a36f726-b3a2-11ed-afa1-0242ac120002";
+        const string userId = "UID123";
+
+        var mockUser = new ClaimsPrincipal(
+            new ClaimsIdentity(
+                new List<Claim>() {
+                    new Claim("Id", userId),
+                    new Claim("BusinessId", businessId)
+                }, "mockUserAuth"));
+        
         var mockItemService = new Mock<IItemService>();
-        var mockBusinessService = new Mock<IBusinessService>();
-        mockBusinessService.Setup(service => service.CheckBusinessIdInJWT(null, businessId)).Returns(true);
-        mockItemService.Setup(service => service.GetItems(null, businessId)).Returns(Task.FromResult(ItemsList()));
+        mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(ItemsList())!);
+
         var controller = new ItemController(mockItemService.Object);
+        controller.ControllerContext = new ControllerContext() {
+            HttpContext = new DefaultHttpContext() { User = mockUser }
+        };
 
         // Act
         var result = controller.GetAllItems(businessId);

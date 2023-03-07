@@ -35,12 +35,15 @@ public class UserService : IUserService {
             return null;
         }
 
-        List<AttributeValue> AWSBusinesses = result["Businesses"].L;
-        List<string> businesses = new();
-        foreach (var item in AWSBusinesses) {
-            businesses.Add(item.S);
+        // Setting the business Id depending if it's null or not
+        // TODO Changes this when refactoring multiple businessIds to single businessId
+        string businessId = "";
+        if (result.ContainsKey("Businesses")) {
+            businessId = result["Businesses"].L[0].S;
         }
-        
+        if (result.ContainsKey("BusinessId")) {
+            businessId = result["BusinessId"].S;
+        }
         
         var userDetails = new User(
             result["UserId"].S,
@@ -51,7 +54,7 @@ public class UserService : IUserService {
             result["LastName"].S,
             result["Password"].S,
             result["Role"].S,
-            businesses
+            businessId
         );
         return userDetails;
     }
