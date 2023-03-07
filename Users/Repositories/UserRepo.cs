@@ -10,10 +10,16 @@ public class UserRepo : IUserRepo {
     public UserRepo(IDynamoDBContext dynamoDbContext) { _dynamoDbContext = dynamoDbContext; }
 
     public async Task<User?> GetByEmail(string email) {
-        return _dynamoDbContext.QueryAsync<User>(
+        User? user = _dynamoDbContext.QueryAsync<User>(
             email,
             new DynamoDBOperationConfig {IndexName = "Email"}
             ).GetRemainingAsync().Result.FirstOrDefault();
+
+        if (user == null) {
+            return new User();
+        }
+
+        return user;
     }
 
     public async void Save(User user) {

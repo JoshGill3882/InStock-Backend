@@ -44,7 +44,7 @@ public class CreateAccountService : ICreateAccountService {
         
         _userRepo.Save(newUser);
 
-        return _jwtService.CreateToken(newUser);
+        return _jwtService.CreateToken(newUser.Email, newUser.BusinessId);
     }
 
     /// <summary>
@@ -71,9 +71,9 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="email"> The entered email to be checked </param>
     /// <returns> true/false if the email is found </returns>
     public bool DuplicateAccount(string email) {
-        User? user = _userRepo.GetByEmail(email).Result;
+        User user = _userRepo.GetByEmail(email).Result!;
         // If the user is null (there wasn't one found using the given email), return false 
-        if (user == null) {
+        if (string.IsNullOrEmpty(user.UserId)) {
             return false;
         }
         // Otherwise return true
