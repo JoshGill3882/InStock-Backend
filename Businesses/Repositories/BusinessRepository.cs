@@ -19,12 +19,12 @@ public class BusinessRepository : IBusinessRepository {
         
         // Checking the User Id is valid
         if (string.IsNullOrEmpty(businessToSave.UserId)) {
-            throw new NullReferenceException("The UserId cannot be null or empty.");
+            throw new NullReferenceException("The User ID cannot be null or empty.");
         } 
         
         // Checking the Business Name is valid
         if (string.IsNullOrEmpty(businessToSave.BusinessName)) {
-            throw new NullReferenceException("The BusinessName cannot be null or empty.");
+            throw new NullReferenceException("The Business Name cannot be null or empty.");
         }
         
         // Check if the user already has a business, throwing exception if so as we will update an existing business instead of create it
@@ -50,5 +50,17 @@ public class BusinessRepository : IBusinessRepository {
             businessModel.BusinessDescription);
         
         return createdBusiness;
+    }
+    
+    public async Task<bool> DoesUserOwnABusiness(Guid userId) {
+        
+        // Checking the User Id is valid
+        if (string.IsNullOrEmpty(userId.ToString())) {
+            throw new NullReferenceException("The User ID cannot be null or empty.");
+        }
+
+        User existingUser = await _context.LoadAsync<User>(userId.ToString());
+
+        return !string.IsNullOrEmpty(existingUser.BusinessId);
     }
 }

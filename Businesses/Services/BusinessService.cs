@@ -42,7 +42,7 @@ public class BusinessService : IBusinessService {
         }
         
         // Check if the user has already got a business, this makes the following other validations meaningless so return
-        if (!string.IsNullOrEmpty(newBusinessRequest.UserCurrentBusinessId)) {
+        if (await _businessRepository.DoesUserOwnABusiness(new Guid(newBusinessRequest.UserId))) {
             errorNotes.AddError("A Business is already associated with your account.");
             return new BusinessDto(errorNotes);
         }

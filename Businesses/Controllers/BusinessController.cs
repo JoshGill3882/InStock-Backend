@@ -22,7 +22,6 @@ public class BusinessController : ControllerBase {
 
         // Get our current UserId and BusinessId to validate and pass to the business service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
-        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
 
         // Check there are no issues with the userId
         if (string.IsNullOrEmpty(currentUserId)) {
@@ -31,7 +30,7 @@ public class BusinessController : ControllerBase {
 
         // Creating CreateBusinessDto to pass the details to the service for processing
         CreateBusinessRequestDto businessRequestToCreate = new CreateBusinessRequestDto(newBusinessForm.BusinessName, 
-            currentUserId, currentUserBusinessId, newBusinessForm.BusinessDescription);
+            currentUserId, newBusinessForm.BusinessDescription);
 
         // Attempting to create new business, it returns success of failure
         BusinessDto createdBusiness = await _businessService.CreateBusiness(businessRequestToCreate);
