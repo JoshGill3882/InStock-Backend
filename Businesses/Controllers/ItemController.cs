@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace instock_server_application.Businesses.Controllers; 
 
 [ApiController]
+[Route("/items")]
 public class ItemController : ControllerBase {
     private readonly IItemService _itemService;
     
@@ -45,4 +47,49 @@ public class ItemController : ControllerBase {
 
         return Ok(items);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateItem([FromBody] CreateItemForm newItemForm) {
+
+        // Get our current UserId and BusinessId to validate and pass to the items service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        
+        // Not using this but it's returning null for some reason?
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null; 
+
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId)) {
+            return Unauthorized();
+        }
+
+        // Creating CreateItemDTO to pass the details to the service for processing
+        CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(newItemForm.SKU,
+            newItemForm.BusinessId, newItemForm.Category, newItemForm.Name, newItemForm.Stock, currentUserId);
+
+        // Attempting to create new item, it returns success of failure
+        ItemDto createdItemDTO = await _itemService.CreateItem(createItemRequestDto);
+
+        // If errors then return 401 with the error messages
+        if (createdItemDTO.ErrorNotification.HasErrors) {
+            return new BadRequestObjectResult(createdItemDTO.ErrorNotification);
+        }
+        
+        // If not errors then return 201 with the URI and newly created object details
+        string? createdItemUrl = Url.Action(controller: "item", action: nameof(GetItem), values:new {sku=createdItemDTO.SKU}, protocol:Request.Scheme);
+        return Created(createdItemUrl ?? string.Empty, new {
+            sku = createdItemDTO.SKU,
+            businessId = createdItemDTO.BusinessId,
+            category = createdItemDTO.Category,
+            name = createdItemDTO.Name,
+            stock = createdItemDTO.Stock
+        });
+    }
+    
+    [Route("{itemId}")]
+    [HttpGet]
+    public async Task<IActionResult> GetItem(string itemId) {
+        throw new NotImplementedException();
+    }
+
+
 }
