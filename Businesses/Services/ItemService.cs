@@ -1,4 +1,5 @@
-﻿using Amazon.DynamoDBv2.Model;
+﻿using System.Text.RegularExpressions;
+using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -13,6 +14,27 @@ public class ItemService : IItemService {
     public ItemService(IItemRepo itemRepo, IBusinessService businessService) {
         _itemRepo = itemRepo;
         _businessService = businessService;
+    }
+    
+    private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
+        // Item Name Variables
+        const string errorKey = "itemName";
+        // This is quite a long max length but this is what Etsy Allows
+        const int itemNameMaxLength = 140;
+        // Based on Etsy recommendation for listings
+        Regex itemNameRegex = new Regex(@"^[a-zA-Z0-9\s]*[@&]?[^$^`]$");
+
+        if (string.IsNullOrEmpty(itemName)) {
+            errorNotes.AddError(errorKey, "The item name cannot be empty.");
+        }
+        
+        if (itemName.Length > itemNameMaxLength) {
+            errorNotes.AddError(errorKey, $"The item name cannot exceed {itemNameMaxLength} characters.");
+        }
+        
+        if (!itemNameRegex.IsMatch(itemName)) {
+            errorNotes.AddError(errorKey, "The item name is invalid.");
+        }
     }
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
@@ -56,19 +78,13 @@ public class ItemService : IItemService {
             throw new NullReferenceException("The UserId cannot be null or empty.");
         }
         
-        // Check if the user has already got a business, this makes the following other validations meaningless so return
-        // if (await _businessRepository.DoesUserOwnABusiness(new Guid(newBusinessRequest.UserId))) {
-        //     errorNotes.AddError("A Business is already associated with your account.");
-        //     return new BusinessDto(errorNotes);
-        // }
-        
         // Validate and clean the Business Name
-        // ValidateBusinessName(errorNotes, newBusinessRequest.BusinessName);
+        ValidateItemName(errorNotes, newItemRequestDto.Name);
 
         // If we've got errors then return the notes and not make a repo call
-        // if (errorNotes.HasErrors) {
-        //     return new ItemDto(errorNotes);
-        // }
+        if (errorNotes.HasErrors) {
+            return new ItemDto(errorNotes);
+        }
         
         // Calling repo to create the business for the user
         StoreItemDto itemToSaveDto =
