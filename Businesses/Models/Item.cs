@@ -3,7 +3,6 @@
 namespace instock_server_application.Businesses.Models; 
 [DynamoDBTable("Items")]
 public class Item {
-    public static string TableName = "Items";
     
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
@@ -21,6 +20,8 @@ public class Item {
     
     [DynamoDBProperty("Stock")]
     public int Stock { get; set; }
+    
+    public Item() {}
 
     /// <summary>
     /// All Args Constructor

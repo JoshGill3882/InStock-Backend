@@ -17,7 +17,7 @@ public class ItemRepo : IItemRepo{
     }
     public async Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId) {
         var request = new QueryRequest {
-            TableName = Item.TableName,
+            TableName = "Items",
             IndexName = "BusinessId",
             KeyConditionExpression = "BusinessId = :Id",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
