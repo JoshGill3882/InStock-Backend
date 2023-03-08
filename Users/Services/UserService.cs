@@ -27,6 +27,12 @@ public class UserService : IUserService {
             }
         };
         var response = await _client.QueryAsync(request);
+
+        // If there was no email found using the QueryRequest then there is no user using that email
+        if (response.Count <= 0) {
+            return null;
+        }
+        
         var result = response.Items[0];
         
         // If the Email does not contain the key "Email", return null
@@ -34,7 +40,16 @@ public class UserService : IUserService {
         if (!result.ContainsKey("Email")) {
             return null;
         }
-        
+
+        // Setting the business Id depending if it's null or not
+        // TODO Changes this when refactoring multiple businessIds to single businessId
+        string businessId = "";
+        if (result.ContainsKey("Businesses")) {
+            businessId = result["Businesses"].L[0].S;
+        }
+        if (result.ContainsKey("BusinessId")) {
+            businessId = result["BusinessId"].S;
+        }
         
         var userDetails = new User(
             result["UserId"].S,
@@ -45,7 +60,7 @@ public class UserService : IUserService {
             result["LastName"].S,
             result["Password"].S,
             result["Role"].S,
-            result["BusinessId"].S
+            businessId
         );
         return userDetails;
     }

@@ -6,6 +6,7 @@ using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Shared.Filters;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories;
 using instock_server_application.Users.Repositories.Interfaces;
@@ -52,18 +53,24 @@ var client = new AmazonDynamoDBClient(
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
-// Services
+// User Services & Repositories
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
-builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+// Business Services & Repositories
 builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
 builder.Services.AddScoped<ICreateAccountService, CreateAccountService>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IItemService, ItemService>();
 
-builder.Services.AddControllers();
+
+builder.Services.AddControllers(options => {
+    options.Filters.Add<GlobalExceptionFilter>();
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
