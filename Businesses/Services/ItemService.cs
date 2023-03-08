@@ -36,6 +36,25 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "The item name is invalid.");
         }
     }
+    
+    private void ValidateItemCategory(ErrorNotification errorNotes, string itemCategory) {
+        // Item Name Variables
+        const string errorKey = "itemCategory";
+        const int itemCategoryMaxLength = 20;
+        Regex itemCategoryRegex = new Regex(@"^[a-zA-Z0-9]+(\s+[a-zA-Z0-9]+)*$");
+
+        if (string.IsNullOrEmpty(itemCategory)) {
+            errorNotes.AddError(errorKey, "The item category cannot be empty.");
+        }
+        
+        if (itemCategory.Length > itemCategoryMaxLength) {
+            errorNotes.AddError(errorKey, $"The item category cannot exceed {itemCategoryMaxLength} characters.");
+        }
+        
+        if (!itemCategoryRegex.IsMatch(itemCategory)) {
+            errorNotes.AddError(errorKey, "The item category is invalid.");
+        }
+    }
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
@@ -78,8 +97,9 @@ public class ItemService : IItemService {
             throw new NullReferenceException("The UserId cannot be null or empty.");
         }
         
-        // Validate and clean the Business Name
+        // Validate the Item Form inputs
         ValidateItemName(errorNotes, newItemRequestDto.Name);
+        ValidateItemCategory(errorNotes, newItemRequestDto.Category);
 
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
