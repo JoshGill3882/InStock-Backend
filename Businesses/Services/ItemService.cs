@@ -55,6 +55,17 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "The item category is invalid.");
         }
     }
+    
+    private void ValidateItemStock(ErrorNotification errorNotes, string itemStock) {
+        // Item Name Variables
+        const string errorKey = "itemStock";
+
+        if (!int.TryParse(itemStock, out int n))
+        {
+            errorNotes.AddError(errorKey, "The item Stock level must be a number.");
+
+        }
+    }
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
@@ -97,9 +108,10 @@ public class ItemService : IItemService {
             throw new NullReferenceException("The UserId cannot be null or empty.");
         }
         
-        // Validate the Item Form inputs
+        // Validate the Item details
         ValidateItemName(errorNotes, newItemRequestDto.Name);
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
+        ValidateItemStock(errorNotes, newItemRequestDto.Stock);
 
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
