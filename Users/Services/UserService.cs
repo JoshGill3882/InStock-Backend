@@ -27,6 +27,12 @@ public class UserService : IUserService {
             }
         };
         var response = await _client.QueryAsync(request);
+
+        // If there was no email found using the QueryRequest then there is no user using that email
+        if (response.Count <= 0) {
+            return null;
+        }
+        
         var result = response.Items[0];
         
         // If the Email does not contain the key "Email", return null
