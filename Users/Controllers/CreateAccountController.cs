@@ -15,7 +15,6 @@ public class CreateAccountController : ControllerBase {
     }
 
     [HttpPost]
-    [Route("create")]
     [AllowAnonymous]
     public async Task<IActionResult> CreateAccount([FromBody] NewAccountDto newAccountDto) {
         string result = _createAccountService.CreateAccount(newAccountDto).Result;
