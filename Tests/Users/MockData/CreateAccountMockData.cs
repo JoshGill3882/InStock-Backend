@@ -18,12 +18,12 @@ public static class CreateAccountMockData {
         );
     }
 
-    public static NewAccountDto SampleDto(string email) {
+    public static NewAccountDto SampleDto(string firstName, string lastName, string email, string password) {
         return new NewAccountDto (
-            "Test",
-            "Test",
+            firstName,
+            lastName,
             email,
-            "Test123!"
+            password
         );
     }
 

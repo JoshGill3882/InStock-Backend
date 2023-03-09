@@ -28,8 +28,8 @@ public class CreateAccountService : ICreateAccountService {
     /// <returns> JWT or error message </returns>
     public async Task<string> CreateAccount(NewAccountDto newAccountDto) {
         // Validations
-        if (ValidateFirstName(newAccountDto.FirstName)) { return "First Name not valid"; }
-        if (ValidateLastName(newAccountDto.LastName)) { return "Last Name not valid"; }
+        if (!ValidateFirstName(newAccountDto.FirstName)) { return "First Name not valid"; }
+        if (!ValidateLastName(newAccountDto.LastName)) { return "Last Name not valid"; }
         if (!ValidateEmail(newAccountDto.Email)) { return "Email not valid"; }
         if (!ValidatePassword(newAccountDto.Password)) { return "Password not valid"; }
         if (DuplicateAccount(newAccountDto.Email)) { return "Duplicate account"; }
@@ -57,7 +57,7 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="firstName"> The User's entered First Name</param>
     /// <returns> True/False for if the User's First Name is null or empty </returns>
     private bool ValidateFirstName(string firstName) {
-        return Regex.IsMatch(firstName, "/^[a-z ,.'-]+$/i");
+        return Regex.IsMatch(firstName, "^[A-Za-z][A-Za-z' -]{1,}$") | !string.IsNullOrEmpty(firstName);
     }
     /// <summary>
     /// Function for checking that the last name entered is not null or empty
@@ -65,7 +65,7 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="lastName"> The User's Entered Last Name </param>
     /// <returns> True/False depending on if it's empty </returns>
     private bool ValidateLastName(string lastName) {
-        return Regex.IsMatch(lastName, "/^[a-z ,.'-]+$/i");
+        return Regex.IsMatch(lastName, "^[A-Za-z][A-Za-z' -]{1,}$") | !string.IsNullOrEmpty(lastName);
     }
     /// <summary>
     /// Function for checking if an email is valid based on a Regex
@@ -81,7 +81,23 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="password"> Given email </param>
     /// <returns> true/false based on if the param matches the regex </returns>
     private bool ValidatePassword(string password) {
-        return Regex.IsMatch(password, "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])[^/\\\\].{8,32}$") | !string.IsNullOrEmpty(password);
+        // Define regular expressions for each password rule
+        Regex lengthRegex = new Regex("^.{8,32}$");
+        Regex specialCharRegex = new Regex("[^a-zA-Z0-9]");
+        Regex numberRegex = new Regex("[0-9]");
+        Regex capitalLetterRegex = new Regex("[A-Z]");
+        Regex lowercaseLetterRegex = new Regex("[a-z]");
+
+        // Check if password meets all rules
+        if (!lengthRegex.IsMatch(password) ||
+            !specialCharRegex.IsMatch(password) ||
+            !numberRegex.IsMatch(password) ||
+            !capitalLetterRegex.IsMatch(password) ||
+            !lowercaseLetterRegex.IsMatch(password)) {
+            return false;
+        }
+
+        return true;
     }
     /// <summary>
     /// Function for checking if an email already exists in the database

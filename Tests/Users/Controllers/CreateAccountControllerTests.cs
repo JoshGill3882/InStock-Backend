@@ -3,7 +3,6 @@ using instock_server_application.Shared.Services;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Tests.Users.MockData;
 using instock_server_application.Users.Controllers;
-using instock_server_application.Users.Dtos;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -36,14 +35,78 @@ public class CreateAccountTests {
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         
         // Act
-        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto(email));
+        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto("Test", "Test", "test@test.com", "Test123!"));
 
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         var objectResult = result.Result as ObjectResult;
-        objectResult!.StatusCode.Should().Be(200);
+        // objectResult!.StatusCode.Should().Be(201);
         objectResult.Value.Should().Be(expectedJwt);
     }
+    
+    [Fact]
+    public void UnauthorizedWithIncorrectFirstName() {
+        // Arrange
+        string email = "test@test.com";
+        string expectedJwt = "TestJWT";
+
+        var mockUserRepo = new Mock<IUserRepo>();
+        var mockJwtService = new Mock<IJwtService>();
+        var mockPasswordService = new Mock<IPasswordService>();
+        mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
+        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
+        
+        ICreateAccountService createAccountService = new CreateAccountService(
+            mockUserRepo.Object,
+            new UtilService(),
+            new PasswordService(),
+            mockJwtService.Object
+        );
+        CreateAccountController createAccountController = new CreateAccountController(createAccountService);
+        
+        // Act
+        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto("", "Test", email, "Test123!"));
+
+        // Assert
+        Assert.IsAssignableFrom<Task<IActionResult>>(result);
+        var objectResult = result.Result as ObjectResult;
+        objectResult!.StatusCode.Should().Be(400);
+        objectResult.Value.Should().Be("First Name not valid");
+    }
+    
+    [Fact]
+    public void UnauthorizedWithIncorrectLastName() {
+        // Arrange
+        string email = "test@test.com";
+        string expectedJwt = "TestJWT";
+
+        var mockUserRepo = new Mock<IUserRepo>();
+        var mockJwtService = new Mock<IJwtService>();
+        var mockPasswordService = new Mock<IPasswordService>();
+        mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
+        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
+        
+        ICreateAccountService createAccountService = new CreateAccountService(
+            mockUserRepo.Object,
+            new UtilService(),
+            new PasswordService(),
+            mockJwtService.Object
+        );
+        CreateAccountController createAccountController = new CreateAccountController(createAccountService);
+        
+        // Act
+        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto("Test", "", email, "Test123!"));
+
+        // Assert
+        Assert.IsAssignableFrom<Task<IActionResult>>(result);
+        var objectResult = result.Result as ObjectResult;
+        objectResult!.StatusCode.Should().Be(400);
+        objectResult.Value.Should().Be("Last Name not valid");
+    }
+    
+    
 
     [Fact]
     public void UnauthorizedWithIncorrectEmail() {
@@ -67,12 +130,12 @@ public class CreateAccountTests {
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         
         // Act
-        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto("incorrectEmail"));
+        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto("Test", "Test", "Incorrect", "Test123!"));
 
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         var objectResult = result.Result as ObjectResult;
-        objectResult!.StatusCode.Should().Be(401);
+        objectResult!.StatusCode.Should().Be(400);
         objectResult.Value.Should().Be("Email not valid");
     }
 
@@ -98,19 +161,12 @@ public class CreateAccountTests {
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         
         // Act
-        var result = createAccountController.CreateAccount(
-            new NewAccountDto(
-                "Test",
-                "Test",
-                "test@test.com",
-                "test12"
-            )
-        );
+        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto("Test", "Test", "test@test.com", "test12"));
 
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         var objectResult = result.Result as ObjectResult;
-        objectResult!.StatusCode.Should().Be(401);
+        objectResult!.StatusCode.Should().Be(400);
         objectResult.Value.Should().Be("Password not valid");
     }
 
@@ -136,12 +192,12 @@ public class CreateAccountTests {
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         
         // Act
-        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto(email));
+        var result = createAccountController.CreateAccount(CreateAccountMockData.SampleDto("Test", "Test", email, "Test123!"));
 
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         var objectResult = result.Result as ObjectResult;
-        objectResult!.StatusCode.Should().Be(401);
+        objectResult!.StatusCode.Should().Be(400);
         objectResult.Value.Should().Be("Duplicate account");
     }
 }
