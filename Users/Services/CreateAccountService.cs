@@ -81,7 +81,7 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="password"> Given email </param>
     /// <returns> true/false based on if the param matches the regex </returns>
     private bool ValidatePassword(string password) {
-        return Regex.IsMatch(password, "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])[^/].{8,32}$") | !string.IsNullOrEmpty(password);
+        return Regex.IsMatch(password, "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])[^/\\\\].{8,32}$") | !string.IsNullOrEmpty(password);
     }
     /// <summary>
     /// Function for checking if an email already exists in the database
