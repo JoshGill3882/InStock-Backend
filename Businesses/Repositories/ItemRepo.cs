@@ -32,36 +32,21 @@ public class ItemRepo : IItemRepo{
     
     public async Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto) {
         
-        // Checking the User Id is valid
-        // if (string.IsNullOrEmpty(itemToSaveDto.UserId)) {
-        //     throw new NullReferenceException("The User ID cannot be null or empty.");
-        // } 
-        
         // Checking the Business Name is valid
         if (string.IsNullOrEmpty(itemToSaveDto.Name)) {
             throw new NullReferenceException("The Business Name cannot be null or empty.");
         }
         
-        // Check if the user already has an item of the same name, throwing exception if so
-        // Item existingItem = await _context.LoadAsync<Item>(itemToSaveDto.Name);
-        // if (!string.IsNullOrEmpty(existingItem.BusinessId)) {
-        //     throw new UserAlreadyOwnsBusinessException();
-        // }
-    
-        // Save the new business
+        // Save the new item
         Item itemModel = new Item(
             itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, Int32.Parse(itemToSaveDto.Stock));
         await _context.SaveAsync(itemModel);
-        
-        // Update the user table to include new business
-        // existingUser.BusinessId = businessModel.BusinessId.ToString();
-        // await _context.SaveAsync(existingUser);
 
         ItemDto createdItemDto = new ItemDto(
-            itemModel.SKU.ToString(), 
-            itemModel.BusinessId.ToString(), 
-            itemModel.Category.ToString(),
-            itemModel.Name.ToString(),
+            itemModel.SKU, 
+            itemModel.BusinessId, 
+            itemModel.Category,
+            itemModel.Name,
             itemModel.Stock.ToString());
         
         return createdItemDto;

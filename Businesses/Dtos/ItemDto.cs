@@ -9,8 +9,6 @@ public class ItemDto : DataTransferObjectSuperType {
     public string Name { get; }
     public string Stock { get; }
     
-
-
     public ItemDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
 

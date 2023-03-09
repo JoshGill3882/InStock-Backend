@@ -59,6 +59,10 @@ public class ItemService : IItemService {
     private void ValidateItemStock(ErrorNotification errorNotes, string itemStock) {
         // Item Name Variables
         const string errorKey = "itemStock";
+        
+        if (string.IsNullOrEmpty(itemStock)) {
+            errorNotes.AddError(errorKey, "The item name cannot be empty.");
+        }
 
         if (!int.TryParse(itemStock, out int n))
         {
@@ -130,7 +134,8 @@ public class ItemService : IItemService {
         
         // Calling repo to create the business for the user
         StoreItemDto itemToSaveDto =
-            new StoreItemDto(newItemRequestDto.SKU, newItemRequestDto.BusinessId, newItemRequestDto.Category, newItemRequestDto.Name, newItemRequestDto.Stock);
+            new StoreItemDto(newItemRequestDto.SKU, newItemRequestDto.BusinessId, newItemRequestDto.Category, 
+                newItemRequestDto.Name, newItemRequestDto.Stock);
         
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 

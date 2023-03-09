@@ -56,9 +56,6 @@ public class ItemController : ControllerBase {
         // Get our current UserId and BusinessId to validate and pass to the items service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
         
-        // Not using this but it's returning null for some reason?
-        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null; 
-
         // Check there are no issues with the userId
         if (string.IsNullOrEmpty(currentUserId)) {
             return Unauthorized();
@@ -68,7 +65,7 @@ public class ItemController : ControllerBase {
         CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(newItemForm.SKU,
             newItemForm.BusinessId, newItemForm.Category, newItemForm.Name, newItemForm.Stock, currentUserId);
 
-        // Attempting to create new item, it returns success of failure
+        // Attempting to create new item
         ItemDto createdItemDTO = await _itemService.CreateItem(createItemRequestDto);
 
         // If errors then return 401 with the error messages
