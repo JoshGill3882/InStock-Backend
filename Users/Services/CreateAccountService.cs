@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Dtos;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories.Interfaces;
@@ -8,13 +9,13 @@ namespace instock_server_application.Users.Services;
 
 public class CreateAccountService : ICreateAccountService {
     private readonly IUserRepo _userRepo;
-    private readonly IUserService _userService;
+    private readonly IUtilService _utilService;
     private readonly IPasswordService _passwordService;
     private readonly IJwtService _jwtService;
 
-    public CreateAccountService(IUserRepo userRepo, IUserService userService, IPasswordService passwordService, IJwtService jwtService) {
+    public CreateAccountService(IUserRepo userRepo, IUtilService utilService, IPasswordService passwordService, IJwtService jwtService) {
         _userRepo = userRepo;
-        _userService = userService;
+        _utilService = utilService;
         _passwordService = passwordService;
         _jwtService = jwtService;
     }
@@ -31,7 +32,7 @@ public class CreateAccountService : ICreateAccountService {
         if (DuplicateAccount(newAccountDto.Email)) { return "Duplicate account"; }
 
         User newUser = new User(
-            _userService.GenerateUUID(),
+            _utilService.GenerateUUID(),
             newAccountDto.Email,
             "Active",
             DateTime.UtcNow.Date.Ticks,

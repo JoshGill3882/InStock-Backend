@@ -1,17 +1,14 @@
-﻿using Amazon.DynamoDBv2;
-using FluentAssertions;
+﻿using FluentAssertions;
+using instock_server_application.Shared.Services;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Tests.Users.MockData;
 using instock_server_application.Users.Controllers;
 using instock_server_application.Users.Dtos;
-using instock_server_application.Users.Models;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace instock_server_application.Tests.Users.Controllers;
 
@@ -24,7 +21,6 @@ public class CreateAccountTests {
         string expectedJwt = "TestJWT";
 
         var mockUserRepo = new Mock<IUserRepo>();
-        var mockAmazonDynamoDb = new Mock<IAmazonDynamoDB>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
@@ -33,7 +29,7 @@ public class CreateAccountTests {
         
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
-            new UserService(mockAmazonDynamoDb.Object), // Will need to be switched once Repo Refactor is complete and UserService passes to Repo Layer
+            new UtilService(),
             new PasswordService(),
             mockJwtService.Object
         );
@@ -56,7 +52,6 @@ public class CreateAccountTests {
         string expectedJwt = "TestJWT";
 
         var mockUserRepo = new Mock<IUserRepo>();
-        var mockAmazonDynamoDb = new Mock<IAmazonDynamoDB>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
@@ -65,7 +60,7 @@ public class CreateAccountTests {
         
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
-            new UserService(mockAmazonDynamoDb.Object), // Will need to be switched once Repo Refactor is complete and UserService passes to Repo Layer
+            new UtilService(),
             new PasswordService(),
             mockJwtService.Object
         );
@@ -88,7 +83,6 @@ public class CreateAccountTests {
         string expectedJwt = "TestJWT";
 
         var mockUserRepo = new Mock<IUserRepo>();
-        var mockAmazonDynamoDb = new Mock<IAmazonDynamoDB>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
@@ -97,7 +91,7 @@ public class CreateAccountTests {
         
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
-            new UserService(mockAmazonDynamoDb.Object), // Will need to be switched once Repo Refactor is complete and UserService passes to Repo Layer
+            new UtilService(),
             new PasswordService(),
             mockJwtService.Object
         );
@@ -127,7 +121,6 @@ public class CreateAccountTests {
         string expectedJwt = "TestJWT";
 
         var mockUserRepo = new Mock<IUserRepo>();
-        var mockAmazonDynamoDb = new Mock<IAmazonDynamoDB>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.SampleUser())!);
@@ -136,7 +129,7 @@ public class CreateAccountTests {
         
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
-            new UserService(mockAmazonDynamoDb.Object), // Will need to be switched once Repo Refactor is complete and UserService passes to Repo Layer
+            new UtilService(),
             new PasswordService(),
             mockJwtService.Object
         );
