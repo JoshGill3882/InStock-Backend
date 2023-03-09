@@ -79,7 +79,6 @@ public class ItemService : IItemService {
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
-        
         if (_businessService.CheckBusinessIdInJwt(userDto, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<Dictionary<string, string>> items = new();
