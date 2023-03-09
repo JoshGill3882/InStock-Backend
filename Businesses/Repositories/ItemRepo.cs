@@ -77,5 +77,31 @@ public class ItemRepo : IItemRepo{
         }
         return duplicateName;
     }
+    
+    public async Task<bool> IsSKUInUse(string SKU, string businessId)
+    {
+
+        var duplicateSKU = false;
+        
+        var request = new ScanRequest
+        {
+            TableName = "Items",
+            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
+                {":Id", new AttributeValue(businessId)},
+                {":SKU", new AttributeValue(SKU)}
+            },
+
+            FilterExpression = "BusinessId = :Id and SKU = :SKU",
+        };
+        
+        var response = await _client.ScanAsync(request);
+        if (response.Items.Count > 0)
+        {
+            duplicateSKU = true;
+        }
+
+        return duplicateSKU;
+
+    }
 
 }

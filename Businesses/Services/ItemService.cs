@@ -80,6 +80,16 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "You already have an item with that name");
         }
     }
+    
+    private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
+    {
+        const string errorKey = "duplicateSKU";
+        var isDuplicate = await _itemRepo.IsSKUInUse(newItemRequestDto.SKU, newItemRequestDto.BusinessId);
+        if (isDuplicate)
+        {
+            errorNotes.AddError(errorKey, "You already have an item with that SKU");
+        }
+    }
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
@@ -126,6 +136,7 @@ public class ItemService : IItemService {
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
         ValidateItemStock(errorNotes, newItemRequestDto.Stock);
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
+        await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
 
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
