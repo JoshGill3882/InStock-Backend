@@ -1,8 +1,10 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
+using instock_server_application.Businesses.Repositories.Exceptions;
 using instock_server_application.Businesses.Repositories.Interfaces;
 
 namespace instock_server_application.Businesses.Repositories; 
@@ -40,13 +42,12 @@ public class ItemRepo : IItemRepo{
             throw new NullReferenceException("The Business Name cannot be null or empty.");
         }
         
-        // Check if the user already has a business, throwing exception if so as we will update an existing business instead of create it
-        // TODO Think this will be better to check the businesses not users by using a composite key when we database refactor
-        // User existingUser = await _context.LoadAsync<User>(businessToSave.UserId);
-        // if (!string.IsNullOrEmpty(existingUser.BusinessId)) {
+        // Check if the user already has an item of the same name, throwing exception if so
+        // Item existingItem = await _context.LoadAsync<Item>(itemToSaveDto.Name);
+        // if (!string.IsNullOrEmpty(existingItem.BusinessId)) {
         //     throw new UserAlreadyOwnsBusinessException();
         // }
-        //
+    
         // Save the new business
         Item itemModel = new Item(
             itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, Int32.Parse(itemToSaveDto.Stock));
@@ -65,4 +66,33 @@ public class ItemRepo : IItemRepo{
         
         return createdItemDto;
     }
+    
+    public async Task<Item?> GetByName(CreateItemRequestDto createItemRequestDto)
+    {
+        var request = new ScanRequest
+        {
+            TableName = "Items",
+            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
+                {":Id", new AttributeValue(createItemRequestDto.BusinessId)},
+                {":name", new AttributeValue(createItemRequestDto.Name)}
+            },
+            // "Name" is protected in DynamoDB so Expression Attribute Name is required
+            ExpressionAttributeNames = new Dictionary<string,string> {
+                {"#n", "Name"},
+            },
+
+            FilterExpression = "BusinessId = :Id and #n = :name",
+            ProjectionExpression = "BusinessId, #n",
+        };
+        
+        var response = await _client.ScanAsync(request);
+        foreach (Dictionary<string, AttributeValue> item in response.Items)
+        {
+            // Process the result.
+            Console.Write(item);
+        }
+
+        return new Item();
+    }
+
 }

@@ -67,6 +67,11 @@ public class ItemService : IItemService {
         }
     }
 
+    private void ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
+    {
+        _itemRepo.GetByName(newItemRequestDto);
+    }
+
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
         
@@ -112,6 +117,7 @@ public class ItemService : IItemService {
         ValidateItemName(errorNotes, newItemRequestDto.Name);
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
         ValidateItemStock(errorNotes, newItemRequestDto.Stock);
+        ValidateDuplicateName(errorNotes, newItemRequestDto);
 
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
