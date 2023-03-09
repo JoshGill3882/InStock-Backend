@@ -21,7 +21,7 @@ public class CreateAccountController : ControllerBase {
         string result = _createAccountService.CreateAccount(newAccountDto).Result;
 
         if (result.Equals("First Name not valid") | result.Equals("Last Name not valid") | result.Equals("Email not valid") | result.Equals("Password not valid") | result.Equals("Duplicate account")) {
-            return Unauthorized(result);
+            return BadRequest(result);
         }
 
         return Ok(result);
