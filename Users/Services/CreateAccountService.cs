@@ -57,7 +57,7 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="firstName"> The User's entered First Name</param>
     /// <returns> True/False for if the User's First Name is null or empty </returns>
     private bool ValidateFirstName(string firstName) {
-        return string.IsNullOrEmpty(firstName);
+        return Regex.IsMatch(firstName, "/^[a-z ,.'-]+$/i");
     }
     /// <summary>
     /// Function for checking that the last name entered is not null or empty
@@ -65,7 +65,7 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="lastName"> The User's Entered Last Name </param>
     /// <returns> True/False depending on if it's empty </returns>
     private bool ValidateLastName(string lastName) {
-        return string.IsNullOrEmpty(lastName);
+        return Regex.IsMatch(lastName, "/^[a-z ,.'-]+$/i");
     }
     /// <summary>
     /// Function for checking if an email is valid based on a Regex
