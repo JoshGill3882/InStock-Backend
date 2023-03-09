@@ -23,6 +23,6 @@ public class CreateAccountController : ControllerBase {
             return BadRequest(result);
         }
 
-        return Ok(result);
+        return new ObjectResult(result) { StatusCode = StatusCodes.Status201Created};
     }
 }
