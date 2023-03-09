@@ -7,7 +7,11 @@ using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Filters;
+using instock_server_application.Shared.Services;
+using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Models;
+using instock_server_application.Users.Repositories;
+using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -61,7 +65,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
+builder.Services.AddScoped<ICreateAccountService, CreateAccountService>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();
+
+// Util Services & Repositories
+builder.Services.AddScoped<IUtilService, UtilService>();
 
 
 builder.Services.AddControllers(options => {
