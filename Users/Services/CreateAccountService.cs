@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using instock_server_application.Shared.Dto;
 using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Dtos;
 using instock_server_application.Users.Models;
@@ -33,7 +34,7 @@ public class CreateAccountService : ICreateAccountService {
         if (!ValidatePassword(newAccountDto.Password)) { return "Password not valid"; }
         if (DuplicateAccount(newAccountDto.Email)) { return "Duplicate account"; }
 
-        User newUser = new User(
+        UserDto newUser = new UserDto(
             _utilService.GenerateUUID(),
             newAccountDto.Email,
             "Active",
@@ -47,7 +48,7 @@ public class CreateAccountService : ICreateAccountService {
         
         _userRepo.Save(newUser);
 
-        return _jwtService.CreateToken(newUser.Email, newUser.BusinessId);
+        return _jwtService.CreateToken(newUser.Email, newUser.UserBusinessId);
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using instock_server_application.Shared.Dto;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories.Interfaces;
 
@@ -22,7 +23,8 @@ public class UserRepo : IUserRepo {
         return user;
     }
 
-    public async void Save(User user) {
+    public async void Save(UserDto userDto) {
+        User user = new User(userDto);
         await _dynamoDbContext.SaveAsync(user);
     }
 }

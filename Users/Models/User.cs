@@ -1,5 +1,7 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.Businesses.Dtos;
+using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Users.Models;
 
@@ -49,4 +51,16 @@ public class User {
     }
 
     public User() { }
+
+    public User(UserDto userDto) {
+        UserId = userDto.UserId;
+        Email = userDto.Email;
+        AccountStatus = userDto.AccountStatus;
+        CreationDate = userDto.CreationDate;
+        FirstName = userDto.FirstName;
+        LastName = userDto.LastName;
+        Password = userDto.Password;
+        Role = userDto.Role;
+        BusinessId = userDto.UserBusinessId;
+    }
 }
