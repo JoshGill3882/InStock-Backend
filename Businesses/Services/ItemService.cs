@@ -2,6 +2,7 @@
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Services; 
 

@@ -7,5 +7,5 @@ using Microsoft.IdentityModel.Tokens;
 namespace instock_server_application.Users.Services; 
 
 public interface IJwtService {
-    public string CreateToken(User user);
+    public string CreateToken(string email, string businessId);
 }
