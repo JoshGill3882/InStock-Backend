@@ -20,7 +20,7 @@ public class CreateAccountController : ControllerBase {
     public async Task<IActionResult> CreateAccount([FromBody] NewAccountDto newAccountDto) {
         string result = _createAccountService.CreateAccount(newAccountDto).Result;
 
-        if (result.Equals("Email not valid") | result.Equals("Password not valid") | result.Equals("Duplicate account")) {
+        if (result.Equals("First Name not valid") | result.Equals("Last Name not valid") | result.Equals("Email not valid") | result.Equals("Password not valid") | result.Equals("Duplicate account")) {
             return Unauthorized(result);
         }
 
