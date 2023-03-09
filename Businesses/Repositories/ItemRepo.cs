@@ -67,8 +67,9 @@ public class ItemRepo : IItemRepo{
         return createdItemDto;
     }
     
-    public async Task<Item?> GetByName(CreateItemRequestDto createItemRequestDto)
+    public async Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto)
     {
+        var duplicateName = false;
         var request = new ScanRequest
         {
             TableName = "Items",
@@ -82,17 +83,14 @@ public class ItemRepo : IItemRepo{
             },
 
             FilterExpression = "BusinessId = :Id and #n = :name",
-            ProjectionExpression = "BusinessId, #n",
         };
         
         var response = await _client.ScanAsync(request);
-        foreach (Dictionary<string, AttributeValue> item in response.Items)
+        if (response.Items.Count > 0)
         {
-            // Process the result.
-            Console.Write(item);
+            duplicateName = true;
         }
-
-        return new Item();
+        return duplicateName;
     }
 
 }
