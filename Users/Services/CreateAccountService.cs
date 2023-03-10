@@ -36,7 +36,7 @@ public class CreateAccountService : ICreateAccountService {
 
         UserDto newUser = new UserDto(
             _utilService.GenerateUUID(),
-            newAccountDto.Email,
+            newAccountDto.Email.ToLower(),
             "Active",
             DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             newAccountDto.FirstName,
