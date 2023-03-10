@@ -25,7 +25,7 @@ public class LoginService : ILoginService {
 
         // If password matches, make a token and pass it back
         if (_passwordService.Verify(password, userDetails.Password)) {
-            jwtToken = _jwtService.CreateToken(userDetails.Email, userDetails.Password);
+            jwtToken = _jwtService.CreateToken(userDetails.Email, userDetails.BusinessId);
         }
         return jwtToken;
     }
