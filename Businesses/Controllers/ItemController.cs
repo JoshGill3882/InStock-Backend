@@ -48,6 +48,12 @@ public class ItemController : ControllerBase {
         return Ok(items);
     }
 
+    /// <summary>
+    /// Add item for a specific business
+    /// </summary>
+    /// <param name="newItemForm"> Create item form </param>
+    /// <param name="businessId"> Unique ID for the business the item needs to be added to</param>
+    /// <returns> Item created, or error with relevant status code</returns>
     [HttpPost]
     [Route("/businesses/{businessId}/items")]
     public async Task<IActionResult> CreateItem([FromBody] CreateItemForm newItemForm, [FromRoute] string businessId) {
