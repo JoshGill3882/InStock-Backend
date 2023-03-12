@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace instock_server_application.Businesses.Controllers; 
 
 [ApiController]
-[Route("/items")]
 public class ItemController : ControllerBase {
     private readonly IItemService _itemService;
     
@@ -50,7 +49,8 @@ public class ItemController : ControllerBase {
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateItem([FromBody] CreateItemForm newItemForm) {
+    [Route("/businesses/{businessId}/items")]
+    public async Task<IActionResult> CreateItem([FromBody] CreateItemForm newItemForm, [FromRoute] string businessId) {
 
         // Get our current UserId and BusinessId to validate and pass to the items service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
@@ -62,7 +62,7 @@ public class ItemController : ControllerBase {
 
         // Creating CreateItemDTO to pass the details to the service for processing
         CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(newItemForm.SKU,
-            newItemForm.BusinessId, newItemForm.Category, newItemForm.Name, newItemForm.Stock, currentUserId);
+            businessId, newItemForm.Category, newItemForm.Name, newItemForm.Stock, currentUserId);
 
         // Attempting to create new item
         ItemDto createdItemDTO = await _itemService.CreateItem(createItemRequestDto);
