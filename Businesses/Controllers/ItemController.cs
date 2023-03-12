@@ -73,7 +73,7 @@ public class ItemController : ControllerBase {
         }
         
         // If not errors then return 201 with the URI and newly created object details
-        string? createdItemUrl = Url.Action(controller: "item", action: nameof(GetItem), values:new {sku=createdItemDTO.SKU}, protocol:Request.Scheme);
+        string? createdItemUrl = Url.Action(controller: "item", action: nameof(GetItem), values:new {itemId=createdItemDTO.SKU}, protocol:Request.Scheme);
         return Created(createdItemUrl ?? string.Empty, new {
             sku = createdItemDTO.SKU,
             businessId = createdItemDTO.BusinessId,
