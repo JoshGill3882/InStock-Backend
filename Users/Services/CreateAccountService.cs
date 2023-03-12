@@ -48,7 +48,7 @@ public class CreateAccountService : ICreateAccountService {
         
         _userRepo.Save(newUser);
 
-        return _jwtService.CreateToken(newUser.Email, newUser.UserBusinessId);
+        return _jwtService.CreateToken(newUser.UserId, newUser.Email, newUser.UserBusinessId);
     }
 
     /// <summary>

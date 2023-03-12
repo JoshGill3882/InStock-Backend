@@ -25,10 +25,10 @@ public class JwtService : IJwtService {
     /// <param name="email"> User's email </param>
     /// <param name="businessId"> User's business id </param>
     /// <returns> JWT Token </returns>
-    public string CreateToken(string email, string businessId) {
+    public string CreateToken(string id, string email, string businessId) {
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new[] {
-                new Claim("Id", email),
+                new Claim("Id", id),
                 new Claim(JwtRegisteredClaimNames.Sub, email),
                 new Claim(JwtRegisteredClaimNames.Email, email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
