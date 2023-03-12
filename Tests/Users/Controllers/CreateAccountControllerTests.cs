@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using instock_server_application.Shared.Services;
+using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Tests.Users.MockData;
 using instock_server_application.Users.Controllers;
@@ -18,13 +19,17 @@ public class CreateAccountTests {
         // Arrange
         string email = "test@test.com";
         string expectedJwt = "TestJWT";
+        string testId = "TestID";
 
         var mockUserRepo = new Mock<IUserRepo>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
+        var mockUtilService = new Mock<IUtilService>();
+        mockUtilService.Setup(service => service.GenerateUUID()).Returns(testId);
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
-        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockJwtService.Setup(service => service.CreateToken(It.IsAny<string>(), email, "")).Returns(expectedJwt);
         mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
+
         
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
@@ -40,7 +45,7 @@ public class CreateAccountTests {
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         var objectResult = result.Result as ObjectResult;
-        // objectResult!.StatusCode.Should().Be(201);
+        objectResult!.StatusCode.Should().Be(201);
         objectResult.Value.Should().Be(expectedJwt);
     }
     
@@ -49,14 +54,17 @@ public class CreateAccountTests {
         // Arrange
         string email = "test@test.com";
         string expectedJwt = "TestJWT";
+        string testId = "TestID";
 
         var mockUserRepo = new Mock<IUserRepo>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
+        var mockUtilService = new Mock<IUtilService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
-        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockJwtService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
-        
+        mockUtilService.Setup(service => service.GenerateUUID()).Returns(testId);
+
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
             new UtilService(),
@@ -80,14 +88,17 @@ public class CreateAccountTests {
         // Arrange
         string email = "test@test.com";
         string expectedJwt = "TestJWT";
+        string testId = "TestID";
 
         var mockUserRepo = new Mock<IUserRepo>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
+        var mockUtilService = new Mock<IUtilService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
-        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockJwtService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
-        
+        mockUtilService.Setup(service => service.GenerateUUID()).Returns(testId);
+
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
             new UtilService(),
@@ -113,14 +124,17 @@ public class CreateAccountTests {
         // Arrange
         string email = "test@test.com";
         string expectedJwt = "TestJWT";
+        string testId = "TestID";
 
         var mockUserRepo = new Mock<IUserRepo>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
+        var mockUtilService = new Mock<IUtilService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
-        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockJwtService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
-        
+        mockUtilService.Setup(service => service.GenerateUUID()).Returns(testId);
+
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
             new UtilService(),
@@ -144,14 +158,17 @@ public class CreateAccountTests {
         // Arrange
         string email = "test@test.com";
         string expectedJwt = "TestJWT";
+        string testId = "TestID";
 
         var mockUserRepo = new Mock<IUserRepo>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
+        var mockUtilService = new Mock<IUtilService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
-        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockJwtService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
-        
+        mockUtilService.Setup(service => service.GenerateUUID()).Returns(testId);
+
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
             new UtilService(),
@@ -175,14 +192,17 @@ public class CreateAccountTests {
         // Arrange
         string email = "test@test.com";
         string expectedJwt = "TestJWT";
+        string testId = "TestID";
 
         var mockUserRepo = new Mock<IUserRepo>();
         var mockJwtService = new Mock<IJwtService>();
         var mockPasswordService = new Mock<IPasswordService>();
+        var mockUtilService = new Mock<IUtilService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.SampleUser())!);
-        mockJwtService.Setup(service => service.CreateToken(email, "")).Returns(expectedJwt);
+        mockJwtService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockPasswordService.Setup(service => service.Encrypt("Test123!")).Returns("s0m3encrypt3dpa55w0rd");
-        
+        mockUtilService.Setup(service => service.GenerateUUID()).Returns(testId);
+
         ICreateAccountService createAccountService = new CreateAccountService(
             mockUserRepo.Object,
             new UtilService(),

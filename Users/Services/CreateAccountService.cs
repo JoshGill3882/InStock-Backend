@@ -36,7 +36,7 @@ public class CreateAccountService : ICreateAccountService {
 
         UserDto newUser = new UserDto(
             _utilService.GenerateUUID(),
-            newAccountDto.Email,
+            newAccountDto.Email.ToLower(),
             "Active",
             DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             newAccountDto.FirstName,
@@ -48,7 +48,7 @@ public class CreateAccountService : ICreateAccountService {
         
         _userRepo.Save(newUser);
 
-        return _jwtService.CreateToken(newUser.Email, newUser.UserBusinessId);
+        return _jwtService.CreateToken(newUser.UserId, newUser.Email, newUser.UserBusinessId);
     }
 
     /// <summary>
