@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Text.RegularExpressions;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -79,7 +78,13 @@ public class ItemController : ControllerBase {
         }
         
         // If not errors then return 201 with the URI and newly created object details
-        string? createdItemUrl = Url.Action(controller: "item", action: nameof(GetItem), values:new {itemId=createdItemDTO.SKU}, protocol:Request.Scheme);
+        string? createdItemUrl = Url.Action(controller: "item", action: nameof(GetItem), values:new
+        {
+            businesses=Url.RouteUrl("businesses"),
+            businessId = createdItemDTO.BusinessId,
+            items=Url.RouteUrl("items"),
+            itemId=createdItemDTO.SKU
+        }, protocol:Request.Scheme);
         return Created(createdItemUrl ?? string.Empty, new {
             sku = createdItemDTO.SKU,
             businessId = createdItemDTO.BusinessId,
@@ -89,9 +94,9 @@ public class ItemController : ControllerBase {
         });
     }
     
-    [Route("{itemId}")]
     [HttpGet]
-    public async Task<IActionResult> GetItem(string itemId) {
+    [Route("businesses/{businessId}/items/{itemId}")]
+    public async Task<IActionResult> GetItem([FromRoute] string itemId, string businessId) {
         throw new NotImplementedException();
     }
 
