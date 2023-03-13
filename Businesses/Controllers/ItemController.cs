@@ -22,11 +22,11 @@ public class ItemController : ControllerBase {
     /// <param name="businessIdModel"> The BusinessID to get all the items for </param>
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
-    [Route("/items")]
-    public async Task<IActionResult> GetAllItems(String businessId) {
+    [Route("/businesses/{businessId}/items")]
+    public async Task<IActionResult> GetAllItems([FromRoute] string businessId) {
         
         // Get our current UserId and BusinessId to validate and pass to the business service
-        string currentUserId = User.FindFirstValue("Id");
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
         string currentUserBusinessId = User.FindFirstValue("BusinessId").Split(",")[0];
 
         // Check there are no issues with the userId
