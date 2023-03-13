@@ -56,20 +56,7 @@ public class ItemService : IItemService {
         }
     }
     
-    private void ValidateItemStock(ErrorNotification errorNotes, string itemStock) {
-        // Item Name Variables
-        const string errorKey = "itemStock";
-        
-        if (string.IsNullOrEmpty(itemStock)) {
-            errorNotes.AddError(errorKey, "The item name cannot be empty.");
-        }
 
-        if (!int.TryParse(itemStock, out int n))
-        {
-            errorNotes.AddError(errorKey, "The item Stock level must be a number.");
-
-        }
-    }
 
     private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
@@ -134,7 +121,6 @@ public class ItemService : IItemService {
         // Validate the Item details
         ValidateItemName(errorNotes, newItemRequestDto.Name);
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
-        ValidateItemStock(errorNotes, newItemRequestDto.Stock);
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
 

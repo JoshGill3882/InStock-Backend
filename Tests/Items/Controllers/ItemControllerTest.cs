@@ -120,7 +120,7 @@ public class ItemControllerTest {
         var createItemForm = new CreateItemForm("Test-SKU-123",
             "Test Category",
             "Test Item Name",
-            "10"
+            10
         );
         
         var mockUser = new ClaimsPrincipal(
@@ -133,7 +133,7 @@ public class ItemControllerTest {
             businessId,
             "Test Category",
             "Test Item Name",
-            "10");
+            10);
 
         // Mock url for url helper to return
         string returnedUrl = "http://returned/";

@@ -12,7 +12,7 @@ WORKDIR "/src/"
 RUN dotnet build "instock-server-application.csproj" -c Release -o /app/build
 
 FROM build AS unit-test
-RUN dotnet test --no-build "instock-server-application.csproj" -c Release -o /app/publish
+RUN dotnet test "instock-server-application.csproj" -c Release -o /app/publish
 
 FROM build AS publish
 RUN dotnet publish "instock-server-application.csproj" -c Release -o /app/publish
