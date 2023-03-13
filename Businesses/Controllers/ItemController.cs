@@ -51,7 +51,7 @@ public class ItemController : ControllerBase {
     // Route to maintain old implementation
     // not permanent
     [HttpGet]
-    [Route("businesses/items")]
+    [Route("/items")]
     public async Task<IActionResult> GetAllItemsWithParam(string businessId)
     {
         return await GetAllItems(businessId);
