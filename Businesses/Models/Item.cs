@@ -1,16 +1,27 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 
 namespace instock_server_application.Businesses.Models; 
-
+[DynamoDBTable("Items")]
 public class Item {
-    public static string TableName = "Items";
     
     [DynamoDBHashKey]
-    private string SKU { get; set; }
-    private string BusinessId { get; set; }
-    private string Category { get; set; }
-    private string Name { get; set; }
-    private int Stock { get; set; }
+    [DynamoDBProperty("SKU")]
+    public string SKU { get; set; }
+    
+    [DynamoDBRangeKey]
+    [DynamoDBProperty("BusinessId")]
+    public string BusinessId { get; set; }
+    
+    [DynamoDBProperty("Category")]
+    public string Category { get; set; }
+    
+    [DynamoDBProperty("Name")]
+    public string Name { get; set; }
+    
+    [DynamoDBProperty("Stock")]
+    public int Stock { get; set; }
+    
+    public Item() {}
 
     /// <summary>
     /// All Args Constructor
