@@ -7,10 +7,12 @@ using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Filters;
+using instock_server_application.Shared.Formatters;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +68,7 @@ builder.Services.AddScoped<IItemService, ItemService>();
 
 builder.Services.AddControllers(options => {
     options.Filters.Add<GlobalExceptionFilter>();
+    options.InputFormatters.Insert(0, JsonPatchInputFormatter.GetJsonPatchInputFormatter());
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
