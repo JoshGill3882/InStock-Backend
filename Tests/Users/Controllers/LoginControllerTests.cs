@@ -30,7 +30,7 @@ public class LoginControllerTest {
         mockLoginService.Setup(service => service.Login(email, plainTextPassword)).Returns(Task.FromResult(token));
         mockUserService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser())!);
         mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
-        mockJwtService.Setup(service => service.CreateToken(SingleUser())).Returns(token);
+        mockJwtService.Setup(service => service.CreateToken(SingleUser().UserId, SingleUser().Email, SingleUser().BusinessId)).Returns(token);
 
         var controller = new LoginController(mockLoginService.Object);
         
@@ -40,9 +40,9 @@ public class LoginControllerTest {
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(result);
         
-        var okObjectResult = result.Result as OkObjectResult;
-        okObjectResult.StatusCode.Should().Be(200);
-        okObjectResult.Value.Should().Be(token);
+        var objectResult = result.Result as ObjectResult;
+        objectResult.StatusCode.Should().Be(200);
+        objectResult.Value.Should().Be(token);
     }
     
     [Fact]
@@ -61,8 +61,8 @@ public class LoginControllerTest {
         var result = controller.Login(login).Result;
         
         // Assert
-        var notFoundObjectResult = result as NotFoundObjectResult;
-        Assert.Equal(404, notFoundObjectResult!.StatusCode);
+        var objectResult = result as ObjectResult;
+        Assert.Equal(404, objectResult!.StatusCode);
     }
     
     [Fact]
@@ -81,7 +81,7 @@ public class LoginControllerTest {
         var result = controller.Login(login).Result;
         
         // Assert
-        var notFoundObjectResult = result as NotFoundObjectResult;
-        Assert.Equal(404, notFoundObjectResult!.StatusCode);
+        var objectResult = result as ObjectResult;
+        Assert.Equal(404, objectResult!.StatusCode);
     }
 }

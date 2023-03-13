@@ -1,5 +1,7 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.Businesses.Dtos;
+using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Users.Models;
 
@@ -7,29 +9,21 @@ namespace instock_server_application.Users.Models;
 public class User {
     [DynamoDBHashKey]
     public string UserId { get; set; }
-    
-    [DynamoDBProperty("Email")]
+    [DynamoDBGlobalSecondaryIndexHashKey("Email")]
     public string Email { get; set; }
-    
-    [DynamoDBProperty("AccountStatus")]
+    [DynamoDBProperty]
     public string AccountStatus { get; set; }
-    
-    [DynamoDBProperty("CreationDate")]
-    public int CreationDate { get; set; }
-    
-    [DynamoDBProperty("FirstName")]
+    [DynamoDBProperty]
+    public long CreationDate { get; set; }
+    [DynamoDBProperty]
     public string FirstName { get; set; }
-    
-    [DynamoDBProperty("LastName")]
+    [DynamoDBProperty]
     public string LastName { get; set; }
-    
-    [DynamoDBProperty("Password")]
+    [DynamoDBProperty]
     public string Password { get; set; }
-    
-    [DynamoDBProperty("Role")]
+    [DynamoDBProperty]
     public string Role { get; set; }
-    
-    [DynamoDBProperty("BusinessId")]
+    [DynamoDBProperty]
     public string BusinessId { get; set; }
 
     /// <summary>
@@ -44,7 +38,7 @@ public class User {
     /// <param name="password"> User's Password </param>
     /// <param name="role"> User's Role </param>
     /// <param name="businessId"> User's Linked Businesses</param>
-    public User(string userId, string email, string accountStatus, int creationDate, string firstName, string lastName, string password, string role, string businessId) {
+    public User(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string businessId) {
         UserId = userId;
         Email = email;
         AccountStatus = accountStatus;
@@ -56,6 +50,17 @@ public class User {
         BusinessId = businessId;
     }
 
-    public User() {
+    public User() { }
+
+    public User(UserDto userDto) {
+        UserId = userDto.UserId;
+        Email = userDto.Email;
+        AccountStatus = userDto.AccountStatus;
+        CreationDate = userDto.CreationDate;
+        FirstName = userDto.FirstName;
+        LastName = userDto.LastName;
+        Password = userDto.Password;
+        Role = userDto.Role;
+        BusinessId = userDto.UserBusinessId;
     }
 }

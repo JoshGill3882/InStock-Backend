@@ -63,7 +63,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
+builder.Services.AddScoped<ICreateAccountService, CreateAccountService>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();
+
+// Util Services & Repositories
+builder.Services.AddScoped<IUtilService, UtilService>();
 
 
 builder.Services.AddControllers(options => {
