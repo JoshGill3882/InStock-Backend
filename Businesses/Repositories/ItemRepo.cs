@@ -39,7 +39,7 @@ public class ItemRepo : IItemRepo{
         
         // Save the new item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, Int32.Parse(itemToSaveDto.Stock));
+            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
         await _context.SaveAsync(itemModel);
 
         ItemDto createdItemDto = new ItemDto(
@@ -47,7 +47,7 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.Stock.ToString());
+            itemModel.Stock);
         
         return createdItemDto;
     }

@@ -6,9 +6,9 @@ public class CreateItemForm
 
     public string Category { get; }
     public string Name { get; }
-    public string Stock { get; }
+    public int Stock { get; }
     
-    public CreateItemForm(string sku, string category, string name, string stock)
+    public CreateItemForm(string sku, string category, string name, int stock)
     {
         SKU = sku;
         Category = category;
