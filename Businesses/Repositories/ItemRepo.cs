@@ -107,8 +107,8 @@ public class ItemRepo : IItemRepo{
 
     }
 
-    public async Task<ItemDto> GetItemWithUpdate(string itemId, JsonPatchDocument patchDocument) {
-        Item existingItem = await _context.LoadAsync<Item>(itemId);
+    public async Task<ItemDto> GetItemWithUpdate(string itemId, string businessId, JsonPatchDocument patchDocument) {
+        Item existingItem = await _context.LoadAsync<Item>(itemId, businessId);
 
         patchDocument.ApplyTo(existingItem);
         

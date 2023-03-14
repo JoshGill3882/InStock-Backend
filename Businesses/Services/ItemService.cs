@@ -166,7 +166,7 @@ public class ItemService : IItemService {
         ErrorNotification errorNotes = new ErrorNotification();
 
         // Getting the existing Item and apply change
-        ItemDto updatedItem = await _itemRepo.GetItemWithUpdate(updateItemRequestDto.ItemId, updateItemRequestDto.ItemPatchDocument);
+        ItemDto updatedItem = await _itemRepo.GetItemWithUpdate(updateItemRequestDto.ItemId, updateItemRequestDto.UserBusinessId, updateItemRequestDto.ItemPatchDocument);
 
         if (updatedItem.ErrorNotification.HasErrors) {
             return updatedItem;
