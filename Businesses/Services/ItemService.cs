@@ -1,9 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using Microsoft.AspNetCore.Mvc;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -137,5 +139,17 @@ public class ItemService : IItemService {
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 
         return createdItem;
+    }
+
+    public async Task<string?> DeleteItem(DeleteItemDto deleteItemDto) {
+        // If the passed in Business ID is in the JWT
+        if (deleteItemDto.User.FindFirstValue("BusinessId").Equals(deleteItemDto.BusinessId)) {
+            // Delete the item
+            _itemRepo.Delete(deleteItemDto);
+            // Return string response
+            return "Item Deleted";
+        }
+        // Otherwise return null
+        return null;
     }
 }
