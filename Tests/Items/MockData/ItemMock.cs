@@ -1,4 +1,6 @@
-﻿using instock_server_application.Businesses.Models;
+﻿using instock_server_application.Businesses.Dtos;
+using instock_server_application.Businesses.Models;
+using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Tests.Items.MockData; 
 
@@ -38,5 +40,13 @@ public static class ItemMock {
 
     public static List<Dictionary<string, string>> EmptyList() {
         return new();
+    }
+
+    public static DeleteItemDto TestDeleteItemDto() {
+        return new DeleteItemDto(
+            null,
+            "TestItemId",
+            "TestBusinessId"
+        );
     }
 }

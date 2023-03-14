@@ -4,6 +4,7 @@ using instock_server_application.Businesses.Controllers;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
+using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
@@ -110,7 +111,6 @@ public class ItemControllerTest {
         unauthorizedResult?.StatusCode.Should().Be(401);
     }
     
-    
     [Fact]
     public async Task Test_CreateItem_WithCorrectFormDetails() {
         // Arrange
@@ -156,5 +156,55 @@ public class ItemControllerTest {
         
         // Assert
         Assert.IsType<CreatedResult>(response);
+    }
+
+    [Fact]
+    public void Test_DeleteItem_WithCorrectDetails() {
+        // Arrange
+        string testBusinessId = "TestBusinessId";
+        string testItemId = "TestItemId";
+        var mockItemRepo = new Mock<IItemRepo>();
+        var mockBusinessService = new Mock<IBusinessService>();
+        var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+            new Claim("BusinessId", "TestBusinessId")
+        }));
+        var itemService = new ItemService(mockItemRepo.Object, mockBusinessService.Object);
+        var itemController = new ItemController(itemService) {
+            ControllerContext = new ControllerContext {
+                HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
+            }
+        };
+
+        // Act
+        var response = itemController.DeleteItem(testItemId, testBusinessId);
+
+        // Assert
+        Assert.IsAssignableFrom<Task<IActionResult>>(response);
+        var result = response.Result as OkObjectResult;
+        result.StatusCode.Should().Be(200);
+        result.Value.Should().Be("Item Deleted");
+    }
+
+    [Fact]
+    public void Test_DeleteItem_IncorrectBusinessId() {
+        // Arrange
+        string testBusinessId = "IncorrectId";
+        string testItemId = "IncorrectId";
+        var mockItemRepo = new Mock<IItemRepo>();
+        var mockBusinessService = new Mock<IBusinessService>();
+        var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new("BusinessId", "TestBusinessId") }));
+        var itemService = new ItemService(mockItemRepo.Object, mockBusinessService.Object);
+        var itemController = new ItemController(itemService) {
+            ControllerContext = new ControllerContext {
+                HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
+            }
+        };
+        // Act
+        var response = itemController.DeleteItem(testItemId, testBusinessId);
+
+        // Assert
+        Assert.IsAssignableFrom<Task<IActionResult>>(response);
+        var result = response.Result as UnauthorizedResult;
+        result.StatusCode.Should().Be(401);
     }
 }
