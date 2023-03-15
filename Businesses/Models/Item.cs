@@ -38,4 +38,9 @@ public class Item {
         Name = name;
         Stock = stock;
     }
+
+    public Item(string sku, string businessId) {
+        SKU = sku;
+        BusinessId = businessId;
+    }
 }
