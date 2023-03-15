@@ -142,6 +142,10 @@ public class ItemService : IItemService {
     }
 
     public async Task<string?> DeleteItem(DeleteItemDto deleteItemDto) {
+        // If the claim "BusinessId" is null or empty (invalid JWT)
+        if (string.IsNullOrEmpty(deleteItemDto.User.FindFirstValue("BusinessId"))) {
+            return null;
+        }
         // If the passed in Business ID is in the JWT
         if (deleteItemDto.User.FindFirstValue("BusinessId").Equals(deleteItemDto.BusinessId)) {
             // Delete the item
