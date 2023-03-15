@@ -3,6 +3,7 @@ using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Shared.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 
@@ -12,9 +13,11 @@ namespace instock_server_application.Businesses.Controllers;
 [Route("/businesses/{businessId}")]
 public class ItemController : ControllerBase {
     private readonly IItemService _itemService;
+    private readonly IUtilService _utilService;
     
-    public ItemController(IItemService itemService) {
+    public ItemController(IItemService itemService, IUtilService utilService) {
         _itemService = itemService;
+        _utilService = utilService;
     }
 
     /// <summary>
@@ -113,12 +116,12 @@ public class ItemController : ControllerBase {
     [HttpDelete]
     [Route("items/{itemId}")]
     public async Task<IActionResult> DeleteItem([FromRoute] string itemId, [FromRoute] string businessId) {
-        string? response = _itemService.DeleteItem(new DeleteItemDto(User, itemId, businessId)).Result;
-
-        if (string.IsNullOrEmpty(response)) {
-            return Unauthorized();
+        // If the user's given BusinessId matches the one to check for
+        if (_utilService.CheckUserBusinessId(User.FindFirstValue("BusinessId"), businessId)) {
+            string result = _itemService.DeleteItem(new DeleteItemDto(itemId, businessId)).Result;
+            return Ok(result);
         }
-
-        return Ok(response);
+        // Otherwise return 401: Unauthorized
+        return Unauthorized();
     }
 }

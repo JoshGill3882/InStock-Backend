@@ -11,6 +11,6 @@ public interface IItemService {
     
     Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto);
 
-    Task<string?> DeleteItem(DeleteItemDto deleteItemDto);
+    Task<string> DeleteItem(DeleteItemDto deleteItemDto);
 
 }

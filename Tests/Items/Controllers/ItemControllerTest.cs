@@ -8,6 +8,8 @@ using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Shared.Services;
+using instock_server_application.Shared.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
@@ -35,7 +37,7 @@ public class ItemControllerTest {
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(expected)!);
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, new UtilService());
         controller.ControllerContext = new ControllerContext() {
              HttpContext = new DefaultHttpContext() { User = mockUser }
          };
@@ -67,7 +69,7 @@ public class ItemControllerTest {
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), incorrectBusinessId)).Returns(Task.FromResult(expected)!);
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, new UtilService());
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };
@@ -97,7 +99,7 @@ public class ItemControllerTest {
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(ItemsList())!);
 
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, new UtilService());
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };
@@ -141,7 +143,7 @@ public class ItemControllerTest {
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.CreateItem(It.IsAny<CreateItemRequestDto>())).Returns(Task.FromResult(expected)!);
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, new UtilService());
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };
@@ -164,12 +166,12 @@ public class ItemControllerTest {
         string testBusinessId = "TestBusinessId";
         string testItemId = "TestItemId";
         var mockItemRepo = new Mock<IItemRepo>();
-        var mockBusinessService = new Mock<IBusinessService>();
         var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
             new Claim("BusinessId", "TestBusinessId")
         }));
-        var itemService = new ItemService(mockItemRepo.Object, mockBusinessService.Object);
-        var itemController = new ItemController(itemService) {
+        var utilService = new UtilService();
+        var itemService = new ItemService(mockItemRepo.Object, utilService);
+        var itemController = new ItemController(itemService, utilService) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
             }
@@ -193,8 +195,8 @@ public class ItemControllerTest {
         var mockItemRepo = new Mock<IItemRepo>();
         var mockBusinessService = new Mock<IBusinessService>();
         var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new("BusinessId", "TestBusinessId") }));
-        var itemService = new ItemService(mockItemRepo.Object, mockBusinessService.Object);
-        var itemController = new ItemController(itemService) {
+        var itemService = new ItemService(mockItemRepo.Object, new UtilService());
+        var itemController = new ItemController(itemService, new UtilService()) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
             }

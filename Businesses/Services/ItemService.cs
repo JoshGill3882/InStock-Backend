@@ -5,17 +5,18 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Shared.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemService : IItemService {
     private readonly IItemRepo _itemRepo;
-    private readonly IBusinessService _businessService;
+    private readonly IUtilService _utilService;
 
-    public ItemService(IItemRepo itemRepo, IBusinessService businessService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService) {
         _itemRepo = itemRepo;
-        _businessService = businessService;
+        _utilService = utilService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -82,7 +83,7 @@ public class ItemService : IItemService {
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
-        if (_businessService.CheckBusinessIdInJwt(userDto, businessId)) {
+        if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<Dictionary<string, string>> items = new();
 
@@ -141,19 +142,10 @@ public class ItemService : IItemService {
         return createdItem;
     }
 
-    public async Task<string?> DeleteItem(DeleteItemDto deleteItemDto) {
-        // If the claim "BusinessId" is null or empty (invalid JWT)
-        if (string.IsNullOrEmpty(deleteItemDto.User.FindFirstValue("BusinessId"))) {
-            return null;
-        }
-        // If the passed in Business ID is in the JWT
-        if (deleteItemDto.User.FindFirstValue("BusinessId").Equals(deleteItemDto.BusinessId)) {
-            // Delete the item
-            _itemRepo.Delete(deleteItemDto);
-            // Return string response
-            return "Item Deleted";
-        }
-        // Otherwise return null
-        return null;
+    public async Task<string> DeleteItem(DeleteItemDto deleteItemDto) {
+        // Delete the item
+        _itemRepo.Delete(deleteItemDto);
+        // Return string response
+        return "Item Deleted";
     }
 }
