@@ -110,7 +110,7 @@ public class ItemController : ControllerBase {
         throw new NotImplementedException();
     }
 
-    [HttpPost]
+    [HttpDelete]
     [Route("items/{itemId}")]
     public async Task<IActionResult> DeleteItem([FromRoute] string itemId, [FromRoute] string businessId) {
         string? response = _itemService.DeleteItem(new DeleteItemDto(User, itemId, businessId)).Result;
