@@ -112,7 +112,7 @@ public class ItemRepo : IItemRepo{
         {
             TableName = "Items",
             ProjectionExpression = "Category",
-            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
                 {":Id", new AttributeValue(businessId)}
             },
             FilterExpression = "BusinessId = :Id",

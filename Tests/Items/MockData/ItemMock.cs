@@ -1,8 +1,4 @@
-﻿using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Models;
-using instock_server_application.Shared.Dto;
-
-namespace instock_server_application.Tests.Items.MockData; 
+﻿namespace instock_server_application.Tests.Items.MockData; 
 
 public static class ItemMock {
     public static List<Dictionary<string, string>> ItemsList () {
@@ -34,6 +30,23 @@ public static class ItemMock {
                 { "Category", "Cards" } ,
                 { "Name", "Birthday Cockatoo" },
                 { "Stock", "43" }
+            }
+        };
+    }
+    
+    public static List<Dictionary<string, string>> CategoriesList () {
+        return new List<Dictionary<string, string>> {
+            new() {
+                { "Category", "Cards" } ,
+            },
+            new() {
+                { "Category", "Bookmarks" } ,
+            },
+            new() {
+                { "Category", "Stationary" } ,
+            },
+            new() {
+                { "Category", "Memo Pads" } ,
             }
         };
     }
