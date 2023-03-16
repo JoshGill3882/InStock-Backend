@@ -12,5 +12,6 @@ public interface IItemService {
     Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto);
 
     Task<DeleteItemDto> DeleteItem(DeleteItemDto deleteItemDto);
-
+    
+    public Task<List<Dictionary<string, string>>?> GetCategories(UserDto userDto, string businessId);
 }
