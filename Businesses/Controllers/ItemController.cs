@@ -1,4 +1,6 @@
 ﻿using System.Security.Claims;
+using System.Xml.XPath;
+using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -13,11 +15,9 @@ namespace instock_server_application.Businesses.Controllers;
 [Route("/businesses/{businessId}")]
 public class ItemController : ControllerBase {
     private readonly IItemService _itemService;
-    private readonly IUtilService _utilService;
     
-    public ItemController(IItemService itemService, IUtilService utilService) {
+    public ItemController(IItemService itemService) {
         _itemService = itemService;
-        _utilService = utilService;
     }
 
     /// <summary>
@@ -116,12 +116,14 @@ public class ItemController : ControllerBase {
     [HttpDelete]
     [Route("items/{itemId}")]
     public async Task<IActionResult> DeleteItem([FromRoute] string itemId, [FromRoute] string businessId) {
-        // If the user's given BusinessId matches the one to check for
-        if (_utilService.CheckUserBusinessId(User.FindFirstValue("BusinessId"), businessId)) {
-            string result = _itemService.DeleteItem(new DeleteItemDto(itemId, businessId)).Result;
-            return Ok(result);
+        DeleteItemDto result = _itemService.DeleteItem(new DeleteItemDto(itemId, User.FindFirstValue("BusinessId"), businessId)).Result;
+
+        if (result.ErrorNotification.HasErrors) {
+            if (result.ErrorNotification.Errors["otherErrors"].Contains(DeleteItemDto.USER_UNAUTHORISED_ERROR)) {
+                return Unauthorized();
+            }
+            return new BadRequestObjectResult(result.ErrorNotification.Errors);
         }
-        // Otherwise return 401: Unauthorized
-        return Unauthorized();
+        return Ok();
     }
 }

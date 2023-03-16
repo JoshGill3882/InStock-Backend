@@ -59,8 +59,6 @@ public class ItemService : IItemService {
         }
     }
     
-
-
     private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
         const string errorKey = "duplicateItemName";
@@ -142,10 +140,16 @@ public class ItemService : IItemService {
         return createdItem;
     }
 
-    public async Task<string> DeleteItem(DeleteItemDto deleteItemDto) {
-        // Delete the item
-        _itemRepo.Delete(deleteItemDto);
-        // Return string response
-        return "Item Deleted";
+    public async Task<DeleteItemDto> DeleteItem(DeleteItemDto deleteItemDto) {
+        if (_utilService.CheckUserBusinessId(deleteItemDto.UserBusinessId, deleteItemDto.BusinessId)) {
+            // Delete the item
+            _itemRepo.Delete(deleteItemDto);
+            // Return string response
+            return deleteItemDto;
+        }
+
+        ErrorNotification errorNotification = new ErrorNotification();
+        errorNotification.AddError(DeleteItemDto.USER_UNAUTHORISED_ERROR);
+        return new DeleteItemDto(errorNotification);
     }
 }
