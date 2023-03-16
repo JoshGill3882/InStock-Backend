@@ -191,4 +191,14 @@ public class ItemService : IItemService {
 
         return savedItem;
     }
+
+    public async Task<> CreateStockUpdate() {
+        //TODO Get stock update details
+        //TODO Validate Stock update details
+        //TODO Validate Item stock level with the update change
+        //TODO Return errors if any
+        //TODO Create new Stock Update record
+        //TODO Update Item details with new stock level
+        //TODO Return newly created stock update 
+    }
 }

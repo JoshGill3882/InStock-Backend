@@ -125,4 +125,14 @@ public class ItemController : ControllerBase {
         
         return new OkObjectResult(itemDto);
     }
+
+    [HttpPost]
+    [Route("businesses/{businessId}/items/{itemId}")]
+    public async Task<IActionResult> CreateStockUpdate([FromRoute] string businessId, [FromRoute] string itemId,
+        [FromBody] CreateStockUpdateForm stockUpdateForm) {
+        //TODO get and validate user
+        //TODO Call server to create a stocki update
+        //TODO Check service response for errors
+        //TODO Return 201 created with object or appropriate response depending on errors
+    }
 }

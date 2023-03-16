@@ -156,4 +156,12 @@ public class ItemRepo : IItemRepo{
         
         return updatedItemDto;
     }
+
+    public async Task<> SaveStockUpdate() {
+        //TODO Get Stock Update details
+        //TODO Validate Stock update details
+        //TODO Throw Exception on incorrect details
+        //TODO Save new Stock Update Item
+        //TODO Return success?
+    }
 }
