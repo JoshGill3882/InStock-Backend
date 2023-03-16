@@ -182,9 +182,8 @@ public class ItemControllerTest {
 
         // Assert
         Assert.IsAssignableFrom<Task<IActionResult>>(response);
-        var result = response.Result as OkObjectResult;
+        var result = response.Result as OkResult;
         result.StatusCode.Should().Be(200);
-        result.Value.Should().Be("Item Deleted");
     }
 
     [Fact]
