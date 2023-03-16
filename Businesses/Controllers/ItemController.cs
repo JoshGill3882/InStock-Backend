@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
+using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 
@@ -110,5 +112,26 @@ public class ItemController : ControllerBase {
         throw new NotImplementedException();
     }
 
+    [HttpPatch]
+    [Route("businesses/{businessId}/items/{itemId}")]
+    public async Task<IActionResult> UpdateItem([FromRoute] string businessId, [FromRoute] string itemId, [FromBody] JsonPatchDocument patchDocument) {
 
+        // Get our current UserId and BusinessId to validate and pass to the items service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId)) {
+            return Unauthorized();
+        }
+        
+        UpdateItemRequestDto updateItemRequestDto = new UpdateItemRequestDto(currentUserId, businessId, patchDocument, itemId);
+        
+        ItemDto itemDto = await _itemService.UpdateItem(updateItemRequestDto);
+
+        if (itemDto.ErrorNotification.HasErrors) {
+            return new BadRequestObjectResult(itemDto.ErrorNotification);
+        }
+        
+        return new OkObjectResult(itemDto);
+    }
 }
