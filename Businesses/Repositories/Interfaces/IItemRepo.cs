@@ -5,9 +5,10 @@ using instock_server_application.Businesses.Models;
 namespace instock_server_application.Businesses.Repositories.Interfaces; 
 
 public interface IItemRepo {
-    public Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId);
+    Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId);
     Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto);
     Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto);
     Task<bool> IsSKUInUse(string SKU, string businessId);
+    void Delete(DeleteItemDto deleteItemDto);
 
 }

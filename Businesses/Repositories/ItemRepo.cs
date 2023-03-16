@@ -104,4 +104,8 @@ public class ItemRepo : IItemRepo{
 
     }
 
+    public void Delete(DeleteItemDto deleteItemDto) {
+        Item item = new Item(deleteItemDto.ItemId, deleteItemDto.BusinessId);
+        _context.DeleteAsync(item);
+    }
 }

@@ -1,19 +1,22 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Shared.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemService : IItemService {
     private readonly IItemRepo _itemRepo;
-    private readonly IBusinessService _businessService;
+    private readonly IUtilService _utilService;
 
-    public ItemService(IItemRepo itemRepo, IBusinessService businessService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService) {
         _itemRepo = itemRepo;
-        _businessService = businessService;
+        _utilService = utilService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -56,8 +59,6 @@ public class ItemService : IItemService {
         }
     }
     
-
-
     private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
         const string errorKey = "duplicateItemName";
@@ -80,7 +81,7 @@ public class ItemService : IItemService {
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
-        if (_businessService.CheckBusinessIdInJwt(userDto, businessId)) {
+        if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<Dictionary<string, string>> items = new();
 
@@ -137,5 +138,18 @@ public class ItemService : IItemService {
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 
         return createdItem;
+    }
+
+    public async Task<DeleteItemDto> DeleteItem(DeleteItemDto deleteItemDto) {
+        if (_utilService.CheckUserBusinessId(deleteItemDto.UserBusinessId, deleteItemDto.BusinessId)) {
+            // Delete the item
+            _itemRepo.Delete(deleteItemDto);
+            // Return string response
+            return deleteItemDto;
+        }
+
+        ErrorNotification errorNotification = new ErrorNotification();
+        errorNotification.AddError(DeleteItemDto.USER_UNAUTHORISED_ERROR);
+        return new DeleteItemDto(errorNotification);
     }
 }
