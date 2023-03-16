@@ -10,5 +10,5 @@ public interface IItemRepo {
     Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto);
     Task<bool> IsSKUInUse(string SKU, string businessId);
     void Delete(DeleteItemDto deleteItemDto);
-
+    public Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(string businessId);
 }

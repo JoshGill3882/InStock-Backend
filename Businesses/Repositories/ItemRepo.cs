@@ -1,10 +1,8 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
-using instock_server_application.Businesses.Repositories.Exceptions;
 using instock_server_application.Businesses.Repositories.Interfaces;
 
 namespace instock_server_application.Businesses.Repositories; 
@@ -107,5 +105,33 @@ public class ItemRepo : IItemRepo{
     public void Delete(DeleteItemDto deleteItemDto) {
         Item item = new Item(deleteItemDto.ItemId, deleteItemDto.BusinessId);
         _context.DeleteAsync(item);
+    }
+    
+    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(string businessId) {
+        var request = new ScanRequest
+        {
+            TableName = "Items",
+            ProjectionExpression = "Category",
+            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
+                {":Id", new AttributeValue(businessId)}
+            },
+            FilterExpression = "BusinessId = :Id",
+        };
+    
+        var response = await _client.ScanAsync(request);
+    
+        var categories = new HashSet<string>();
+        var categoryList = new List<Dictionary<string, AttributeValue>>();
+        foreach (var item in response.Items) {
+            var categoryValue = item["Category"];
+            var category = categoryValue.S;
+            if (categories.Add(category)) {
+                categoryList.Add(new Dictionary<string, AttributeValue> {
+                    {"Category", categoryValue}
+                });
+            }
+        }
+    
+        return categoryList;
     }
 }
