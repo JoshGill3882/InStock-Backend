@@ -3,15 +3,12 @@ using FluentAssertions;
 using instock_server_application.Businesses.Controllers;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Shared.Services;
-using instock_server_application.Shared.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using Xunit;
 using static instock_server_application.Tests.Items.MockData.ItemMock;
@@ -224,7 +221,7 @@ public class ItemControllerTest {
         List<Dictionary<string, string>> expected = CategoriesList();
         
         var mockItemService = new Mock<IItemService>();
-        mockItemService.Setup(service => service.GetCategories(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(expected)!);
+        mockItemService.Setup(service => service.GetCategories(It.IsAny<CategoryDto>())).Returns(Task.FromResult(expected)!);
         
         var controller = new ItemController(mockItemService.Object);
         controller.ControllerContext = new ControllerContext() {
@@ -256,7 +253,7 @@ public class ItemControllerTest {
                     new Claim("BusinessId", incorrectBusinessId)
                 }, "mockUserAuth"));
         var mockItemService = new Mock<IItemService>();
-        mockItemService.Setup(service => service.GetCategories(It.IsAny<UserDto>(), incorrectBusinessId)).Returns(Task.FromResult(expected)!);
+        mockItemService.Setup(service => service.GetCategories(It.IsAny<CategoryDto>())).Returns(Task.FromResult(expected)!);
         
         var controller = new ItemController(mockItemService.Object);
         controller.ControllerContext = new ControllerContext() {
@@ -286,8 +283,8 @@ public class ItemControllerTest {
                 }, "mockUserAuth"));
         
         var mockItemService = new Mock<IItemService>();
-        mockItemService.Setup(service => service.GetCategories(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(ItemsList())!);
-
+        mockItemService.Setup(service => service.GetCategories(It.IsAny<CategoryDto>())).Returns(Task.FromResult(ItemsList())!);
+    
         var controller = new ItemController(mockItemService.Object);
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
