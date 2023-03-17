@@ -132,11 +132,8 @@ public class ItemController : ControllerBase {
         if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
-        
-        // Creating new userDto to pass into service
-        UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
-        
-        List<Dictionary<string, string>>? categories = _itemService.GetCategories(currentUserDto, businessId).Result;
+
+        List<Dictionary<string, string>>? categories = _itemService.GetCategories(new CategoryDto(currentUserBusinessId, businessId)).Result;
 
         if (categories == null) {
             return Unauthorized();

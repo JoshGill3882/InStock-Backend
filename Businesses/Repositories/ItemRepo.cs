@@ -107,13 +107,13 @@ public class ItemRepo : IItemRepo{
         _context.DeleteAsync(item);
     }
     
-    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(string businessId) {
+    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(CategoryDto categoryDto) {
         var request = new ScanRequest
         {
             TableName = Item.TableName,
             ProjectionExpression = "Category",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Id", new AttributeValue(businessId)}
+                {":Id", new AttributeValue(categoryDto.BusinessId)}
             },
             FilterExpression = "BusinessId = :Id",
         };
