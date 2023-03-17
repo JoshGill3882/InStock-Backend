@@ -157,11 +157,10 @@ public class ItemRepo : IItemRepo{
         return updatedItemDto;
     }
 
-    public async Task<> SaveStockUpdate() {
-        //TODO Get Stock Update details
+    public async Task<> SaveStockUpdate(StoreStockUpdateDto storeStockUpdateDto) {
         //TODO Validate Stock update details
         //TODO Throw Exception on incorrect details
         //TODO Save new Stock Update Item
-        //TODO Return success?
+        //TODO Return success with object stored
     }
 }

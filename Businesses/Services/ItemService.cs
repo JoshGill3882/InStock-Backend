@@ -192,13 +192,42 @@ public class ItemService : IItemService {
         return savedItem;
     }
 
-    public async Task<> CreateStockUpdate() {
-        //TODO Get stock update details
-        //TODO Validate Stock update details
-        //TODO Validate Item stock level with the update change
-        //TODO Return errors if any
+    private void ValidateStockUpdateAmount(ErrorNotification errorNotes, int stockAmountChange) {
+        if (stockAmountChange < 0) {
+            //TODO check that the stock reduction does not let available stock go below 0
+        }
+    }
+    
+    public async void CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto) {
+        
+        // Validation
+        // Check if the user and business Ids are valid, they should be validated by this point so throw exception
+        if (string.IsNullOrEmpty(createStockUpdateRequestDto.UserId)) {
+            throw new NullReferenceException("The UserId cannot be null or empty.");
+        }
+        if (string.IsNullOrEmpty(createStockUpdateRequestDto.UserBusinessId)) {
+            throw new NullReferenceException("The BusinessId cannot be null or empty.");
+        }
+
+        ErrorNotification errorNotes = new ErrorNotification();
+        
+        // Check if the user is allowed to edit the business, return as no need to do anymore validation
+        if (createStockUpdateRequestDto.UserBusinessId.Equals(createStockUpdateRequestDto.BusinessId)) {
+            errorNotes.AddError("You are not authorised to update this business.");
+            return;
+        }
+        
+        // Check that the items stock is not going into the negatives
+        ValidateStockUpdateAmount(errorNotes, createStockUpdateRequestDto.ChangeStockAmountBy);
+
+        if (errorNotes.HasErrors) {
+            return;
+        }
+        
         //TODO Create new Stock Update record
+        
         //TODO Update Item details with new stock level
+        
         //TODO Return newly created stock update 
     }
 }

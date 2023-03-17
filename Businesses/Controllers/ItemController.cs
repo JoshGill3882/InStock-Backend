@@ -130,9 +130,24 @@ public class ItemController : ControllerBase {
     [Route("businesses/{businessId}/items/{itemId}")]
     public async Task<IActionResult> CreateStockUpdate([FromRoute] string businessId, [FromRoute] string itemId,
         [FromBody] CreateStockUpdateForm stockUpdateForm) {
-        //TODO get and validate user
-        //TODO Call server to create a stocki update
+        
+        // Get our current UserId and BusinessId to validate and pass to the items service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string currentUserBusinessId = User.FindFirstValue("BusinessId");
+        
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId) || string.IsNullOrEmpty(currentUserBusinessId)) {
+            return Unauthorized();
+        }
+
+        CreateStockUpdateRequestDto createStockUpdateRequestDto = new CreateStockUpdateRequestDto(
+            currentUserId, currentUserBusinessId, businessId, stockUpdateForm.ChangeStockAmountBy,
+            stockUpdateForm.ReasonForChange);
+        
+        _itemService.CreateStockUpdate(createStockUpdateRequestDto);
+        
         //TODO Check service response for errors
+        
         //TODO Return 201 created with object or appropriate response depending on errors
     }
 }
