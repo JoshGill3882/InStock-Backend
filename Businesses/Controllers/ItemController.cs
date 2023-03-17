@@ -27,10 +27,10 @@ public class ItemController : ControllerBase {
         
         // Get our current UserId and BusinessId to validate and pass to the business service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
-        string currentUserBusinessId = User.FindFirstValue("BusinessId").Split(",")[0];
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
 
         // Check there are no issues with the userId
-        if (string.IsNullOrEmpty(currentUserId)) {
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
         
