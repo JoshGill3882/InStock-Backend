@@ -17,7 +17,7 @@ public class ItemRepo : IItemRepo{
     }
     public async Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId) {
         var request = new QueryRequest {
-            TableName = "Items",
+            TableName = Item.TableName,
             IndexName = "BusinessId",
             KeyConditionExpression = "BusinessId = :Id",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
@@ -55,7 +55,7 @@ public class ItemRepo : IItemRepo{
         var duplicateName = false;
         var request = new ScanRequest
         {
-            TableName = "Items",
+            TableName = Item.TableName,
             ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
                 {":Id", new AttributeValue(createItemRequestDto.BusinessId)},
                 {":name", new AttributeValue(createItemRequestDto.Name)}
@@ -83,7 +83,7 @@ public class ItemRepo : IItemRepo{
         
         var request = new ScanRequest
         {
-            TableName = "Items",
+            TableName = Item.TableName,
             ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
                 {":Id", new AttributeValue(businessId)},
                 {":SKU", new AttributeValue(SKU)}
@@ -110,7 +110,7 @@ public class ItemRepo : IItemRepo{
     public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(string businessId) {
         var request = new ScanRequest
         {
-            TableName = "Items",
+            TableName = Item.TableName,
             ProjectionExpression = "Category",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
                 {":Id", new AttributeValue(businessId)}
