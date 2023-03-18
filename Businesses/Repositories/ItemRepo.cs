@@ -1,10 +1,8 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
-using instock_server_application.Businesses.Repositories.Exceptions;
 using instock_server_application.Businesses.Repositories.Interfaces;
 
 namespace instock_server_application.Businesses.Repositories; 
@@ -19,7 +17,7 @@ public class ItemRepo : IItemRepo{
     }
     public async Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId) {
         var request = new QueryRequest {
-            TableName = "Items",
+            TableName = Item.TableName,
             IndexName = "BusinessId",
             KeyConditionExpression = "BusinessId = :Id",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
@@ -57,7 +55,7 @@ public class ItemRepo : IItemRepo{
         var duplicateName = false;
         var request = new ScanRequest
         {
-            TableName = "Items",
+            TableName = Item.TableName,
             ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
                 {":Id", new AttributeValue(createItemRequestDto.BusinessId)},
                 {":name", new AttributeValue(createItemRequestDto.Name)}
@@ -85,7 +83,7 @@ public class ItemRepo : IItemRepo{
         
         var request = new ScanRequest
         {
-            TableName = "Items",
+            TableName = Item.TableName,
             ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
                 {":Id", new AttributeValue(businessId)},
                 {":SKU", new AttributeValue(SKU)}
@@ -107,5 +105,33 @@ public class ItemRepo : IItemRepo{
     public void Delete(DeleteItemDto deleteItemDto) {
         Item item = new Item(deleteItemDto.ItemId, deleteItemDto.BusinessId);
         _context.DeleteAsync(item);
+    }
+    
+    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(CategoryDto categoryDto) {
+        var request = new ScanRequest
+        {
+            TableName = Item.TableName,
+            ProjectionExpression = "Category",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                {":Id", new AttributeValue(categoryDto.BusinessId)}
+            },
+            FilterExpression = "BusinessId = :Id",
+        };
+    
+        var response = await _client.ScanAsync(request);
+    
+        var categories = new HashSet<string>();
+        var categoryList = new List<Dictionary<string, AttributeValue>>();
+        foreach (var item in response.Items) {
+            var categoryValue = item["Category"];
+            var category = categoryValue.S;
+            if (categories.Add(category)) {
+                categoryList.Add(new Dictionary<string, AttributeValue> {
+                    {"Category", categoryValue}
+                });
+            }
+        }
+    
+        return categoryList;
     }
 }

@@ -152,4 +152,30 @@ public class ItemService : IItemService {
         errorNotification.AddError(DeleteItemDto.USER_UNAUTHORISED_ERROR);
         return new DeleteItemDto(errorNotification);
     }
+
+    public async Task<List<Dictionary<string, string>>?> GetCategories(CategoryDto categoryDto) {
+
+        if (_utilService.CheckUserBusinessId(categoryDto.UserBusinessId, categoryDto.BusinessId)) {
+            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(categoryDto).Result;
+            List<Dictionary<string, string>> categories = new();
+
+            // User has access, but incorrect businessID or no items found
+            if (responseCategories.Count == 0) {
+                // Return an empty list
+                return categories;
+            }
+
+            foreach (Dictionary<string, AttributeValue> category in responseCategories) {
+                categories.Add(
+                    new() {
+                        { "Category", category["Category"].S }
+                    }
+                );
+            }
+            return categories;
+        }
+        
+        // If the user doesn't have access, return "null"
+        return null;
+    }
 }

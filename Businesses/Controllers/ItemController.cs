@@ -1,13 +1,9 @@
 ﻿using System.Security.Claims;
-using System.Xml.XPath;
-using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace instock_server_application.Businesses.Controllers; 
 
@@ -23,6 +19,7 @@ public class ItemController : ControllerBase {
     /// <summary>
     /// Function for getting all the items for a specific business, providing the currently logged in user has access
     /// </summary>
+    /// <param name="businessIdModel"> The BusinessID to get all the items for </param>
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
     [Route("items")]
@@ -30,10 +27,10 @@ public class ItemController : ControllerBase {
         
         // Get our current UserId and BusinessId to validate and pass to the business service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
-        string currentUserBusinessId = User.FindFirstValue("BusinessId").Split(",")[0];
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
 
         // Check there are no issues with the userId
-        if (string.IsNullOrEmpty(currentUserId)) {
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
         
@@ -49,15 +46,6 @@ public class ItemController : ControllerBase {
         }
 
         return Ok(items);
-    }
-    
-    // Route to maintain old implementation
-    // not permanent
-    [HttpGet]
-    [Route("/items")]
-    public async Task<IActionResult> GetAllItemsWithParam(string businessId)
-    {
-        return await GetAllItems(businessId);
     }
 
     /// <summary>
@@ -125,5 +113,34 @@ public class ItemController : ControllerBase {
             return new BadRequestObjectResult(result.ErrorNotification.Errors);
         }
         return Ok();
+    }
+    
+    /// <summary>
+    /// Function for getting all the categories for a specific business, providing the currently logged in user has access
+    /// </summary>
+    /// <param name="businessIdModel"> The BusinessID to get all the categories for </param>
+    /// <returns> List of all the Categories found, or an error message with a 404 status code </returns>
+    [HttpGet]
+    [Route("categories")]
+    public async Task<IActionResult> GetAllCategories([FromRoute] string businessId) {
+        
+        // Get our current UserId and BusinessId to validate and pass to the business service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+            return Unauthorized();
+        }
+
+        List<Dictionary<string, string>>? categories = _itemService.GetCategories(new CategoryDto(currentUserBusinessId, businessId)).Result;
+
+        if (categories == null) {
+            return Unauthorized();
+        } if (categories.Count == 0) {
+            return NotFound();
+        }
+
+        return Ok(categories);
     }
 }
