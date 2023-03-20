@@ -192,13 +192,7 @@ public class ItemService : IItemService {
         return savedItem;
     }
 
-    private void ValidateStockUpdateAmount(ErrorNotification errorNotes, int stockAmountChange) {
-        if (stockAmountChange < 0) {
-            //TODO check that the stock reduction does not let available stock go below 0
-        }
-    }
-    
-    public async void CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto) {
+    public async Task<StockUpdateDto> CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto) {
         
         // Validation
         // Check if the user and business Ids are valid, they should be validated by this point so throw exception
@@ -208,26 +202,45 @@ public class ItemService : IItemService {
         if (string.IsNullOrEmpty(createStockUpdateRequestDto.UserBusinessId)) {
             throw new NullReferenceException("The BusinessId cannot be null or empty.");
         }
+        if (string.IsNullOrEmpty(createStockUpdateRequestDto.ItemId)) {
+            throw new NullReferenceException("The ItemId cannot be null or empty.");
+        }
 
         ErrorNotification errorNotes = new ErrorNotification();
         
         // Check if the user is allowed to edit the business, return as no need to do anymore validation
-        if (createStockUpdateRequestDto.UserBusinessId.Equals(createStockUpdateRequestDto.BusinessId)) {
+        if (!createStockUpdateRequestDto.UserBusinessId.Equals(createStockUpdateRequestDto.BusinessId)) {
             errorNotes.AddError("You are not authorised to update this business.");
-            return;
+            return new StockUpdateDto(errorNotes);
         }
         
-        // Check that the items stock is not going into the negatives
-        ValidateStockUpdateAmount(errorNotes, createStockUpdateRequestDto.ChangeStockAmountBy);
+        // Check that the item exists
+        ItemDto? existingItemDto =
+            await _itemRepo.GetItem(createStockUpdateRequestDto.BusinessId, createStockUpdateRequestDto.ItemId);
+        
+        if (existingItemDto == null) {
+            errorNotes.AddError("This item does not exist");
+        }
 
         if (errorNotes.HasErrors) {
-            return;
+            return new StockUpdateDto(errorNotes);
         }
         
-        //TODO Create new Stock Update record
+        // Saving to database
+        // Create new Stock Update record
+        StoreStockUpdateDto stockUpdateDtoToSave = new StoreStockUpdateDto(createStockUpdateRequestDto.BusinessId,
+            createStockUpdateRequestDto.ItemId, createStockUpdateRequestDto.ChangeStockAmountBy,
+            createStockUpdateRequestDto.ReasonForChange);
+        StockUpdateDto stockUpdateDtoSaved = await _itemRepo.SaveStockUpdate(stockUpdateDtoToSave);
+
+        // Update Item details with new stock level
+        int newStockLevel = int.Parse(existingItemDto.Stock) + createStockUpdateRequestDto.ChangeStockAmountBy;
+        StoreItemDto updatedItemDto = new StoreItemDto(existingItemDto.SKU, existingItemDto.BusinessId, existingItemDto.Category,
+            existingItemDto.Name, newStockLevel.ToString());
+        await _itemRepo.SaveExistingItem(updatedItemDto);
         
-        //TODO Update Item details with new stock level
-        
-        //TODO Return newly created stock update 
+        // Returning results
+        // Return newly created stock update 
+        return stockUpdateDtoSaved;
     }
 }

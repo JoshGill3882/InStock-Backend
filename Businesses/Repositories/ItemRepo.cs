@@ -1,4 +1,5 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Runtime.CompilerServices;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -10,6 +11,7 @@ using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Users.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Rewrite;
+using Xunit.Sdk;
 
 namespace instock_server_application.Businesses.Repositories; 
 
@@ -157,10 +159,39 @@ public class ItemRepo : IItemRepo{
         return updatedItemDto;
     }
 
-    public async Task<> SaveStockUpdate(StoreStockUpdateDto storeStockUpdateDto) {
-        //TODO Validate Stock update details
-        //TODO Throw Exception on incorrect details
-        //TODO Save new Stock Update Item
-        //TODO Return success with object stored
+    public async Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto storeStockUpdateDto) {
+        if (string.IsNullOrEmpty(storeStockUpdateDto.BusinessId)) {
+            throw new NullReferenceException("The stock update business ID cannot be null.");
+        }
+        if (string.IsNullOrEmpty(storeStockUpdateDto.ItemSku)) {
+            throw new NullReferenceException("The stock update item ID cannot be null.");
+        }
+        
+        ItemStockUpdateModel itemStockUpdateModel = new ItemStockUpdateModel(storeStockUpdateDto.ItemSku, storeStockUpdateDto.BusinessId);
+        itemStockUpdateModel.AddStockUpdateDetails(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange);
+
+        await _context.SaveAsync(itemStockUpdateModel);
+
+        StockUpdateDto stockUpdateDto =
+            new StockUpdateDto(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange);
+        return stockUpdateDto;
+    }
+
+    public async Task<ItemDto?> GetItem(string businessId, string itemSku) {
+        if (string.IsNullOrEmpty(businessId)) {
+            throw new NullReferenceException("The stock update business ID cannot be null.");
+        }
+        if (string.IsNullOrEmpty(itemSku)) {
+            throw new NullReferenceException("The stock update item ID cannot be null.");
+        }
+
+        Item item = await _context.LoadAsync<Item>(itemSku, businessId);
+
+        if (item == null) {
+            return null;
+        }
+        
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.Stock.ToString());
+        return itemDto;
     }
 }

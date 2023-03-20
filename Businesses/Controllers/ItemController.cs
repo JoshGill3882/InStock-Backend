@@ -127,7 +127,7 @@ public class ItemController : ControllerBase {
     }
 
     [HttpPost]
-    [Route("businesses/{businessId}/items/{itemId}")]
+    [Route("businesses/{businessId}/items/{itemId}/stock/updates")]
     public async Task<IActionResult> CreateStockUpdate([FromRoute] string businessId, [FromRoute] string itemId,
         [FromBody] CreateStockUpdateForm stockUpdateForm) {
         
@@ -142,12 +142,25 @@ public class ItemController : ControllerBase {
 
         CreateStockUpdateRequestDto createStockUpdateRequestDto = new CreateStockUpdateRequestDto(
             currentUserId, currentUserBusinessId, businessId, stockUpdateForm.ChangeStockAmountBy,
-            stockUpdateForm.ReasonForChange);
+            stockUpdateForm.ReasonForChange, itemId);
         
-        _itemService.CreateStockUpdate(createStockUpdateRequestDto);
+        StockUpdateDto stockUpdateDto = await _itemService.CreateStockUpdate(createStockUpdateRequestDto);
         
-        //TODO Check service response for errors
+        // Check service response for errors
+        if (stockUpdateDto.ErrorNotification.HasErrors) {
+            return new BadRequestObjectResult(stockUpdateDto.ErrorNotification);
+        }
         
-        //TODO Return 201 created with object or appropriate response depending on errors
+        // Return 201 created with object or appropriate response depending on errors
+        string? createdStockUpdateUrl = Url.Action(controller: "item", action: nameof(GetStockUpdates),
+            values: new { businessId=createStockUpdateRequestDto.BusinessId, itemId=createStockUpdateRequestDto.ItemId }, protocol: Request.Scheme);
+
+        return Created(createdStockUpdateUrl, stockUpdateDto);
+    }
+    
+    [HttpGet]
+    [Route("businesses/{businessId}/items/{itemId}/stock/updates")]
+    public async Task<IActionResult> GetStockUpdates([FromRoute] string businessId, [FromRoute] string itemId) {
+        throw new NotImplementedException();
     }
 }

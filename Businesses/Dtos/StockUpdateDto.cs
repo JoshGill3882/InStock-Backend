@@ -2,16 +2,13 @@
 
 namespace instock_server_application.Businesses.Dtos; 
 
-public class StoreStockUpdateDto {
-
-    public string BusinessId { get; }
-    public string ItemSku { get; }
+public class StockUpdateDto : DataTransferObjectSuperType {
     public int ChangeStockAmountBy { get; }
     public string ReasonForChange { get; }
+    
+    public StockUpdateDto(ErrorNotification errorNotes) : base(errorNotes) {}
 
-    public StoreStockUpdateDto(string businessId, string itemSku, int changeStockAmountBy, string reasonForChange) {
-        BusinessId = businessId;
-        ItemSku = itemSku;
+    public StockUpdateDto(int changeStockAmountBy, string reasonForChange) {
         ChangeStockAmountBy = changeStockAmountBy;
         ReasonForChange = reasonForChange;
     }

@@ -5,7 +5,7 @@ using instock_server_application.Businesses.Dtos;
 namespace instock_server_application.Businesses.Models; 
 
 [DynamoDBTable("Items")]
-public abstract class ItemStockUpdateModel {
+public class ItemStockUpdateModel {
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
     public string SKU { get; set; }
@@ -21,20 +21,27 @@ public abstract class ItemStockUpdateModel {
     public ItemStockUpdateModel() {
     }
 
-    public ItemStockUpdateModel(string sku, string businessId, List<StockUpdateObject> stockUpdates) {
+    public ItemStockUpdateModel(string sku, string businessId) {
         SKU = sku;
         BusinessId = businessId;
-        StockUpdates = stockUpdates;
+        StockUpdates = new List<StockUpdateObject>() ;
     }
 
-    public abstract class StockUpdateObject {
+    public void AddStockUpdateDetails(int changeStockAmount, string reasonForChange) {
+        StockUpdates.Add(new StockUpdateObject(changeStockAmount, reasonForChange));
+    }
+    
+    public class StockUpdateObject {
         [DynamoDBProperty("StockAmountChanged")]
         public int AmountChanged { get; }
         
         [DynamoDBProperty("ReasonForStockChange")]
-        public int ReasonForChange { get; }
-        
-        public StockUpdateObject(int amountChanged, int reasonForChange) {
+        public string ReasonForChange { get; }
+
+        public StockUpdateObject() {
+        }
+
+        public StockUpdateObject(int amountChanged, string reasonForChange) {
             AmountChanged = amountChanged;
             ReasonForChange = reasonForChange;
         }
