@@ -63,15 +63,4 @@ public class BusinessService : IBusinessService {
 
         return createdBusiness;
     }
-
-    /// <summary>
-    /// Function for checking if a given BusinessId is contained within a User's Claims
-    /// </summary>
-    /// <param name="userDto">The users details</param>
-    /// <param name="idToCheck"> The ID to check for </param>
-    /// <returns> True/False depending if the ID is found </returns>
-    public bool CheckBusinessIdInJwt(UserDto userDto, string idToCheck) {
-        // Return if the business Id matches or not
-        return userDto.UserBusinessId.Equals(idToCheck);
-    }
 }

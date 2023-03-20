@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.JsonPatch;
 namespace instock_server_application.Businesses.Repositories.Interfaces;
 
 public interface IItemRepo {
-    public Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId);
+    Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId);
     Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto);
-    Task<bool> IsNameInUse(string businessId, string itemName);
+    Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto);
     Task<bool> IsSKUInUse(string SKU, string businessId);
-    public Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto);
-    public Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto stockUpdateDto);
-    public Task<ItemDto?> GetItem(string businessId, string itemSku);
+    Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto);
+    Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto stockUpdateDto);
+    Task<ItemDto?> GetItem(string businessId, string itemSku);
+    void Delete(DeleteItemDto deleteItemDto);
+    Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(CategoryDto categoryDto);
 }

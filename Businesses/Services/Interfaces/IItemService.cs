@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Models;
+﻿using instock_server_application.Businesses.Dtos;
 using instock_server_application.Shared.Dto;
 using Microsoft.AspNetCore.JsonPatch;
 
@@ -11,4 +9,7 @@ public interface IItemService {
     Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto);
     public Task<StockUpdateDto> CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto);
 
+    Task<DeleteItemDto> DeleteItem(DeleteItemDto deleteItemDto);
+    
+    public Task<List<Dictionary<string, string>>?> GetCategories(CategoryDto categoryDto);
 }

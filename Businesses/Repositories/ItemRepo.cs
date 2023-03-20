@@ -1,12 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
-using instock_server_application.Businesses.Repositories.Exceptions;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Users.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -25,7 +23,7 @@ public class ItemRepo : IItemRepo{
     }
     public async Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId) {
         var request = new QueryRequest {
-            TableName = "Items",
+            TableName = Item.TableName,
             IndexName = "BusinessId",
             KeyConditionExpression = "BusinessId = :Id",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
@@ -35,6 +33,7 @@ public class ItemRepo : IItemRepo{
         var response = await _client.QueryAsync(request);
         return response.Items;
     }
+    
     public async Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto) {
         
         // Checking the Business Name is valid
@@ -44,7 +43,7 @@ public class ItemRepo : IItemRepo{
         
         // Save the new item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, Int32.Parse(itemToSaveDto.Stock));
+            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
         await _context.SaveAsync(itemModel);
 
         ItemDto createdItemDto = new ItemDto(
@@ -52,20 +51,20 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.Stock.ToString());
+            itemModel.Stock);
         
         return createdItemDto;
     }
     
-    public async Task<bool> IsNameInUse(string businessId, string itemName)
+    public async Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto)
     {
         var duplicateName = false;
         var request = new ScanRequest
         {
-            TableName = "Items",
+            TableName = Item.TableName,
             ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
-                {":Id", new AttributeValue(businessId)},
-                {":name", new AttributeValue(itemName)}
+                {":Id", new AttributeValue(createItemRequestDto.BusinessId)},
+                {":name", new AttributeValue(createItemRequestDto.Name)}
             },
             // "Name" is protected in DynamoDB so Expression Attribute Name is required
             ExpressionAttributeNames = new Dictionary<string,string> {
@@ -90,7 +89,7 @@ public class ItemRepo : IItemRepo{
         
         var request = new ScanRequest
         {
-            TableName = "Items",
+            TableName = Item.TableName,
             ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
                 {":Id", new AttributeValue(businessId)},
                 {":SKU", new AttributeValue(SKU)}
@@ -109,6 +108,39 @@ public class ItemRepo : IItemRepo{
 
     }
 
+    public void Delete(DeleteItemDto deleteItemDto) {
+        Item item = new Item(deleteItemDto.ItemId, deleteItemDto.BusinessId);
+        _context.DeleteAsync(item);
+    }
+    
+    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(CategoryDto categoryDto) {
+        var request = new ScanRequest
+        {
+            TableName = Item.TableName,
+            ProjectionExpression = "Category",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                {":Id", new AttributeValue(categoryDto.BusinessId)}
+            },
+            FilterExpression = "BusinessId = :Id",
+        };
+    
+        var response = await _client.ScanAsync(request);
+    
+        var categories = new HashSet<string>();
+        var categoryList = new List<Dictionary<string, AttributeValue>>();
+        foreach (var item in response.Items) {
+            var categoryValue = item["Category"];
+            var category = categoryValue.S;
+            if (categories.Add(category)) {
+                categoryList.Add(new Dictionary<string, AttributeValue> {
+                    {"Category", categoryValue}
+                });
+            }
+        }
+    
+        return categoryList;
+    }
+    
     public async Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto) {
                 
         // Checking the Item SKU is valid

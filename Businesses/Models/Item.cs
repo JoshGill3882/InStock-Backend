@@ -3,6 +3,7 @@
 namespace instock_server_application.Businesses.Models; 
 [DynamoDBTable("Items")]
 public class Item {
+    public static readonly string TableName = "Items";
     
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
@@ -37,5 +38,10 @@ public class Item {
         Category = category;
         Name = name;
         Stock = stock;
+    }
+
+    public Item(string sku, string businessId) {
+        SKU = sku;
+        BusinessId = businessId;
     }
 }

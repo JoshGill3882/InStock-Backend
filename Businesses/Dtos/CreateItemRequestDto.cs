@@ -6,10 +6,10 @@ public class CreateItemRequestDto
     public string BusinessId { get; }
     public string Category { get; }
     public string Name { get; }
-    public string Stock { get; }
+    public int Stock { get; }
     public string UserId { get; }
 
-    public CreateItemRequestDto(string sku, string businessId, string category, string name, string stock, string userId)
+    public CreateItemRequestDto(string sku, string businessId, string category, string name, int stock, string userId)
     {
         SKU = sku;
         BusinessId = businessId;

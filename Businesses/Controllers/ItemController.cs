@@ -6,11 +6,11 @@ using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace instock_server_application.Businesses.Controllers; 
 
 [ApiController]
+[Route("/businesses/{businessId}")]
 public class ItemController : ControllerBase {
     private readonly IItemService _itemService;
     
@@ -24,15 +24,15 @@ public class ItemController : ControllerBase {
     /// <param name="businessIdModel"> The BusinessID to get all the items for </param>
     /// <returns> List of all the Items found, or an error message with a 404 status code </returns>
     [HttpGet]
-    [Route("/businesses/{businessId}/items")]
+    [Route("items")]
     public async Task<IActionResult> GetAllItems([FromRoute] string businessId) {
         
         // Get our current UserId and BusinessId to validate and pass to the business service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
-        string currentUserBusinessId = User.FindFirstValue("BusinessId").Split(",")[0];
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
 
         // Check there are no issues with the userId
-        if (string.IsNullOrEmpty(currentUserId)) {
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
         
@@ -57,7 +57,7 @@ public class ItemController : ControllerBase {
     /// <param name="businessId"> Unique ID for the business the item needs to be added to</param>
     /// <returns> Item created, or error with relevant status code</returns>
     [HttpPost]
-    [Route("/businesses/{businessId}/items")]
+    [Route("items")]
     public async Task<IActionResult> CreateItem([FromBody] CreateItemForm newItemForm, [FromRoute] string businessId) {
 
         // Get our current UserId and BusinessId to validate and pass to the items service
@@ -98,13 +98,56 @@ public class ItemController : ControllerBase {
     }
     
     [HttpGet]
-    [Route("businesses/{businessId}/items/{itemId}")]
+    [Route("items/{itemId}")]
     public async Task<IActionResult> GetItem([FromRoute] string itemId, string businessId) {
         throw new NotImplementedException();
     }
 
+    [HttpDelete]
+    [Route("items/{itemId}")]
+    public async Task<IActionResult> DeleteItem([FromRoute] string itemId, [FromRoute] string businessId) {
+        DeleteItemDto result = _itemService.DeleteItem(new DeleteItemDto(itemId, User.FindFirstValue("BusinessId"), businessId)).Result;
+
+        if (result.ErrorNotification.HasErrors) {
+            if (result.ErrorNotification.Errors["otherErrors"].Contains(DeleteItemDto.USER_UNAUTHORISED_ERROR)) {
+                return Unauthorized();
+            }
+            return new BadRequestObjectResult(result.ErrorNotification.Errors);
+        }
+        return Ok();
+    }
+    
+    /// <summary>
+    /// Function for getting all the categories for a specific business, providing the currently logged in user has access
+    /// </summary>
+    /// <param name="businessIdModel"> The BusinessID to get all the categories for </param>
+    /// <returns> List of all the Categories found, or an error message with a 404 status code </returns>
+    [HttpGet]
+    [Route("categories")]
+    public async Task<IActionResult> GetAllCategories([FromRoute] string businessId) {
+        
+        // Get our current UserId and BusinessId to validate and pass to the business service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+            return Unauthorized();
+        }
+
+        List<Dictionary<string, string>>? categories = _itemService.GetCategories(new CategoryDto(currentUserBusinessId, businessId)).Result;
+
+        if (categories == null) {
+            return Unauthorized();
+        } if (categories.Count == 0) {
+            return NotFound();
+        }
+
+        return Ok(categories);
+    }
+    
     [HttpPost]
-    [Route("businesses/{businessId}/items/{itemSku}/stock/updates")]
+    [Route("items/{itemSku}/stock/updates")]
     public async Task<IActionResult> CreateStockUpdate([FromRoute] string businessId, [FromRoute] string itemSku,
         [FromBody] CreateStockUpdateForm stockUpdateForm) {
         

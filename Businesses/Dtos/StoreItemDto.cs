@@ -6,9 +6,9 @@ public class StoreItemDto
     public string BusinessId { get; }
     public string Category { get; }
     public string Name { get; }
-    public string Stock { get; }
+    public int Stock { get; }
 
-    public StoreItemDto(string sku, string businessId, string category, string name, string stock)
+    public StoreItemDto(string sku, string businessId, string category, string name, int stock)
     {
         SKU = sku;
         BusinessId = businessId;

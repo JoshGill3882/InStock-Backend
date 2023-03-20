@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
@@ -6,17 +7,19 @@ using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Shared.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemService : IItemService {
     private readonly IItemRepo _itemRepo;
-    private readonly IBusinessService _businessService;
+    private readonly IUtilService _utilService;
 
-    public ItemService(IItemRepo itemRepo, IBusinessService businessService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService) {
         _itemRepo = itemRepo;
-        _businessService = businessService;
+        _utilService = utilService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -59,6 +62,15 @@ public class ItemService : IItemService {
         }
     }
     
+    private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto){
+        const string errorKey = "duplicateItemName";
+        var isDuplicate = await _itemRepo.IsNameInUse(newItemRequestDto);
+        if (isDuplicate)
+        {
+            errorNotes.AddError(errorKey, "You already have an item with that name");
+        }
+    }
+    
     private void ValidateItemStock(ErrorNotification errorNotes, string itemStock) {
         // Item Name Variables
         const string errorKey = "itemStock";
@@ -74,20 +86,10 @@ public class ItemService : IItemService {
         }
     }
 
-    private async Task ValidateDuplicateName(ErrorNotification errorNotes, string businessId, string itemName)
-    {
-        const string errorKey = "duplicateItemName";
-        var isDuplicate = await _itemRepo.IsNameInUse(businessId, itemName);
-        if (isDuplicate)
-        {
-            errorNotes.AddError(errorKey, "You already have an item with that name");
-        }
-    }
-    
-    private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, string businessId, string itemSku)
+    private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
         const string errorKey = "duplicateSKU";
-        var isDuplicate = await _itemRepo.IsSKUInUse(itemSku, businessId);
+        var isDuplicate = await _itemRepo.IsSKUInUse(newItemRequestDto.SKU, newItemRequestDto.BusinessId);
         if (isDuplicate)
         {
             errorNotes.AddError(errorKey, "You already have an item with that SKU");
@@ -96,7 +98,7 @@ public class ItemService : IItemService {
 
     public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
         
-        if (_businessService.CheckBusinessIdInJwt(userDto, businessId)) {
+        if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<Dictionary<string, string>> items = new();
 
@@ -137,10 +139,10 @@ public class ItemService : IItemService {
         // Validate the Item details
         ValidateItemName(errorNotes, newItemRequestDto.Name);
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
+        await ValidateDuplicateName(errorNotes, newItemRequestDto);
+        await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
         ValidateItemStock(errorNotes, newItemRequestDto.Stock);
-        await ValidateDuplicateName(errorNotes, newItemRequestDto.BusinessId, newItemRequestDto.Name);
-        await ValidateDuplicateSKU(errorNotes, newItemRequestDto.BusinessId, newItemRequestDto.SKU);
-
+        
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
             return new ItemDto(errorNotes);
@@ -155,6 +157,46 @@ public class ItemService : IItemService {
 
         return createdItem;
     }
+
+    public async Task<DeleteItemDto> DeleteItem(DeleteItemDto deleteItemDto) {
+        if (_utilService.CheckUserBusinessId(deleteItemDto.UserBusinessId, deleteItemDto.BusinessId)) {
+            // Delete the item
+            _itemRepo.Delete(deleteItemDto);
+            // Return string response
+            return deleteItemDto;
+        }
+
+        ErrorNotification errorNotification = new ErrorNotification();
+        errorNotification.AddError(DeleteItemDto.USER_UNAUTHORISED_ERROR);
+        return new DeleteItemDto(errorNotification);
+    }
+
+    public async Task<List<Dictionary<string, string>>?> GetCategories(CategoryDto categoryDto) {
+
+        if (_utilService.CheckUserBusinessId(categoryDto.UserBusinessId, categoryDto.BusinessId)) {
+            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(categoryDto).Result;
+            List<Dictionary<string, string>> categories = new();
+
+            // User has access, but incorrect businessID or no items found
+            if (responseCategories.Count == 0) {
+                // Return an empty list
+                return categories;
+            }
+
+            foreach (Dictionary<string, AttributeValue> category in responseCategories) {
+                categories.Add(
+                    new() {
+                        { "Category", category["Category"].S }
+                    }
+                );
+            }
+            return categories;
+        }
+        
+        // If the user doesn't have access, return "null"
+        return null;
+    }
+    
     public async Task<StockUpdateDto> CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto) {
         
         // Validation
