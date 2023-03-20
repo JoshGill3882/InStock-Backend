@@ -7,6 +7,7 @@ public class BusinessDto : DataTransferObjectSuperType {
     public string BusinessName { get; }
     public string BusinessDescription { get; }
     public string BusinessOwnerId { get; }
+    public string UserBusinessId { get; }
 
     public BusinessDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
@@ -16,5 +17,10 @@ public class BusinessDto : DataTransferObjectSuperType {
         BusinessName = businessName;
         BusinessOwnerId = businessOwnerId;
         BusinessDescription = businessDescription;
+    }
+
+    public BusinessDto(string userBusinessId, string businessId) {
+        UserBusinessId = userBusinessId;
+        BusinessId = businessId;
     }
 }

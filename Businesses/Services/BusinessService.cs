@@ -1,16 +1,43 @@
 using System.Text.RegularExpressions;
+using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Shared.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class BusinessService : IBusinessService {
     private readonly IBusinessRepository _businessRepository;
+    private readonly IUtilService _utilService;
 
-    public BusinessService(IBusinessRepository businessRepository) {
+    public BusinessService(IBusinessRepository businessRepository, IUtilService utilService) {
         _businessRepository = businessRepository;
+        _utilService = utilService;
+    }
+
+    public async Task<Dictionary<string, string>> GetBusiness(BusinessDto businessDto) {
+
+        if (_utilService.CheckUserBusinessId(businessDto.UserBusinessId, businessDto.BusinessId)) {
+            Dictionary<string, AttributeValue> responseItems = _businessRepository.GetBusiness(businessDto).Result;
+            Dictionary<string, string> business = new();
+                
+            // User has access, but incorrect businessID or no business found
+            if (responseItems.Count == 0) {
+                // Return an empty list
+                return business;
+            }
+
+            foreach (var data in responseItems) {
+                business.Add(data.Key, data.Value.S);
+            }
+
+            return business;
+        }
+        
+        // If the user doesn't have access, return "null"
+        return null;
     }
 
     private void ValidateBusinessName(ErrorNotification errorNotes, string businessName) {
