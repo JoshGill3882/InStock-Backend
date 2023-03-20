@@ -127,8 +127,8 @@ public class ItemController : ControllerBase {
     }
 
     [HttpPost]
-    [Route("businesses/{businessId}/items/{itemId}/stock/updates")]
-    public async Task<IActionResult> CreateStockUpdate([FromRoute] string businessId, [FromRoute] string itemId,
+    [Route("businesses/{businessId}/items/{itemSku}/stock/updates")]
+    public async Task<IActionResult> CreateStockUpdate([FromRoute] string businessId, [FromRoute] string itemSku,
         [FromBody] CreateStockUpdateForm stockUpdateForm) {
         
         // Get our current UserId and BusinessId to validate and pass to the items service
@@ -140,27 +140,32 @@ public class ItemController : ControllerBase {
             return Unauthorized();
         }
 
+        // Send Stock Update details to service to be validated and persisted
         CreateStockUpdateRequestDto createStockUpdateRequestDto = new CreateStockUpdateRequestDto(
-            currentUserId, currentUserBusinessId, businessId, stockUpdateForm.ChangeStockAmountBy,
-            stockUpdateForm.ReasonForChange, itemId);
+             userId: currentUserId, 
+             userBusinessId: currentUserBusinessId,
+             businessId: businessId,
+             itemSku: itemSku,
+             changeStockAmountBy: stockUpdateForm.ChangeStockAmountBy,
+             reasonForChange: stockUpdateForm.ReasonForChange);
         
         StockUpdateDto stockUpdateDto = await _itemService.CreateStockUpdate(createStockUpdateRequestDto);
         
-        // Check service response for errors
+        // Check for any errors when creating the Stock Update, return appropriately
         if (stockUpdateDto.ErrorNotification.HasErrors) {
             return new BadRequestObjectResult(stockUpdateDto.ErrorNotification);
         }
         
         // Return 201 created with object or appropriate response depending on errors
-        string? createdStockUpdateUrl = Url.Action(controller: "item", action: nameof(GetStockUpdates),
-            values: new { businessId=createStockUpdateRequestDto.BusinessId, itemId=createStockUpdateRequestDto.ItemId }, protocol: Request.Scheme);
+        string createdStockUpdateUrl = Url.Action(controller: "item", action: nameof(GetStockUpdates),
+            values: new { businessId=createStockUpdateRequestDto.BusinessId, itemSku=createStockUpdateRequestDto.ItemSku }, protocol: Request.Scheme) ?? "";
 
         return Created(createdStockUpdateUrl, stockUpdateDto);
     }
     
     [HttpGet]
-    [Route("businesses/{businessId}/items/{itemId}/stock/updates")]
-    public async Task<IActionResult> GetStockUpdates([FromRoute] string businessId, [FromRoute] string itemId) {
+    [Route("businesses/{businessId}/items/{itemSku}/stock/updates")]
+    public async Task<IActionResult> GetStockUpdates([FromRoute] string businessId, [FromRoute] string itemSku) {
         throw new NotImplementedException();
     }
 }

@@ -11,17 +11,17 @@ public class CreateStockUpdateRequestDto : DataTransferObjectSuperType {
     public string UserBusinessId { get; }
     
     public string BusinessId { get; }
-    public string ItemId { get; }
+    public string ItemSku { get; }
     public int ChangeStockAmountBy { get; }
     public string ReasonForChange { get; }
 
 
-    public CreateStockUpdateRequestDto(string userId, string userBusinessId, string businessId, int changeStockAmountBy, string reasonForChange, string itemId) {
+    public CreateStockUpdateRequestDto(string userId, string userBusinessId, string businessId, int changeStockAmountBy, string reasonForChange, string itemSku) {
         UserId = userId;
         UserBusinessId = userBusinessId;
         BusinessId = businessId;
         ReasonForChange = reasonForChange;
-        ItemId = itemId;
+        ItemSku = itemSku;
         ChangeStockAmountBy = changeStockAmountBy;
     }
 }

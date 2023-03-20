@@ -202,7 +202,7 @@ public class ItemService : IItemService {
         if (string.IsNullOrEmpty(createStockUpdateRequestDto.UserBusinessId)) {
             throw new NullReferenceException("The BusinessId cannot be null or empty.");
         }
-        if (string.IsNullOrEmpty(createStockUpdateRequestDto.ItemId)) {
+        if (string.IsNullOrEmpty(createStockUpdateRequestDto.ItemSku)) {
             throw new NullReferenceException("The ItemId cannot be null or empty.");
         }
 
@@ -216,31 +216,42 @@ public class ItemService : IItemService {
         
         // Check that the item exists
         ItemDto? existingItemDto =
-            await _itemRepo.GetItem(createStockUpdateRequestDto.BusinessId, createStockUpdateRequestDto.ItemId);
+            await _itemRepo.GetItem(createStockUpdateRequestDto.BusinessId, createStockUpdateRequestDto.ItemSku);
         
         if (existingItemDto == null) {
             errorNotes.AddError("This item does not exist");
         }
 
+        // If we have had any errors then return this
         if (errorNotes.HasErrors) {
             return new StockUpdateDto(errorNotes);
         }
         
         // Saving to database
         // Create new Stock Update record
-        StoreStockUpdateDto stockUpdateDtoToSave = new StoreStockUpdateDto(createStockUpdateRequestDto.BusinessId,
-            createStockUpdateRequestDto.ItemId, createStockUpdateRequestDto.ChangeStockAmountBy,
-            createStockUpdateRequestDto.ReasonForChange, DateTime.Now);
+        StoreStockUpdateDto stockUpdateDtoToSave = new StoreStockUpdateDto(
+            businessId: createStockUpdateRequestDto.BusinessId,
+            itemSku: createStockUpdateRequestDto.ItemSku, 
+            changeStockAmountBy: createStockUpdateRequestDto.ChangeStockAmountBy,
+            reasonForChange: createStockUpdateRequestDto.ReasonForChange, 
+            dateTimeAdded: DateTime.Now);
+        
         StockUpdateDto stockUpdateDtoSaved = await _itemRepo.SaveStockUpdate(stockUpdateDtoToSave);
 
-        // Update Item details with new stock level
-        int newStockLevel = int.Parse(existingItemDto.Stock) + createStockUpdateRequestDto.ChangeStockAmountBy;
-        StoreItemDto updatedItemDto = new StoreItemDto(existingItemDto.SKU, existingItemDto.BusinessId, existingItemDto.Category,
-            existingItemDto.Name, newStockLevel.ToString());
+        // Update the Item's details with new stock level after the update
+        int newStockLevel = int.Parse(existingItemDto.Stock) + stockUpdateDtoSaved.ChangeStockAmountBy;
+        
+        StoreItemDto updatedItemDto = new StoreItemDto(
+            sku: existingItemDto.SKU, 
+            businessId: existingItemDto.BusinessId, 
+            category: existingItemDto.Category,
+            name: existingItemDto.Name, 
+            stock: newStockLevel.ToString());
+        
         await _itemRepo.SaveExistingItem(updatedItemDto);
         
         // Returning results
-        // Return newly created stock update 
+        // Return newly created stock update
         return stockUpdateDtoSaved;
     }
 }
