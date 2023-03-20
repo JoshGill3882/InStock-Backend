@@ -1,4 +1,6 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Exceptions;
@@ -9,10 +11,25 @@ namespace instock_server_application.Businesses.Repositories;
 
 public class BusinessRepository : IBusinessRepository {
 
+    private readonly IAmazonDynamoDB _client;
     private readonly IDynamoDBContext _context;
 
-    public BusinessRepository(IDynamoDBContext context) {
+    public BusinessRepository(IAmazonDynamoDB client, IDynamoDBContext context) {
+        _client = client;
         _context = context;
+    }
+    
+    public async Task<Dictionary<string, AttributeValue>> GetBusiness(BusinessDto businessDto) {
+        var request = new GetItemRequest() {
+            TableName = BusinessModel.TableName,
+            Key = new Dictionary<string,AttributeValue>() {
+                {
+                    "BusinessId", new AttributeValue { S = businessDto.BusinessId }
+                }
+            },
+        };
+        var response = await _client.GetItemAsync(request);
+        return response.Item;
     }
 
     public async Task<BusinessDto> SaveNewBusiness(StoreBusinessDto businessToSave) {

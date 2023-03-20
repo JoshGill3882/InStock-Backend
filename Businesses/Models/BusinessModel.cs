@@ -4,6 +4,8 @@ namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Businesses")]
 public class BusinessModel {
+    public static readonly string TableName = "Businesses";
+    
     [DynamoDBHashKey]
     [DynamoDBProperty("BusinessId")]
     public Guid BusinessId { get; set; }
