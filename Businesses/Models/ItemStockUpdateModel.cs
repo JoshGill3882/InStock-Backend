@@ -1,8 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.DynamoDBv2.Model;
-using instock_server_application.Businesses.Dtos;
-using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace instock_server_application.Businesses.Models; 
@@ -31,13 +28,14 @@ public class ItemStockUpdateModel {
     }
 
     public void AddStockUpdateDetails(int changeStockAmount, string reasonForChange) {
+        StockUpdates ??= new List<StockUpdateObject>();
         StockUpdates.Add(new StockUpdateObject(changeStockAmount, reasonForChange));
     }
     
     public class StockUpdateObject {
-        public int AmountChanged { get; }
+        public int AmountChanged { get; set; }
         
-        public string ReasonForChange { get; }
+        public string ReasonForChange { get; set; }
 
         public StockUpdateObject() {
         }
