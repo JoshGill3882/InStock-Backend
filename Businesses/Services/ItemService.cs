@@ -194,7 +194,7 @@ public class ItemService : IItemService {
         
         // Check if the user is allowed to edit the business, return as no need to do anymore validation
         if (!createStockUpdateRequestDto.UserBusinessId.Equals(createStockUpdateRequestDto.BusinessId)) {
-            errorNotes.AddError("You are not authorised to update this business.");
+            errorNotes.AddError(StockUpdateDto.USER_UNAUTHORISED_ERROR);
             return new StockUpdateDto(errorNotes);
         }
         
