@@ -9,7 +9,6 @@ namespace instock_server_application.Businesses.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("/business")]
 public class BusinessController : ControllerBase {
     private IBusinessService _businessService;
 
@@ -18,6 +17,7 @@ public class BusinessController : ControllerBase {
     }
 
     [HttpPost]
+    [Route("/business")]
     public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessForm newBusinessForm) {
 
         // Get our current UserId and BusinessId to validate and pass to the business service
@@ -50,9 +50,27 @@ public class BusinessController : ControllerBase {
         });
     }
 
-    [Route("{businessId}")]
     [HttpGet]
-    public async Task<IActionResult> GetBusiness(string businessId) {
-        throw new NotImplementedException();
+    [Route("/businesses/{businessId}")]
+    public async Task<IActionResult> GetBusiness([FromRoute] string businessId) {
+        
+        // Get our current UserId and BusinessId to validate and pass to the business service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+        
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+            return Unauthorized();
+        }
+        
+        Dictionary<string, string> businessDetails = _businessService.GetBusiness(new BusinessDto(currentUserBusinessId, businessId)).Result;
+
+        if (businessDetails == null) {
+            return Unauthorized();
+        } if (businessDetails.Count == 0) {
+            return NotFound();
+        }
+
+        return Ok(businessDetails);
     }
 }
