@@ -78,7 +78,7 @@ builder.Services.AddScoped<IUtilService, UtilService>();
 builder.Services.AddControllers(options => {
     options.Filters.Add<GlobalExceptionFilter>();
     // options.InputFormatters.Insert(0, JsonPatchInputFormatter.GetJsonPatchInputFormatter());
-}).AddNewtonsoftJson();
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
