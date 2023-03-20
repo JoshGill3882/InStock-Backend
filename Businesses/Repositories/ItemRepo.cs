@@ -180,7 +180,7 @@ public class ItemRepo : IItemRepo{
 
         // Returning the new object that was saved
         StockUpdateDto stockUpdateDto =
-            new StockUpdateDto(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange);
+            new StockUpdateDto(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange, storeStockUpdateDto.DateTimeAdded);
         
         return stockUpdateDto;
     }
