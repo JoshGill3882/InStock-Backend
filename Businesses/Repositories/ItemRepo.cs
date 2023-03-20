@@ -137,7 +137,7 @@ public class ItemRepo : IItemRepo{
         }
         
         // Check if the item already exists so we know we are updating one
-        Item existingItem = await _context.LoadAsync<Item>(itemToSaveDto.SKU);
+        Item existingItem = await _context.LoadAsync<Item>(itemToSaveDto.SKU, itemToSaveDto.BusinessId);
 
         if (existingItem == null) {
             throw new NullReferenceException("The Item you are trying to update does not exist");
