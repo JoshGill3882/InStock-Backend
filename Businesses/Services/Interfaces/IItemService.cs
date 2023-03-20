@@ -9,7 +9,6 @@ namespace instock_server_application.Businesses.Services.Interfaces;
 public interface IItemService {
     public Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId);
     Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto);
-    Task<ItemDto> UpdateItem(UpdateItemRequestDto updateItemRequestDto);
     public Task<StockUpdateDto> CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto);
 
 }

@@ -155,43 +155,6 @@ public class ItemService : IItemService {
 
         return createdItem;
     }
-
-    public async Task<ItemDto> UpdateItem(UpdateItemRequestDto updateItemRequestDto) {
-        
-        // Check if the user Id is valid, they should be validated by this point so throw exception
-        if (string.IsNullOrEmpty(updateItemRequestDto.UserId)) {
-            throw new NullReferenceException("The UserId cannot be null or empty.");
-        }
-
-        ErrorNotification errorNotes = new ErrorNotification();
-
-        // Getting the existing Item and apply change
-        ItemDto updatedItem = await _itemRepo.GetItemWithUpdate(updateItemRequestDto.ItemId, updateItemRequestDto.UserBusinessId, updateItemRequestDto.ItemPatchDocument);
-
-        if (updatedItem.ErrorNotification.HasErrors) {
-            return updatedItem;
-        }
-        
-        // Validate the Item details
-        ValidateItemName(errorNotes, updatedItem.Name);
-        ValidateItemCategory(errorNotes, updatedItem.Category);
-        ValidateItemStock(errorNotes, updatedItem.Stock);
-        await ValidateDuplicateName(errorNotes, updatedItem.BusinessId, updatedItem.Name);
-        await ValidateDuplicateSKU(errorNotes, updatedItem.BusinessId, updatedItem.SKU);
-        
-        // If we've got errors then return the notes and not make a repo call
-        if (errorNotes.HasErrors) {
-            return new ItemDto(errorNotes);
-        }
-
-        StoreItemDto itemToSaveDto = new StoreItemDto(updatedItem.SKU, updatedItem.BusinessId, updatedItem.Category,
-            updatedItem.Name, updatedItem.Stock);
-
-        ItemDto savedItem = await _itemRepo.SaveExistingItem(itemToSaveDto);
-
-        return savedItem;
-    }
-
     public async Task<StockUpdateDto> CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto) {
         
         // Validation

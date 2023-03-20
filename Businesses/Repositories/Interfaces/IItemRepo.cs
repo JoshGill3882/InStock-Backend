@@ -11,7 +11,6 @@ public interface IItemRepo {
     Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto);
     Task<bool> IsNameInUse(string businessId, string itemName);
     Task<bool> IsSKUInUse(string SKU, string businessId);
-    public Task<ItemDto> GetItemWithUpdate(string itemId, string businessId, JsonPatchDocument patchDocument);
     public Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto);
     public Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto stockUpdateDto);
     public Task<ItemDto?> GetItem(string businessId, string itemSku);

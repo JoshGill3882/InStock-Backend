@@ -109,21 +109,6 @@ public class ItemRepo : IItemRepo{
 
     }
 
-    public async Task<ItemDto> GetItemWithUpdate(string itemId, string businessId, JsonPatchDocument patchDocument) {
-        Item existingItem = await _context.LoadAsync<Item>(itemId, businessId);
-    
-        patchDocument.ApplyTo(existingItem);
-        
-        ItemDto createdItemDto = new ItemDto(
-            existingItem.SKU, 
-            existingItem.BusinessId, 
-            existingItem.Category,
-            existingItem.Name,
-            existingItem.Stock.ToString());
-    
-        return createdItemDto;
-    }
-
     public async Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto) {
                 
         // Checking the Item SKU is valid

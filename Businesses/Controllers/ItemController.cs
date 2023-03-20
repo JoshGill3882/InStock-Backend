@@ -103,29 +103,6 @@ public class ItemController : ControllerBase {
         throw new NotImplementedException();
     }
 
-    [HttpPatch]
-    [Route("businesses/{businessId}/items/{itemId}")]
-    public async Task<IActionResult> UpdateItem([FromRoute] string businessId, [FromRoute] string itemId, [FromBody] JsonPatchDocument patchDocument) {
-
-        // Get our current UserId and BusinessId to validate and pass to the items service
-        string? currentUserId = User.FindFirstValue("Id") ?? null;
-        
-        // Check there are no issues with the userId
-        if (string.IsNullOrEmpty(currentUserId)) {
-            return Unauthorized();
-        }
-        
-        UpdateItemRequestDto updateItemRequestDto = new UpdateItemRequestDto(currentUserId, businessId, patchDocument, itemId);
-        
-        ItemDto itemDto = await _itemService.UpdateItem(updateItemRequestDto);
-
-        if (itemDto.ErrorNotification.HasErrors) {
-            return new BadRequestObjectResult(itemDto.ErrorNotification);
-        }
-        
-        return new OkObjectResult(itemDto);
-    }
-
     [HttpPost]
     [Route("businesses/{businessId}/items/{itemSku}/stock/updates")]
     public async Task<IActionResult> CreateStockUpdate([FromRoute] string businessId, [FromRoute] string itemSku,
