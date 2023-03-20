@@ -166,11 +166,13 @@ public class ItemRepo : IItemRepo{
         if (string.IsNullOrEmpty(storeStockUpdateDto.ItemSku)) {
             throw new NullReferenceException("The stock update item ID cannot be null.");
         }
-        
-        ItemStockUpdateModel itemStockUpdateModel = new ItemStockUpdateModel(storeStockUpdateDto.ItemSku, storeStockUpdateDto.BusinessId);
-        itemStockUpdateModel.AddStockUpdateDetails(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange);
 
-        await _context.SaveAsync(itemStockUpdateModel);
+        ItemStockUpdateModel existingStockUpdates =
+            await _context.LoadAsync<ItemStockUpdateModel>(storeStockUpdateDto.ItemSku, storeStockUpdateDto.BusinessId);
+
+        existingStockUpdates.AddStockUpdateDetails(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange);
+
+        await _context.SaveAsync(existingStockUpdates);
 
         StockUpdateDto stockUpdateDto =
             new StockUpdateDto(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange);
