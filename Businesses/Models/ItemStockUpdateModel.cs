@@ -27,22 +27,23 @@ public class ItemStockUpdateModel {
         StockUpdates = new List<StockUpdateObject>() ;
     }
 
-    public void AddStockUpdateDetails(int changeStockAmount, string reasonForChange) {
+    public void AddStockUpdateDetails(int changeStockAmount, string reasonForChange, DateTime dateTimeAdded) {
         StockUpdates ??= new List<StockUpdateObject>();
-        StockUpdates.Add(new StockUpdateObject(changeStockAmount, reasonForChange));
+        StockUpdates.Add(new StockUpdateObject(changeStockAmount, reasonForChange, dateTimeAdded));
     }
     
     public class StockUpdateObject {
         public int AmountChanged { get; set; }
-        
         public string ReasonForChange { get; set; }
+        public DateTime DateTimeAdded { get; set; }
 
         public StockUpdateObject() {
         }
 
-        public StockUpdateObject(int amountChanged, string reasonForChange) {
+        public StockUpdateObject(int amountChanged, string reasonForChange, DateTime dateTimeAdded) {
             AmountChanged = amountChanged;
             ReasonForChange = reasonForChange;
+            DateTimeAdded = dateTimeAdded;
         }
     }
     public class StockUpdateObjectConverter : IPropertyConverter

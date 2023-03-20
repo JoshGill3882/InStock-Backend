@@ -230,7 +230,7 @@ public class ItemService : IItemService {
         // Create new Stock Update record
         StoreStockUpdateDto stockUpdateDtoToSave = new StoreStockUpdateDto(createStockUpdateRequestDto.BusinessId,
             createStockUpdateRequestDto.ItemId, createStockUpdateRequestDto.ChangeStockAmountBy,
-            createStockUpdateRequestDto.ReasonForChange);
+            createStockUpdateRequestDto.ReasonForChange, DateTime.Now);
         StockUpdateDto stockUpdateDtoSaved = await _itemRepo.SaveStockUpdate(stockUpdateDtoToSave);
 
         // Update Item details with new stock level

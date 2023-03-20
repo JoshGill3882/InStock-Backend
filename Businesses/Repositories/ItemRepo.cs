@@ -170,7 +170,7 @@ public class ItemRepo : IItemRepo{
         ItemStockUpdateModel existingStockUpdates =
             await _context.LoadAsync<ItemStockUpdateModel>(storeStockUpdateDto.ItemSku, storeStockUpdateDto.BusinessId);
 
-        existingStockUpdates.AddStockUpdateDetails(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange);
+        existingStockUpdates.AddStockUpdateDetails(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange, storeStockUpdateDto.DateTimeAdded);
 
         await _context.SaveAsync(existingStockUpdates);
 
