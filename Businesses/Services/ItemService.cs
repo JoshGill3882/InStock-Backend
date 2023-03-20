@@ -70,21 +70,6 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "You already have an item with that name");
         }
     }
-    
-    private void ValidateItemStock(ErrorNotification errorNotes, string itemStock) {
-        // Item Name Variables
-        const string errorKey = "itemStock";
-        
-        if (string.IsNullOrEmpty(itemStock)) {
-            errorNotes.AddError(errorKey, "The item name cannot be empty.");
-        }
-
-        if (!int.TryParse(itemStock, out int n))
-        {
-            errorNotes.AddError(errorKey, "The item Stock level must be a number.");
-
-        }
-    }
 
     private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
@@ -141,7 +126,6 @@ public class ItemService : IItemService {
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
-        ValidateItemStock(errorNotes, newItemRequestDto.Stock);
         
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
@@ -244,14 +228,14 @@ public class ItemService : IItemService {
         StockUpdateDto stockUpdateDtoSaved = await _itemRepo.SaveStockUpdate(stockUpdateDtoToSave);
 
         // Update the Item's details with new stock level after the update
-        int newStockLevel = int.Parse(existingItemDto.Stock) + stockUpdateDtoSaved.ChangeStockAmountBy;
+        int newStockLevel = existingItemDto.Stock + stockUpdateDtoSaved.ChangeStockAmountBy;
         
         StoreItemDto updatedItemDto = new StoreItemDto(
             sku: existingItemDto.SKU, 
             businessId: existingItemDto.BusinessId, 
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
-            stock: newStockLevel.ToString());
+            stock: newStockLevel);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

@@ -184,7 +184,7 @@ public class ItemController : ControllerBase {
     }
     
     [HttpGet]
-    [Route("businesses/{businessId}/items/{itemSku}/stock/updates")]
+    [Route("items/{itemSku}/stock/updates")]
     public async Task<IActionResult> GetStockUpdates([FromRoute] string businessId, [FromRoute] string itemSku) {
         throw new NotImplementedException();
     }

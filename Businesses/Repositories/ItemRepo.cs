@@ -162,7 +162,7 @@ public class ItemRepo : IItemRepo{
         
         // Save the new updated item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, Int32.Parse(itemToSaveDto.Stock));
+            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
         await _context.SaveAsync(itemModel);
         
         // Return the updated Items details
@@ -171,7 +171,7 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.Stock.ToString());
+            itemModel.Stock);
         
         return updatedItemDto;
     }
@@ -220,7 +220,7 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.Stock.ToString());
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.Stock);
         return itemDto;
     }
 }
