@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Numerics;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
@@ -18,7 +19,7 @@ public class ItemStockService : IItemStockService {
     private void ValidateAmountChangeBy(ErrorNotification errorNotes, int changeAmountBy, ItemDto existingItem) {
         const string errorKey = "ChangeAmountBy";
 
-        double newStockLevel = changeAmountBy + existingItem.Stock;
+        long newStockLevel = (long) changeAmountBy + (long) existingItem.Stock;
         if (newStockLevel > int.MaxValue) {
             errorNotes.AddError(errorKey, $"The stock level cannot be more than {int.MaxValue}.");
         }

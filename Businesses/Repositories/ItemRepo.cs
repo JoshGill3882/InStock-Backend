@@ -45,7 +45,7 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.Stock);
+            itemModel.GetStock());
         
         return createdItemDto;
     }
@@ -165,7 +165,7 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.Stock);
+            itemModel.GetStock());
         
         return updatedItemDto;
     }
@@ -214,7 +214,7 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.Stock);
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock());
         return itemDto;
     }
 }
