@@ -14,6 +14,31 @@ public class ItemStockService : IItemStockService {
     public ItemStockService(IItemRepo itemRepo) {
         _itemRepo = itemRepo;
     }
+
+    private void ValidateAmountChangeBy(ErrorNotification errorNotes, int changeAmountBy, ItemDto existingItem) {
+        const string errorKey = "ChangeAmountBy";
+
+        double newStockLevel = changeAmountBy + existingItem.Stock;
+        if (newStockLevel > int.MaxValue) {
+            errorNotes.AddError(errorKey, $"The stock level cannot be more than {int.MaxValue}.");
+        }
+        if (newStockLevel > int.MinValue) {
+            errorNotes.AddError(errorKey, $"The stock level cannot be less than {int.MaxValue}.");
+        }
+    }    
+    private void ValidateReasonForChange(ErrorNotification errorNotes, string reasonForChange) {
+        const string errorKey = "ReasonForChange";
+        const int maxLength = 250;
+        const string permittedRegex = @"[a-zA-Z0-9,.\-& ]";
+
+        if (reasonForChange.Length > maxLength) {
+            errorNotes.AddError(errorKey, $"The reason cannot exceed {maxLength}.");
+        }
+
+        if (!Regex.IsMatch(reasonForChange, permittedRegex)) {
+            errorNotes.AddError(errorKey, "The reason can only contain alphanumeric characters, spaces, commas, and dashes.");
+        }
+    }
     
     public async Task<StockUpdateDto> CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto) {
         
@@ -37,15 +62,22 @@ public class ItemStockService : IItemStockService {
             return new StockUpdateDto(errorNotes);
         }
         
-        // Check that the item exists
+        // Check that the item exists, return as no need to do anymore validation
         ItemDto? existingItemDto =
             await _itemRepo.GetItem(createStockUpdateRequestDto.BusinessId, createStockUpdateRequestDto.ItemSku);
         
         if (existingItemDto == null) {
             errorNotes.AddError("This item does not exist");
+            return new StockUpdateDto(errorNotes);
         }
+        
+        // Validate the amount we're updating
+        ValidateAmountChangeBy(errorNotes, createStockUpdateRequestDto.ChangeStockAmountBy, existingItemDto);
 
-        // If we have had any errors then return this
+        // Validate the update's reason text
+        ValidateReasonForChange(errorNotes, createStockUpdateRequestDto.ReasonForChange);
+        
+        // If we have had any errors then return them
         if (errorNotes.HasErrors) {
             return new StockUpdateDto(errorNotes);
         }
