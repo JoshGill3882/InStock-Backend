@@ -1,10 +1,6 @@
-﻿using System.Security.Claims;
-using instock_server_application.Businesses.Controllers.forms;
-using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Services.Interfaces;
+﻿using instock_server_application.Users.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace instock_server_application.Businesses.Controllers; 
 
 [ApiController]
@@ -20,7 +16,7 @@ public class StatisticsController {
     /// <param name="businessIdModel"> The BusinessID to get stats for </param>
     /// <returns> An overview , or an error message with a 404 status code </returns>
     [HttpGet]
-    [Route("statistics/{businessId}")]
+    [Route("businesses/statistics/{businessId}")]
     public async Task<IActionResult> GetItem([FromRoute] string businessId) {
 
         // Check user and business are both valid
