@@ -19,12 +19,12 @@ public class BusinessRepository : IBusinessRepository {
         _context = context;
     }
     
-    public async Task<Dictionary<string, AttributeValue>> GetBusiness(BusinessDto businessDto) {
+    public async Task<Dictionary<string, AttributeValue>> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
         var request = new GetItemRequest() {
             TableName = BusinessModel.TableName,
             Key = new Dictionary<string,AttributeValue>() {
                 {
-                    "BusinessId", new AttributeValue { S = businessDto.BusinessId }
+                    "BusinessId", new AttributeValue { S = validateBusinessIdDto.BusinessId }
                 }
             },
         };

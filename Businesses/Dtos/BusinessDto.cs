@@ -18,9 +18,4 @@ public class BusinessDto : DataTransferObjectSuperType {
         BusinessOwnerId = businessOwnerId;
         BusinessDescription = businessDescription;
     }
-
-    public BusinessDto(string userBusinessId, string businessId) {
-        UserBusinessId = userBusinessId;
-        BusinessId = businessId;
-    }
 }

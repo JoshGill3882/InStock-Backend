@@ -17,10 +17,10 @@ public class BusinessService : IBusinessService {
         _utilService = utilService;
     }
 
-    public async Task<Dictionary<string, string>> GetBusiness(BusinessDto businessDto) {
+    public async Task<Dictionary<string, string>> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
 
-        if (_utilService.CheckUserBusinessId(businessDto.UserBusinessId, businessDto.BusinessId)) {
-            Dictionary<string, AttributeValue> responseItems = _businessRepository.GetBusiness(businessDto).Result;
+        if (_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
+            Dictionary<string, AttributeValue> responseItems = _businessRepository.GetBusiness(validateBusinessIdDto).Result;
             Dictionary<string, string> business = new();
                 
             // User has access, but incorrect businessID or no business found

@@ -63,7 +63,7 @@ public class BusinessController : ControllerBase {
             return Unauthorized();
         }
         
-        Dictionary<string, string> businessDetails = _businessService.GetBusiness(new BusinessDto(currentUserBusinessId, businessId)).Result;
+        Dictionary<string, string> businessDetails = _businessService.GetBusiness(new ValidateBusinessIdDto(currentUserBusinessId, businessId)).Result;
 
         if (businessDetails == null) {
             return Unauthorized();
