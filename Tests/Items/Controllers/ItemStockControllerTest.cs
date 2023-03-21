@@ -21,7 +21,7 @@ public class ItemStockControllerTest {
         const string userBusinessId = "businessId123_valid";
         const string requestBusinessId = "businessId123_valid";
         const string requestItemSku = "itemSku123_valid";
-        const int changeStockAmountBy = 10;
+        const string changeStockAmountBy = "10";
         const string reasonForChange = "Other";
         
         // Arrange
@@ -33,7 +33,7 @@ public class ItemStockControllerTest {
                 }, "mockUserAuth"));
         
         var existingItem = new ItemDto(requestItemSku, userBusinessId, "category", "name", 50);
-        var storedItemStockUpdate = new StockUpdateDto(changeStockAmountBy, reasonForChange, DateTime.Today);
+        var storedItemStockUpdate = new StockUpdateDto(int.Parse(changeStockAmountBy), reasonForChange, DateTime.Today);
 
         var mockItemRepo = new Mock<IItemRepo>();
         mockItemRepo.Setup(s => s.GetItem(userBusinessId, requestItemSku)).Returns(Task.FromResult(existingItem)!);

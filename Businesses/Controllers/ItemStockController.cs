@@ -52,8 +52,10 @@ public class ItemStockController : ControllerBase {
         
         // Check for any errors when creating the Stock Update, return appropriately
         if (stockUpdateDto.ErrorNotification.HasErrors) {
-            if (stockUpdateDto.ErrorNotification.Errors["otherErrors"].Contains(StockUpdateDto.USER_UNAUTHORISED_ERROR)) {
-                return Unauthorized();
+            if (stockUpdateDto.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+                if (stockUpdateDto.ErrorNotification.Errors["otherErrors"].Contains(StockUpdateDto.USER_UNAUTHORISED_ERROR)) {
+                    return Unauthorized();
+                }
             }
             return new BadRequestObjectResult(stockUpdateDto.ErrorNotification);
         }
