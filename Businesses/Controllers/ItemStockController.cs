@@ -29,6 +29,15 @@ public class ItemStockController : ControllerBase {
         if (string.IsNullOrEmpty(currentUserId) || string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
+        
+        // Converting Stock string to int, done here instead of within form so we can control the error our way
+        int changeStockAmountBy;
+        bool isInt = int.TryParse(stockUpdateForm.ChangeStockAmountBy, out changeStockAmountBy);
+        if (!isInt) {
+            var response = new ErrorNotification();
+            response.AddError("ChangeStockAmountBy", "The stock amount must be a valid number.");
+            return new BadRequestObjectResult(response);
+        }
 
         // Send Stock Update details to service to be validated and persisted
         CreateStockUpdateRequestDto createStockUpdateRequestDto = new CreateStockUpdateRequestDto(
@@ -36,7 +45,7 @@ public class ItemStockController : ControllerBase {
              userBusinessId: currentUserBusinessId,
              businessId: businessId,
              itemSku: itemSku,
-             changeStockAmountBy: stockUpdateForm.ChangeStockAmountBy,
+             changeStockAmountBy: changeStockAmountBy,
              reasonForChange: stockUpdateForm.ReasonForChange);
         
         StockUpdateDto stockUpdateDto = await _itemStockService.CreateStockUpdate(createStockUpdateRequestDto);
