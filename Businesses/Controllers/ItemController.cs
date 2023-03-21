@@ -133,7 +133,7 @@ public class ItemController : ControllerBase {
             return Unauthorized();
         }
 
-        List<Dictionary<string, string>>? categories = _itemService.GetCategories(new CategoryDto(currentUserBusinessId, businessId)).Result;
+        List<Dictionary<string, string>>? categories = _itemService.GetCategories(new ValidateBusinessIdDto(currentUserBusinessId, businessId)).Result;
 
         if (categories == null) {
             return Unauthorized();
