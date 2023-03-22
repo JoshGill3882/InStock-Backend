@@ -1,4 +1,5 @@
-﻿using instock_server_application.Users.Models;
+﻿using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace instock_server_application.Businesses.Controllers; 
@@ -6,7 +7,7 @@ namespace instock_server_application.Businesses.Controllers;
 [ApiController]
 [Authorize]
 [Route("/statistics")]
-public class StatisticsController {
+public class StatisticsController : ControllerBase {
     
     //Constructor not needed yet as this is just a mock that doesnt depend on services
 
@@ -16,7 +17,7 @@ public class StatisticsController {
     /// <param name="businessIdModel"> The BusinessID to get stats for </param>
     /// <returns> An overview , or an error message with a 404 status code </returns>
     [HttpGet]
-    [Route("businesses/statistics/{businessId}")]
+    [Route("{businessId}")]
     public async Task<IActionResult> GetItem([FromRoute] string businessId) {
 
         // Check user and business are both valid
@@ -27,44 +28,65 @@ public class StatisticsController {
         if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
-
-        Dictionary<string, object> stats = new Dictionary<string, object>() {
-            {
-                "totals", new Dictionary<string, int>() {
-                    { "totalItemsOrdered", 16 },
-                    { "totalItemsReturned", 5 },
-                    { "totalItemsDamaged", 1 },
-                    { "totalItemsSold", 47 },
-                    { "totalItemsCorrectedInRecount", 3 },
-                    { "totalItemsResent", 12 },
-                    { "totalItemsGivenAway", 14 }
-                }
-            },
-            {
-                "advice", new Dictionary<string, string>() {
-                    { "adviceForUser1", "You're having to resend alot of items, do you need package orders more securely?" },
-                    { "adviceForUser2", "Cards appear to be your most popular product, keep up the good work!" }
-                }
-            },
-            {
-                "ordersByCategory", new Dictionary<string, int>() {
-                    { "Cards", 8 },
-                    { "Candles", 4 },
-                    { "MaxWelts", 3 },
-                    { "Stickers", 1 }
-                }
-            },
-            {
-                "salesByCategory", new Dictionary<string, int>() {
-                    { "Cards", 22 },
-                    { "Candles", 15 },
-                    { "MaxWelts", 5 },
-                    { "Stickers", 5 }
-                }
-            }
-        };
-
+        
+        List<Dictionary<string, object>> stats = GenerateRandomDictionaries();
+        
+        
         return Ok(stats);
+    }
+    
+    public static List<Dictionary<string, object>> GenerateRandomDictionaries()
+    {
+        List<Dictionary<string, object>> dictionaries = new List<Dictionary<string, object>>();
+
+        // Define the possible values for the ReasonForChange key
+        string[] reasonsForChange = { "Sale", "Restock", "Correction", "Damaged", "Returned", "Resent", "Giveaway", "Lost" };
+
+        // Define the start and end dates for the DateTimeAdded key
+        DateTime startDate = new DateTime(DateTime.Now.Year, 1, 1);
+        DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
+
+        Random rand = new Random();
+
+        // Generate 100 random dictionaries
+        for (int i = 0; i < 100; i++)
+        {
+            Dictionary<string, object> dictionary = new Dictionary<string, object>();
+            
+            dictionary.Add("Sku", "BKM-" + (rand.Next(899) + 100));
+            
+            // Generate a random ReasonForChange
+            dictionary.Add("ReasonForChange", reasonsForChange[rand.Next(reasonsForChange.Length)]);
+
+            //Selects a random 
+            List<string> items = new List<string>() {
+                "Cards",
+                "Candles",
+                "Stickers",
+                "Magnets",
+                "Bookmarks"
+            };
+
+            Random random = new Random();
+            string selected_cateogry = items[random.Next(items.Count)];
+            
+            dictionary.Add("Category", selected_cateogry);
+            
+            // Generate a random ItemName
+            dictionary.Add("ItemName", "Item " + (i + 1));
+
+            // Generate a random DateTimeAdded between the start and end dates
+            TimeSpan timeSpan = endDate - startDate;
+            TimeSpan newSpan = new TimeSpan(0, rand.Next(0, (int)timeSpan.TotalMinutes), 0);
+            dictionary.Add("DateTimeAdded", startDate + newSpan);
+
+            // Generate a random AmountChanged between -10 and 10
+            dictionary.Add("Amount Changed", rand.Next(-10, 11));
+
+            dictionaries.Add(dictionary);
+        }
+
+        return dictionaries;
     }
     
 }
