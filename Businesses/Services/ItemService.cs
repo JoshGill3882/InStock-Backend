@@ -150,10 +150,10 @@ public class ItemService : IItemService {
         return new DeleteItemDto(errorNotification);
     }
 
-    public async Task<List<Dictionary<string, string>>?> GetCategories(CategoryDto categoryDto) {
+    public async Task<List<Dictionary<string, string>>?> GetCategories(ValidateBusinessIdDto validateBusinessIdDto) {
 
-        if (_utilService.CheckUserBusinessId(categoryDto.UserBusinessId, categoryDto.BusinessId)) {
-            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(categoryDto).Result;
+        if (_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
+            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(validateBusinessIdDto).Result;
             List<Dictionary<string, string>> categories = new();
 
             // User has access, but incorrect businessID or no items found

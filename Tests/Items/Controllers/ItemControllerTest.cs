@@ -221,7 +221,7 @@ public class ItemControllerTest {
         List<Dictionary<string, string>> expected = CategoriesList();
         
         var mockItemService = new Mock<IItemService>();
-        mockItemService.Setup(service => service.GetCategories(It.IsAny<CategoryDto>())).Returns(Task.FromResult(expected)!);
+        mockItemService.Setup(service => service.GetCategories(It.IsAny<ValidateBusinessIdDto>())).Returns(Task.FromResult(expected)!);
         
         var controller = new ItemController(mockItemService.Object);
         controller.ControllerContext = new ControllerContext() {
@@ -253,7 +253,7 @@ public class ItemControllerTest {
                     new Claim("BusinessId", incorrectBusinessId)
                 }, "mockUserAuth"));
         var mockItemService = new Mock<IItemService>();
-        mockItemService.Setup(service => service.GetCategories(It.IsAny<CategoryDto>())).Returns(Task.FromResult(expected)!);
+        mockItemService.Setup(service => service.GetCategories(It.IsAny<ValidateBusinessIdDto>())).Returns(Task.FromResult(expected)!);
         
         var controller = new ItemController(mockItemService.Object);
         controller.ControllerContext = new ControllerContext() {
@@ -283,7 +283,7 @@ public class ItemControllerTest {
                 }, "mockUserAuth"));
         
         var mockItemService = new Mock<IItemService>();
-        mockItemService.Setup(service => service.GetCategories(It.IsAny<CategoryDto>())).Returns(Task.FromResult(ItemsList())!);
+        mockItemService.Setup(service => service.GetCategories(It.IsAny<ValidateBusinessIdDto>())).Returns(Task.FromResult(ItemsList())!);
     
         var controller = new ItemController(mockItemService.Object);
         controller.ControllerContext = new ControllerContext() {

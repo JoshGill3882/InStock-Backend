@@ -3,14 +3,38 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Shared.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class BusinessService : IBusinessService {
     private readonly IBusinessRepository _businessRepository;
+    private readonly IUtilService _utilService;
 
-    public BusinessService(IBusinessRepository businessRepository) {
+    public BusinessService(IBusinessRepository businessRepository, IUtilService utilService) {
         _businessRepository = businessRepository;
+        _utilService = utilService;
+    }
+
+    public async Task<BusinessDto> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
+        ErrorNotification errorNote = new ErrorNotification();
+        
+        if (!_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
+            // If the user doesn't have access, return "Unauthorized"
+            errorNote.AddError("Unauthorized");
+            return new BusinessDto(errorNote);
+        }
+        
+        BusinessDto? responseItems = _businessRepository.GetBusiness(validateBusinessIdDto).Result;
+
+        // User has access, but incorrect businessID or no business found
+        if (responseItems == null) {
+            // Return "Unauthorized"
+            errorNote.AddError("Unauthorized");
+            return new BusinessDto(errorNote);
+        }
+        
+        return responseItems;
     }
 
     private void ValidateBusinessName(ErrorNotification errorNotes, string businessName) {
