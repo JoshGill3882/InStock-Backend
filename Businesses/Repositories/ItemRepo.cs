@@ -45,7 +45,7 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.Stock);
+            itemModel.GetStock());
         
         return createdItemDto;
     }
@@ -107,13 +107,13 @@ public class ItemRepo : IItemRepo{
         _context.DeleteAsync(item);
     }
     
-    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(CategoryDto categoryDto) {
+    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto) {
         var request = new ScanRequest
         {
             TableName = Item.TableName,
             ProjectionExpression = "Category",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Id", new AttributeValue(categoryDto.BusinessId)}
+                {":Id", new AttributeValue(validateBusinessIdDto.BusinessId)}
             },
             FilterExpression = "BusinessId = :Id",
         };
@@ -133,5 +133,88 @@ public class ItemRepo : IItemRepo{
         }
     
         return categoryList;
+    }
+    
+    public async Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto) {
+                
+        // Checking the Item SKU is valid
+        if (string.IsNullOrEmpty(itemToSaveDto.SKU)) {
+            throw new NullReferenceException("The Item SKU cannot be null or empty.");
+        }
+        
+        // Checking the Item Name is valid
+        if (string.IsNullOrEmpty(itemToSaveDto.Name)) {
+            throw new NullReferenceException("The Item Name cannot be null or empty.");
+        }
+        
+        // Check if the item already exists so we know we are updating one
+        Item existingItem = await _context.LoadAsync<Item>(itemToSaveDto.SKU, itemToSaveDto.BusinessId);
+
+        if (existingItem == null) {
+            throw new NullReferenceException("The Item you are trying to update does not exist");
+        }
+        
+        // Save the new updated item
+        Item itemModel = new Item(
+            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
+        await _context.SaveAsync(itemModel);
+        
+        // Return the updated Items details
+        ItemDto updatedItemDto = new ItemDto(
+            itemModel.SKU, 
+            itemModel.BusinessId, 
+            itemModel.Category,
+            itemModel.Name,
+            itemModel.GetStock());
+        
+        return updatedItemDto;
+    }
+
+    public async Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto storeStockUpdateDto) {
+        // Validating details
+        if (string.IsNullOrEmpty(storeStockUpdateDto.BusinessId)) {
+            throw new NullReferenceException("The stock update business ID cannot be null.");
+        }
+        if (string.IsNullOrEmpty(storeStockUpdateDto.ItemSku)) {
+            throw new NullReferenceException("The stock update item ID cannot be null.");
+        }
+
+        // Getting the existing items stock updates
+        ItemStockUpdateModel existingStockUpdates =
+            await _context.LoadAsync<ItemStockUpdateModel>(storeStockUpdateDto.ItemSku, storeStockUpdateDto.BusinessId);
+
+        // Adding to the existing stock updates
+        existingStockUpdates.AddStockUpdateDetails(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange, storeStockUpdateDto.DateTimeAdded);
+
+        // Saving all of the updates
+        await _context.SaveAsync(existingStockUpdates);
+
+        // Returning the new object that was saved
+        StockUpdateDto stockUpdateDto =
+            new StockUpdateDto(storeStockUpdateDto.ChangeStockAmountBy, storeStockUpdateDto.ReasonForChange, storeStockUpdateDto.DateTimeAdded);
+        
+        return stockUpdateDto;
+    }
+
+    public async Task<ItemDto?> GetItem(string businessId, string itemSku) {
+        // Validating details
+        if (string.IsNullOrEmpty(businessId)) {
+            throw new NullReferenceException("The stock update business ID cannot be null.");
+        }
+        if (string.IsNullOrEmpty(itemSku)) {
+            throw new NullReferenceException("The stock update item ID cannot be null.");
+        }
+
+        // Getting the existing item
+        Item item = await _context.LoadAsync<Item>(itemSku, businessId);
+
+        // If the item wasn't in the database then return null
+        if (item == null) {
+            return null;
+        }
+        
+        // Returning the item details from the database
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock());
+        return itemDto;
     }
 }

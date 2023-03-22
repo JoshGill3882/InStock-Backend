@@ -9,7 +9,6 @@ namespace instock_server_application.Businesses.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("/business")]
 public class BusinessController : ControllerBase {
     private IBusinessService _businessService;
 
@@ -18,6 +17,7 @@ public class BusinessController : ControllerBase {
     }
 
     [HttpPost]
+    [Route("/business")]
     public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessForm newBusinessForm) {
 
         // Get our current UserId and BusinessId to validate and pass to the business service
@@ -50,9 +50,30 @@ public class BusinessController : ControllerBase {
         });
     }
 
-    [Route("{businessId}")]
     [HttpGet]
-    public async Task<IActionResult> GetBusiness(string businessId) {
-        throw new NotImplementedException();
+    [Route("/businesses/{businessId}")]
+    public async Task<IActionResult> GetBusiness([FromRoute] string businessId) {
+        
+        // Get our current UserId and BusinessId to validate and pass to the business service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+        
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+            return Unauthorized();
+        }
+        
+        BusinessDto businessDetails = _businessService.GetBusiness(new ValidateBusinessIdDto(currentUserBusinessId, businessId)).Result;
+
+        if (businessDetails.ErrorNotification.HasErrors) {
+            if (businessDetails.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+                if (businessDetails.ErrorNotification.Errors["otherErrors"].Contains("Unauthorized")) {
+                    return Unauthorized();
+                }
+            }
+            return new BadRequestObjectResult(businessDetails.ErrorNotification);
+        }
+
+        return Ok(businessDetails);
     }
 }
