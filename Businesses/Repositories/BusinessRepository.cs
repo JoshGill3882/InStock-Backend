@@ -14,6 +14,22 @@ public class BusinessRepository : IBusinessRepository {
     public BusinessRepository(IDynamoDBContext context) {
         _context = context;
     }
+    public async Task<BusinessDto?> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
+        BusinessModel existingBusiness = await _context.LoadAsync<BusinessModel>(validateBusinessIdDto.BusinessId);
+
+        if (existingBusiness == null) {
+            return null;
+        }
+        
+        BusinessDto businessDto = new BusinessDto(
+            businessId: existingBusiness.BusinessId,
+            businessName: existingBusiness.BusinessName,
+            businessDescription: existingBusiness.BusinessDescription,
+            businessOwnerId: existingBusiness.OwnerId
+        );
+        
+        return businessDto;
+    }
 
     public async Task<BusinessDto> SaveNewBusiness(StoreBusinessDto businessToSave) {
         

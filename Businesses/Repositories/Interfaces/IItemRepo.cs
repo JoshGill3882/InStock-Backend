@@ -1,8 +1,5 @@
 ﻿using Amazon.DynamoDBv2.Model;
-using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
-using instock_server_application.Businesses.Models;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace instock_server_application.Businesses.Repositories.Interfaces;
 
@@ -15,7 +12,7 @@ public interface IItemRepo {
     Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto stockUpdateDto);
     Task<ItemDto?> GetItem(string businessId, string itemSku);
     void Delete(DeleteItemDto deleteItemDto);
-    Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(CategoryDto categoryDto);
+    Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto);
     Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto);
 
 }

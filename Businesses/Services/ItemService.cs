@@ -89,13 +89,14 @@ public class ItemService : IItemService {
             }
 
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
+                string stock = item["Stock"].S ?? item["Stock"].N;
                 items.Add(
                     new () {
                         {"SKU", item["SKU"].S},
                         {"BusinessId", item["BusinessId"].S},
                         {"Category", item["Category"].S},
                         {"Name", item["Name"].S},
-                        {"Stock", item["Stock"].N}
+                        {"Stock", stock}
                     }
                 );
             }
@@ -150,10 +151,10 @@ public class ItemService : IItemService {
         return new DeleteItemDto(errorNotification);
     }
 
-    public async Task<List<Dictionary<string, string>>?> GetCategories(CategoryDto categoryDto) {
+    public async Task<List<Dictionary<string, string>>?> GetCategories(ValidateBusinessIdDto validateBusinessIdDto) {
 
-        if (_utilService.CheckUserBusinessId(categoryDto.UserBusinessId, categoryDto.BusinessId)) {
-            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(categoryDto).Result;
+        if (_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
+            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(validateBusinessIdDto).Result;
             List<Dictionary<string, string>> categories = new();
 
             // User has access, but incorrect businessID or no items found

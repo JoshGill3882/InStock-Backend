@@ -27,8 +27,6 @@ public class Item {
     public String Stock {
         get => _stock.ToString();
         set {
-            
-            
             if (value.Length > int.MaxValue.ToString().Length) {
                 if (value.Contains('-')) {
                     _stock = int.MinValue;

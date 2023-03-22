@@ -11,5 +11,5 @@ public interface IItemService {
 
     Task<DeleteItemDto> DeleteItem(DeleteItemDto deleteItemDto);
     
-    public Task<List<Dictionary<string, string>>?> GetCategories(CategoryDto categoryDto);
+    public Task<List<Dictionary<string, string>>?> GetCategories(ValidateBusinessIdDto validateBusinessIdDto);
 }
