@@ -233,7 +233,7 @@ public class ItemRepo : IItemRepo{
             await _context.LoadAsync<ItemOrdersModel>(storeItemOrderDto.ItemSku, storeItemOrderDto.BusinessId);
 
         // Adding to the existing stock updates
-        existingItemOrders.AddStockUpdateDetails(storeItemOrderDto.AmountOrdered, storeItemOrderDto.DateTimeAdded);
+        existingItemOrders.AddItemOrderDetails(storeItemOrderDto.AmountOrdered, storeItemOrderDto.DateTimeAdded);
 
         // Saving all of the updates
         await _context.SaveAsync(existingItemOrders);

@@ -27,7 +27,7 @@ public class ItemOrdersModel {
         ItemOrders = new List<ItemOrderObject>() ;
     }
 
-    public void AddStockUpdateDetails(int amountOrdered, DateTime dateTimeAdded) {
+    public void AddItemOrderDetails(int amountOrdered, DateTime dateTimeAdded) {
         ItemOrders ??= new List<ItemOrderObject>();
         ItemOrders.Add(new ItemOrderObject(amountOrdered, dateTimeAdded));
     }
