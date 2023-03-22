@@ -217,4 +217,31 @@ public class ItemRepo : IItemRepo{
         ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock());
         return itemDto;
     }
+    
+    
+    public async Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto) {
+        // Validating details
+        if (string.IsNullOrEmpty(storeItemOrderDto.BusinessId)) {
+            throw new NullReferenceException("The stock update business ID cannot be null.");
+        }
+        if (string.IsNullOrEmpty(storeItemOrderDto.ItemSku)) {
+            throw new NullReferenceException("The stock update item ID cannot be null.");
+        }
+
+        // Getting the existing items stock updates
+        ItemOrdersModel existingItemOrders =
+            await _context.LoadAsync<ItemOrdersModel>(storeItemOrderDto.ItemSku, storeItemOrderDto.BusinessId);
+
+        // Adding to the existing stock updates
+        existingItemOrders.AddStockUpdateDetails(storeItemOrderDto.AmountOrdered, storeItemOrderDto.DateTimeAdded);
+
+        // Saving all of the updates
+        await _context.SaveAsync(existingItemOrders);
+
+        // Returning the new object that was saved
+        ItemOrderDto itemOrderDto =
+            new ItemOrderDto(storeItemOrderDto.AmountOrdered, storeItemOrderDto.DateTimeAdded);
+        
+        return itemOrderDto;
+    }
 }

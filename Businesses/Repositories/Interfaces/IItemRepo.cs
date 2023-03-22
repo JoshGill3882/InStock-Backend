@@ -16,4 +16,6 @@ public interface IItemRepo {
     Task<ItemDto?> GetItem(string businessId, string itemSku);
     void Delete(DeleteItemDto deleteItemDto);
     Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(CategoryDto categoryDto);
+    Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto);
+
 }
