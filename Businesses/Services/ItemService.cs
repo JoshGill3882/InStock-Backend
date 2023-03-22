@@ -89,13 +89,14 @@ public class ItemService : IItemService {
             }
 
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
+                string stock = item["Stock"].S ?? item["Stock"].N;
                 items.Add(
                     new () {
                         {"SKU", item["SKU"].S},
                         {"BusinessId", item["BusinessId"].S},
                         {"Category", item["Category"].S},
                         {"Name", item["Name"].S},
-                        {"Stock", item["Stock"].N}
+                        {"Stock", stock}
                     }
                 );
             }
