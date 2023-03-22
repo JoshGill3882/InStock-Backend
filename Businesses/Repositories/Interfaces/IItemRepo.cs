@@ -1,13 +1,19 @@
 ﻿using Amazon.DynamoDBv2.Model;
+using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
+using instock_server_application.Businesses.Models;
+using Microsoft.AspNetCore.JsonPatch;
 
-namespace instock_server_application.Businesses.Repositories.Interfaces; 
+namespace instock_server_application.Businesses.Repositories.Interfaces;
 
 public interface IItemRepo {
     Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId);
     Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto);
     Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto);
     Task<bool> IsSKUInUse(string SKU, string businessId);
+    Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto);
+    Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto stockUpdateDto);
+    Task<ItemDto?> GetItem(string businessId, string itemSku);
     void Delete(DeleteItemDto deleteItemDto);
-    public Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto);
+    Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto);
 }
