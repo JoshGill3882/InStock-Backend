@@ -1,6 +1,4 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
+﻿using Amazon.DynamoDBv2.DataModel;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Exceptions;
@@ -11,25 +9,26 @@ namespace instock_server_application.Businesses.Repositories;
 
 public class BusinessRepository : IBusinessRepository {
 
-    private readonly IAmazonDynamoDB _client;
     private readonly IDynamoDBContext _context;
 
-    public BusinessRepository(IAmazonDynamoDB client, IDynamoDBContext context) {
-        _client = client;
+    public BusinessRepository(IDynamoDBContext context) {
         _context = context;
     }
-    
-    public async Task<Dictionary<string, AttributeValue>> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
-        var request = new GetItemRequest() {
-            TableName = BusinessModel.TableName,
-            Key = new Dictionary<string,AttributeValue>() {
-                {
-                    "BusinessId", new AttributeValue { S = validateBusinessIdDto.BusinessId }
-                }
-            },
-        };
-        var response = await _client.GetItemAsync(request);
-        return response.Item;
+    public async Task<BusinessDto?> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
+        BusinessModel existingBusiness = await _context.LoadAsync<BusinessModel>(validateBusinessIdDto.BusinessId);
+
+        if (existingBusiness == null) {
+            return null;
+        }
+        
+        BusinessDto businessDto = new BusinessDto(
+            businessId: existingBusiness.BusinessId,
+            businessName: existingBusiness.BusinessName,
+            businessDescription: existingBusiness.BusinessDescription,
+            businessOwnerId: existingBusiness.OwnerId
+        );
+        
+        return businessDto;
     }
 
     public async Task<BusinessDto> SaveNewBusiness(StoreBusinessDto businessToSave) {

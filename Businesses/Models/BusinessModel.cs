@@ -8,7 +8,7 @@ public class BusinessModel {
     
     [DynamoDBHashKey]
     [DynamoDBProperty("BusinessId")]
-    public Guid BusinessId { get; set; }
+    public String BusinessId { get; set; }
 
     [DynamoDBProperty("Name")] public string BusinessName { get; set; }
 
@@ -16,29 +16,29 @@ public class BusinessModel {
     public string BusinessDescription { get; set; }
     
     [DynamoDBProperty("Owner")] 
-    public Guid OwnerId { get; set; }
+    public String OwnerId { get; set; }
 
     public BusinessModel() {
     }
 
     public BusinessModel(string id, string name, string owner, string businessDescription) {
-        BusinessId = new Guid(id);
+        BusinessId = id;
         BusinessName = name;
         BusinessDescription = businessDescription;
-        OwnerId = new Guid(owner);
+        OwnerId = owner;
     }
     
     public BusinessModel(Guid id, string name, string owner, string businessDescription) {
-        BusinessId = id;
+        BusinessId = id.ToString();
         BusinessName = name;
         BusinessDescription = businessDescription;
-        OwnerId = new Guid(owner);
+        OwnerId = new Guid(owner).ToString();
     }
     
     public BusinessModel(Guid id, string name, Guid owner, string businessDescription) {
-        BusinessId = id;
+        BusinessId = id.ToString();
         BusinessName = name;
-        OwnerId = owner;
+        OwnerId = owner.ToString();
         BusinessDescription = businessDescription;
     }
 }

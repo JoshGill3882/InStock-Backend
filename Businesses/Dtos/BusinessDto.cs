@@ -7,7 +7,6 @@ public class BusinessDto : DataTransferObjectSuperType {
     public string BusinessName { get; }
     public string BusinessDescription { get; }
     public string BusinessOwnerId { get; }
-    public string UserBusinessId { get; }
 
     public BusinessDto(ErrorNotification errorNotes) : base(errorNotes) {
     }

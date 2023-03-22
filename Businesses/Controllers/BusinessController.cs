@@ -63,12 +63,15 @@ public class BusinessController : ControllerBase {
             return Unauthorized();
         }
         
-        Dictionary<string, string> businessDetails = _businessService.GetBusiness(new ValidateBusinessIdDto(currentUserBusinessId, businessId)).Result;
+        BusinessDto businessDetails = _businessService.GetBusiness(new ValidateBusinessIdDto(currentUserBusinessId, businessId)).Result;
 
-        if (businessDetails == null) {
-            return Unauthorized();
-        } if (businessDetails.Count == 0) {
-            return NotFound();
+        if (businessDetails.ErrorNotification.HasErrors) {
+            if (businessDetails.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+                if (businessDetails.ErrorNotification.Errors["otherErrors"].Contains("Unauthorized")) {
+                    return Unauthorized();
+                }
+            }
+            return new BadRequestObjectResult(businessDetails.ErrorNotification);
         }
 
         return Ok(businessDetails);

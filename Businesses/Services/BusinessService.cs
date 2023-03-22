@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -17,27 +16,25 @@ public class BusinessService : IBusinessService {
         _utilService = utilService;
     }
 
-    public async Task<Dictionary<string, string>> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
-
-        if (_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
-            Dictionary<string, AttributeValue> responseItems = _businessRepository.GetBusiness(validateBusinessIdDto).Result;
-            Dictionary<string, string> business = new();
-                
-            // User has access, but incorrect businessID or no business found
-            if (responseItems.Count == 0) {
-                // Return an empty list
-                return business;
-            }
-
-            foreach (var data in responseItems) {
-                business.Add(data.Key, data.Value.S);
-            }
-
-            return business;
+    public async Task<BusinessDto> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
+        ErrorNotification errorNote = new ErrorNotification();
+        
+        if (!_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
+            // If the user doesn't have access, return "Unauthorized"
+            errorNote.AddError("Unauthorized");
+            return new BusinessDto(errorNote);
         }
         
-        // If the user doesn't have access, return "null"
-        return null;
+        BusinessDto? responseItems = _businessRepository.GetBusiness(validateBusinessIdDto).Result;
+
+        // User has access, but incorrect businessID or no business found
+        if (responseItems == null) {
+            // Return "Unauthorized"
+            errorNote.AddError("Unauthorized");
+            return new BusinessDto(errorNote);
+        }
+        
+        return responseItems;
     }
 
     private void ValidateBusinessName(ErrorNotification errorNotes, string businessName) {
