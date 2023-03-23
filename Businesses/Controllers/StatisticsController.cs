@@ -17,20 +17,21 @@ public class StatisticsController : ControllerBase {
     /// <param name="businessIdModel"> The BusinessID to get stats for </param>
     /// <returns> An overview , or an error message with a 404 status code </returns>
     [HttpGet]
-    [Route("{businessId}")]
-    public async Task<IActionResult> GetItem([FromRoute] string businessId) {
+    [Route("mockBusiness")]
+    public async Task<IActionResult> GetItem() {
 
         // Check user and business are both valid
         string? currentUserId = User.FindFirstValue("Id") ?? null;
-        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+        // string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
 
         // Check there are no issues with the userId
-        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
-            return Unauthorized();
-        }
+        // if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+        //     return Unauthorized();
+        // }
         
         Dictionary<string, object> stats = new Dictionary<string, object>();
         Dictionary<string, int> overallShopPerformance = new Dictionary<string, int>();
+        overallShopPerformance.Add("sales", 98);
         overallShopPerformance.Add("orders", 102);
         overallShopPerformance.Add("corrections", 6);
         overallShopPerformance.Add("returns", 2);
@@ -44,6 +45,7 @@ public class StatisticsController : ControllerBase {
         Dictionary<string, object> performanceByCategory = new Dictionary<string, object>();
         
         Dictionary<string, int> cardsPerformance = new Dictionary<string, int>();
+        cardsPerformance.Add("sales", 40);
         cardsPerformance.Add("orders", 42);
         cardsPerformance.Add("corrections", 5);
         cardsPerformance.Add("returns", 0);
@@ -54,6 +56,7 @@ public class StatisticsController : ControllerBase {
         performanceByCategory.Add("cards", cardsPerformance);
         
         Dictionary<string, int> stickersPerformance = new Dictionary<string, int>();
+        stickersPerformance.Add("sales", 22);
         stickersPerformance.Add("orders", 24);
         stickersPerformance.Add("corrections", 1);
         stickersPerformance.Add("returns", 2);
@@ -64,6 +67,7 @@ public class StatisticsController : ControllerBase {
         performanceByCategory.Add("stickers", stickersPerformance);
         
         Dictionary<string, int> bookmarksPerformance = new Dictionary<string, int>();
+        bookmarksPerformance.Add("sales", 34);
         bookmarksPerformance.Add("orders", 36);
         bookmarksPerformance.Add("corrections", 0);
         bookmarksPerformance.Add("returns", 0);
@@ -97,7 +101,6 @@ public class StatisticsController : ControllerBase {
             {"March", 5}
         };
         stats.Add("deductionsByMonth", deductionsByMonth);
-
         
         return Ok(stats);
     }
