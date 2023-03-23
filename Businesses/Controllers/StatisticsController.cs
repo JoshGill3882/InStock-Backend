@@ -29,64 +29,76 @@ public class StatisticsController : ControllerBase {
             return Unauthorized();
         }
         
-        List<Dictionary<string, object>> stats = GenerateRandomDictionaries();
+        Dictionary<string, object> stats = new Dictionary<string, object>();
+        Dictionary<string, int> overallShopPerformance = new Dictionary<string, int>();
+        overallShopPerformance.Add("orders", 102);
+        overallShopPerformance.Add("corrections", 6);
+        overallShopPerformance.Add("returns", 2);
+        overallShopPerformance.Add("giveaways", 10);
+        overallShopPerformance.Add("damaged", 1);
+        overallShopPerformance.Add("restocked", 50);
+        overallShopPerformance.Add("lost", 0);
         
+        stats.Add("overallShopPerformance", overallShopPerformance);
+        
+        Dictionary<string, object> performanceByCategory = new Dictionary<string, object>();
+        
+        Dictionary<string, int> cardsPerformance = new Dictionary<string, int>();
+        cardsPerformance.Add("orders", 42);
+        cardsPerformance.Add("corrections", 5);
+        cardsPerformance.Add("returns", 0);
+        cardsPerformance.Add("giveaways", 5);
+        cardsPerformance.Add("damaged", 1);
+        cardsPerformance.Add("restocked", 30);
+        cardsPerformance.Add("lost", 0);
+        performanceByCategory.Add("cards", cardsPerformance);
+        
+        Dictionary<string, int> stickersPerformance = new Dictionary<string, int>();
+        stickersPerformance.Add("orders", 24);
+        stickersPerformance.Add("corrections", 1);
+        stickersPerformance.Add("returns", 2);
+        stickersPerformance.Add("giveaways", 3);
+        stickersPerformance.Add("damaged", 0);
+        stickersPerformance.Add("restocked", 20);
+        stickersPerformance.Add("lost", 0);
+        performanceByCategory.Add("stickers", stickersPerformance);
+        
+        Dictionary<string, int> bookmarksPerformance = new Dictionary<string, int>();
+        bookmarksPerformance.Add("orders", 36);
+        bookmarksPerformance.Add("corrections", 0);
+        bookmarksPerformance.Add("returns", 0);
+        bookmarksPerformance.Add("giveaways", 2);
+        bookmarksPerformance.Add("damaged", 0);
+        bookmarksPerformance.Add("restocked", 0);
+        bookmarksPerformance.Add("lost", 0);
+        performanceByCategory.Add("bookmarks", bookmarksPerformance);
+        stats.Add("performanceByCategory", performanceByCategory);
+        
+        // // Sales for past 6 months 
+        Dictionary<string, int> salesByMonth = new Dictionary<string, int>()
+        {
+            {"October", 10},
+            {"November", 20},
+            {"December", 15},
+            {"January", 12},
+            {"February", 25},
+            {"March", 20}
+        };
+        stats.Add("salesByMonth", salesByMonth);
+        
+        // Deductions for past 6 months
+        Dictionary<string, int> deductionsByMonth = new Dictionary<string, int>()
+        {
+            {"October", 2},
+            {"November", 4},
+            {"December", 3},
+            {"January", 1},
+            {"February", 5},
+            {"March", 5}
+        };
+        stats.Add("deductionsByMonth", deductionsByMonth);
+
         
         return Ok(stats);
     }
-    
-    public static List<Dictionary<string, object>> GenerateRandomDictionaries()
-    {
-        List<Dictionary<string, object>> dictionaries = new List<Dictionary<string, object>>();
-
-        // Define the possible values for the ReasonForChange key
-        string[] reasonsForChange = { "Sale", "Restock", "Correction", "Damaged", "Returned", "Resent", "Giveaway", "Lost" };
-
-        // Define the start and end dates for the DateTimeAdded key
-        DateTime startDate = new DateTime(DateTime.Now.Year, 1, 1);
-        DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
-
-        Random rand = new Random();
-
-        // Generate 100 random dictionaries
-        for (int i = 0; i < 100; i++)
-        {
-            Dictionary<string, object> dictionary = new Dictionary<string, object>();
-            
-            dictionary.Add("Sku", "BKM-" + (rand.Next(899) + 100));
-            
-            // Generate a random ReasonForChange
-            dictionary.Add("ReasonForChange", reasonsForChange[rand.Next(reasonsForChange.Length)]);
-
-            //Selects a random 
-            List<string> items = new List<string>() {
-                "Cards",
-                "Candles",
-                "Stickers",
-                "Magnets",
-                "Bookmarks"
-            };
-
-            Random random = new Random();
-            string selected_cateogry = items[random.Next(items.Count)];
-            
-            dictionary.Add("Category", selected_cateogry);
-            
-            // Generate a random ItemName
-            dictionary.Add("ItemName", "Item " + (i + 1));
-
-            // Generate a random DateTimeAdded between the start and end dates
-            TimeSpan timeSpan = endDate - startDate;
-            TimeSpan newSpan = new TimeSpan(0, rand.Next(0, (int)timeSpan.TotalMinutes), 0);
-            dictionary.Add("DateTimeAdded", startDate + newSpan);
-
-            // Generate a random AmountChanged between -10 and 10
-            dictionary.Add("Amount Changed", rand.Next(-10, 11));
-
-            dictionaries.Add(dictionary);
-        }
-
-        return dictionaries;
-    }
-    
 }
