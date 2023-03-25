@@ -1,18 +1,19 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using instock_server_application.Users.Models;
+using instock_server_application.Security.Models;
+using instock_server_application.Security.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace instock_server_application.Users.Services; 
+namespace instock_server_application.Security.Services; 
 
-public class JwtService : IJwtService {
+public class AccessTokenService : IAccessTokenService {
     private readonly string _jwtIssuer;
     private readonly string _jwtAudience;
     private readonly SymmetricSecurityKey _jwtKey;
     
-    public JwtService(IOptions<JwtKey> jwtConfig) {
+    public AccessTokenService(IOptions<JwtKey> jwtConfig) {
         _jwtAudience = jwtConfig.Value.Audience;
         _jwtIssuer = jwtConfig.Value.Issuer;
         _jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Value.SecretKey));
@@ -29,8 +30,7 @@ public class JwtService : IJwtService {
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new[] {
                 new Claim("Id", id),
-                new Claim(JwtRegisteredClaimNames.Sub, email),
-                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim("Email", email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("BusinessId", businessId)
             }),

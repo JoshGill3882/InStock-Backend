@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Dtos;
@@ -12,13 +13,13 @@ public class CreateAccountService : ICreateAccountService {
     private readonly IUserRepo _userRepo;
     private readonly IUtilService _utilService;
     private readonly IPasswordService _passwordService;
-    private readonly IJwtService _jwtService;
+    private readonly IAccessTokenService _accessTokenService;
 
-    public CreateAccountService(IUserRepo userRepo, IUtilService utilService, IPasswordService passwordService, IJwtService jwtService) {
+    public CreateAccountService(IUserRepo userRepo, IUtilService utilService, IPasswordService passwordService, IAccessTokenService accessTokenService) {
         _userRepo = userRepo;
         _utilService = utilService;
         _passwordService = passwordService;
-        _jwtService = jwtService;
+        _accessTokenService = accessTokenService;
     }
 
     /// <summary>
@@ -48,7 +49,7 @@ public class CreateAccountService : ICreateAccountService {
         
         _userRepo.Save(newUser);
 
-        return _jwtService.CreateToken(newUser.UserId, newUser.Email, newUser.UserBusinessId);
+        return _accessTokenService.CreateToken(newUser.UserId, newUser.Email, newUser.UserBusinessId);
     }
 
     /// <summary>
