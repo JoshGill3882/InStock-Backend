@@ -14,11 +14,11 @@ namespace instock_server_application.Businesses.Controllers;
 [Authorize]
 public class BusinessController : ControllerBase {
     private readonly IBusinessService _businessService;
-    private readonly IJwtService _jwtService;
+    private readonly IAccessTokenService _accessTokenService;
 
-    public BusinessController(IBusinessService businessService, IJwtService jwtService) {
+    public BusinessController(IBusinessService businessService, IAccessTokenService accessTokenService) {
         _businessService = businessService;
-        _jwtService = jwtService;
+        _accessTokenService = accessTokenService;
     }
 
     [HttpPost]
@@ -48,7 +48,7 @@ public class BusinessController : ControllerBase {
         
         // If not errors then return 201 with the URI and newly created object details and a new JWT
         string? createdBusinessUrl = Url.Action(controller: "business", action: nameof(GetBusiness), values:new {businessId=createdBusiness.BusinessId}, protocol:Request.Scheme);
-        string newJwtToken = _jwtService.CreateToken(currentUserId, currentUserEmail, createdBusiness.BusinessId);
+        string newJwtToken = _accessTokenService.CreateToken(currentUserId, currentUserEmail, createdBusiness.BusinessId);
         return Created(createdBusinessUrl ?? string.Empty, new {
             businessId = createdBusiness.BusinessId,
             businessName = createdBusiness.BusinessName,

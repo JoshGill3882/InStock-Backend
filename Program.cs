@@ -61,7 +61,7 @@ builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
 // User Services & Repositories
-builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IUserService, UserService>();

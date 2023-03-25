@@ -8,12 +8,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace instock_server_application.Security.Services; 
 
-public class JwtService : IJwtService {
+public class AccessTokenService : IAccessTokenService {
     private readonly string _jwtIssuer;
     private readonly string _jwtAudience;
     private readonly SymmetricSecurityKey _jwtKey;
     
-    public JwtService(IOptions<JwtKey> jwtConfig) {
+    public AccessTokenService(IOptions<JwtKey> jwtConfig) {
         _jwtAudience = jwtConfig.Value.Audience;
         _jwtIssuer = jwtConfig.Value.Issuer;
         _jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Value.SecretKey));

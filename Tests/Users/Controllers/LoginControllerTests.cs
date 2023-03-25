@@ -25,13 +25,13 @@ public class LoginControllerTest {
         
         var mockLoginService = new Mock<ILoginService>();
         var mockPasswordService = new Mock<IPasswordService>();
-        var mockJwtService = new Mock<IJwtService>();
+        var mockAccessTokenService = new Mock<IAccessTokenService>();
         var mockUserService = new Mock<IUserService>();
         
         mockLoginService.Setup(service => service.Login(email, plainTextPassword)).Returns(Task.FromResult(token));
         mockUserService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser())!);
         mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
-        mockJwtService.Setup(service => service.CreateToken(SingleUser().UserId, SingleUser().Email, SingleUser().BusinessId)).Returns(token);
+        mockAccessTokenService.Setup(service => service.CreateToken(SingleUser().UserId, SingleUser().Email, SingleUser().BusinessId)).Returns(token);
 
         var controller = new LoginController(mockLoginService.Object);
         
