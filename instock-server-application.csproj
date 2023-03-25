@@ -27,9 +27,4 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Auth\Models" />
-      <Folder Include="Auth\Services\Interfaces" />
-    </ItemGroup>
-
 </Project>

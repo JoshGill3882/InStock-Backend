@@ -1,4 +1,5 @@
-﻿using instock_server_application.Users.Models;
+﻿using instock_server_application.Auth.Services.Interfaces;
+using instock_server_application.Users.Models;
 using instock_server_application.Users.Services.Interfaces;
 
 namespace instock_server_application.Users.Services; 

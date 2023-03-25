@@ -1,11 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using instock_server_application.Users.Models;
+using instock_server_application.Auth.Models;
+using instock_server_application.Auth.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace instock_server_application.Users.Services; 
+namespace instock_server_application.Auth.Services; 
 
 public class JwtService : IJwtService {
     private readonly string _jwtIssuer;

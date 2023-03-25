@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using instock_server_application.Auth.Services.Interfaces;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -26,9 +27,7 @@ public class BusinessController : ControllerBase {
 
         // Get our current User details from the ClaimsPrinciple Object
         string? currentUserId = User.FindFirstValue("Id") ?? null;
-        Console.WriteLine("ID: " + currentUserId);
         string? currentUserEmail = User.FindFirstValue("Email") ?? null;
-        Console.WriteLine("Email: " + currentUserEmail);
 
         // Check there are no issues with the ID or Email
         if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserEmail)) {

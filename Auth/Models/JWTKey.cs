@@ -1,4 +1,4 @@
-﻿namespace instock_server_application.Users.Models; 
+﻿namespace instock_server_application.Auth.Models; 
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#bind-hierarchical-configuration-data-using-the-options-pattern
 public class JwtKey {
