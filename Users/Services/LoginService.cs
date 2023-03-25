@@ -1,4 +1,4 @@
-﻿using instock_server_application.Auth.Services.Interfaces;
+﻿using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Services.Interfaces;
 

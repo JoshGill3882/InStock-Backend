@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using instock_server_application.Auth.Services.Interfaces;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Users.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

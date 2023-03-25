@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using instock_server_application.Auth.Services.Interfaces;
+using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Shared.Services;
 using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Repositories.Interfaces;
