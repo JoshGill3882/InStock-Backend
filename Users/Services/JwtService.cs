@@ -22,23 +22,17 @@ public class JwtService : IJwtService {
     /// Method which will be ran on a successful authentication
     /// Creates a JWT token which is then passed back
     /// </summary>
-    /// <param name="email"> User's Email </param>
+    /// <param name="email"> User's email </param>
+    /// <param name="businessId"> User's business id </param>
     /// <returns> JWT Token </returns>
-    public string CreateToken(User user) {
-        // Alter the BusinessIds stored into a string seperated by commas
-        string businessIds = "";
-        foreach (string id in user.Businesses) {
-            businessIds += id + ",";
-        }
-        businessIds.Remove(businessIds.Length - 1, 1);
-
+    public string CreateToken(string id, string email, string businessId) {
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(new[] {
-                new Claim("Id", user.UserId),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("Id", id),
+                new Claim(JwtRegisteredClaimNames.Sub, email),
+                new Claim(JwtRegisteredClaimNames.Email, email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("BusinessIds", businessIds)
+                new Claim("BusinessId", businessId)
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             Issuer = _jwtIssuer,

@@ -1,16 +1,51 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+﻿using System.Numerics;
+using Amazon.DynamoDBv2.DataModel;
 
 namespace instock_server_application.Businesses.Models; 
-
+[DynamoDBTable("Items")]
 public class Item {
-    public static string TableName = "Items";
+    public static readonly string TableName = "Items";
+
+    // The value for the items stock, this is so we get more control over the value
+    private int _stock;
     
     [DynamoDBHashKey]
-    private string SKU { get; set; }
-    private string BusinessId { get; set; }
-    private string Category { get; set; }
-    private string Name { get; set; }
-    private int Stock { get; set; }
+    [DynamoDBProperty("SKU")]
+    public string SKU { get; set; }
+    
+    [DynamoDBRangeKey]
+    [DynamoDBProperty("BusinessId")]
+    public string BusinessId { get; set; }
+    
+    [DynamoDBProperty("Category")]
+    public string Category { get; set; }
+    
+    [DynamoDBProperty("Name")]
+    public string Name { get; set; }
+
+    [DynamoDBProperty("Stock")]
+    public String Stock {
+        get => _stock.ToString();
+        set {
+            if (value.Length > int.MaxValue.ToString().Length) {
+                if (value.Contains('-')) {
+                    _stock = int.MinValue;
+                }
+                else {
+                    _stock = int.MaxValue;
+                }
+            } else if ( long.Parse(value) >= int.MaxValue) {
+                _stock = int.MaxValue;
+            } else if (long.Parse(value) <= int.MinValue) {
+                _stock = int.MinValue;
+            }
+            else {
+                _stock = int.Parse(value);
+            }
+        }
+    }
+
+    public Item() {}
 
     /// <summary>
     /// All Args Constructor
@@ -25,6 +60,15 @@ public class Item {
         BusinessId = businessId;
         Category = category;
         Name = name;
-        Stock = stock;
+        _stock = stock;
+    }
+
+    public Item(string sku, string businessId) {
+        SKU = sku;
+        BusinessId = businessId;
+    }
+
+    public int GetStock() {
+        return _stock;
     }
 }

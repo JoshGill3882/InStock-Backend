@@ -1,7 +1,8 @@
-﻿using System.Security.Claims;
+﻿using instock_server_application.Businesses.Dtos;
 
 namespace instock_server_application.Businesses.Services.Interfaces; 
 
 public interface IBusinessService {
-    public bool CheckBusinessIdInJWT(ClaimsPrincipal User, string idToCheck);
+    Task<BusinessDto> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto);
+    Task<BusinessDto> CreateBusiness(CreateBusinessRequestDto newBusinessRequest);
 }

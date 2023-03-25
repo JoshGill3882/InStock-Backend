@@ -1,16 +1,22 @@
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Shared.Filters;
+using instock_server_application.Shared.Formatters;
+using instock_server_application.Shared.Services;
+using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,18 +55,31 @@ var client = new AmazonDynamoDBClient(
     RegionEndpoint.EUWest2
 );
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
+builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
-// Services
+// User Services & Repositories
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
-builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepo, UserRepo>();
-builder.Services.AddScoped<IBusinessService, BusinessService>();
-builder.Services.AddScoped<IItemRepo, ItemRepo>();
 
-builder.Services.AddControllers();
+// Business Services & Repositories
+builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+builder.Services.AddScoped<IItemRepo, ItemRepo>();
+builder.Services.AddScoped<ICreateAccountService, CreateAccountService>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IItemStockService, ItemStockService>();
+
+// Util Services & Repositories
+builder.Services.AddScoped<IUtilService, UtilService>();
+
+
+builder.Services.AddControllers(options => {
+    options.Filters.Add<GlobalExceptionFilter>();
+    // options.InputFormatters.Insert(0, JsonPatchInputFormatter.GetJsonPatchInputFormatter());
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

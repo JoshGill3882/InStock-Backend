@@ -13,7 +13,7 @@ public static class UserMock {
             "Barnes", 
             "s0m3encrypt3dpa55w0rd", 
             "StandardUser",
-            new List<string> {"2a36f726-b3a2-11ed-afa1-0242ac120002"}
+            "2a36f726-b3a2-11ed-afa1-0242ac120002"
         );
     }
 }
