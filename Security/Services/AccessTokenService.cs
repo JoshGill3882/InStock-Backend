@@ -23,6 +23,7 @@ public class AccessTokenService : IAccessTokenService {
     /// Method which will be ran on a successful authentication
     /// Creates a JWT token which is then passed back
     /// </summary>
+    /// <param name="id"> User's id </param>
     /// <param name="email"> User's email </param>
     /// <param name="businessId"> User's business id </param>
     /// <returns> JWT Token </returns>
@@ -45,5 +46,9 @@ public class AccessTokenService : IAccessTokenService {
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public string RefreshToAccess(string refreshToken) {
+        return "Access";
     }
 }

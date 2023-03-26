@@ -14,6 +14,7 @@ public static class CreateAccountMockData {
             "Barnes", 
             "s0m3encrypt3dpa55w0rd", 
             "Standard User",
+            "",
             ""
         );
     }

@@ -2,4 +2,5 @@
 
 public interface IAccessTokenService {
     public string CreateToken(string id, string email, string businessId);
+    public string RefreshToAccess(string refreshToken);
 }

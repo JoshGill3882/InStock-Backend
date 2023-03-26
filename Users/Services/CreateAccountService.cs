@@ -44,6 +44,7 @@ public class CreateAccountService : ICreateAccountService {
             newAccountDto.LastName,
             _passwordService.Encrypt(newAccountDto.Password),
             "Standard User",
+            "",
             ""
         );
         

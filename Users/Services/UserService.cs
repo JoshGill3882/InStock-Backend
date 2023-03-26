@@ -60,7 +60,8 @@ public class UserService : IUserService {
             result["LastName"].S,
             result["Password"].S,
             result["Role"].S,
-            businessId
+            businessId,
+            result["RefreshToken"].S
         );
         return userDetails;
     }

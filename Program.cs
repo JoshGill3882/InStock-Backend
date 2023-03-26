@@ -60,8 +60,11 @@ var client = new AmazonDynamoDBClient(
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
-// User Services & Repositories
+// Security Services and Repositories
 builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
+// User Services & Repositories
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IUserService, UserService>();
