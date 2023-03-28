@@ -18,6 +18,7 @@ public class UserService : IUserService {
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
     public async Task<User?> FindUserByEmail(string email) {
+        // TODO - Change this to use an instance of UserRepo
         var request = new QueryRequest {
             TableName = "Users",
             IndexName = "Email",
@@ -61,7 +62,10 @@ public class UserService : IUserService {
             result["Password"].S,
             result["Role"].S,
             businessId,
-            result["RefreshToken"].S
+            new () {
+                {"Token", ""},
+                {"Expiry", ""}
+            }
         );
         return userDetails;
     }

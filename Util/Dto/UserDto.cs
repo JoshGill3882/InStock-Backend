@@ -12,9 +12,9 @@ public class UserDto {
     public string Password { get; }
     public string Role { get; }
     public string UserBusinessId { get; }
-    public string RefreshToken { get; }
+    public Dictionary<string, string> RefreshToken { get; }
 
-    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, string refreshToken) {
+    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, Dictionary<string, string> refreshToken) {
         UserId = userId;
         Email = email;
         AccountStatus = accountStatus;

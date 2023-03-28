@@ -3,5 +3,5 @@
 namespace instock_server_application.Security.Services.Interfaces; 
 
 public interface IRefreshTokenService {
-    public Task<string> CreateToken(RefreshTokenDto refreshTokenDto);
+    public Task<Dictionary<string, string>> CreateToken(RefreshTokenDto refreshTokenDto);
 }
