@@ -6,6 +6,9 @@ using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Security.Models;
+using instock_server_application.Security.Services;
+using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Shared.Filters;
 using instock_server_application.Shared.Formatters;
 using instock_server_application.Shared.Services;
@@ -58,7 +61,7 @@ builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
 // User Services & Repositories
-builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IUserService, UserService>();
