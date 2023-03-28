@@ -1,7 +1,10 @@
 ﻿using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 
-namespace instock_server_application.Businesses.Models; 
+namespace instock_server_application.Businesses.Models;
+
 [DynamoDBTable("Items")]
 public class Item {
     public static readonly string TableName = "Items";
@@ -70,5 +73,10 @@ public class Item {
 
     public int GetStock() {
         return _stock;
+    }
+    
+    // Scan conditions used in scans for this model
+    public static ScanCondition ByBusinessId(string businessId) {
+        return new ScanCondition(nameof(BusinessId), ScanOperator.Equal, businessId);
     }
 }

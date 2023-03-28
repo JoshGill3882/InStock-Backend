@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using Microsoft.AspNetCore.Connections;
 
 namespace instock_server_application.Businesses.Repositories; 
 
@@ -15,17 +16,31 @@ public class ItemRepo : IItemRepo{
         _client = client;
         _context = context;
     }
-    public async Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId) {
-        var request = new QueryRequest {
-            TableName = Item.TableName,
-            IndexName = "BusinessId",
-            KeyConditionExpression = "BusinessId = :Id",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Id", new AttributeValue(businessId)}
-            }
-        };
-        var response = await _client.QueryAsync(request);
-        return response.Items;
+    
+    public async Task<List<ItemDto>> GetAllItems(string businessId) {
+        
+        // Get List of items
+        // List<Item> listOfItemModel = await _context.QueryAsync<Item>(businessId).GetRemainingAsync();
+        
+        List<Item> listOfItemModel = await _context.ScanAsync<Item>(
+            new [] {
+                Item.ByBusinessId(businessId)
+            }).GetRemainingAsync();
+
+        // Convert list of items
+        List<ItemDto> listOfItemDto = new List<ItemDto>();
+        
+        foreach (Item itemModel in listOfItemModel) {
+            listOfItemDto.Add(
+                new ItemDto(
+                    sku: itemModel.SKU,
+                    businessId: itemModel.BusinessId,
+                    category: itemModel.Category,
+                    name: itemModel.Name,
+                    stock: itemModel.GetStock()));
+        }
+        
+        return listOfItemDto;
     }
     
     public async Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto) {

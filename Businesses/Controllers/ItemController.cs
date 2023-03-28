@@ -37,15 +37,19 @@ public class ItemController : ControllerBase {
         // Creating new userDto to pass into service
         UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
         
-        List<Dictionary<string, string>>? items = _itemService.GetItems(currentUserDto, businessId).Result;
+        ListOfItemDto listOfItemDto = _itemService.GetItems(currentUserDto, businessId).Result;
 
-        if (items == null) {
-            return Unauthorized();
-        } if (items.Count == 0) {
+        if (listOfItemDto.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+            if (listOfItemDto.ErrorNotification.Errors["otherErrors"].Contains(ListOfItemDto.ERROR_UNAUTHORISED)) {
+                return Unauthorized();
+            }
+        }
+        
+        if (listOfItemDto.ListOfItems.Count <= 0) {
             return NotFound();
         }
-
-        return Ok(items);
+        
+        return Ok(listOfItemDto.ToDictionaryForHttpResonse());
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
+using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
@@ -76,36 +77,17 @@ public class ItemService : IItemService {
         }
     }
 
-    public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
+    public async Task<ListOfItemDto> GetItems(UserDto userDto, string businessId) {
         
-        if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
-            List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
-            List<Dictionary<string, string>> items = new();
-
-            // User has access, but incorrect businessID or no items found
-            if (responseItems.Count == 0) {
-                // Return an empty list
-                return items;
-            }
-
-            foreach (Dictionary<string, AttributeValue> item in responseItems) {
-                string stock = item["Stock"].S ?? item["Stock"].N;
-                items.Add(
-                    new () {
-                        {"SKU", item["SKU"].S},
-                        {"BusinessId", item["BusinessId"].S},
-                        {"Category", item["Category"].S},
-                        {"Name", item["Name"].S},
-                        {"Stock", stock}
-                    }
-                );
-            }
-
-            return items;
+        if (!_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
+            ErrorNotification errorNotes = new ErrorNotification();
+            errorNotes.AddError(ListOfItemDto.ERROR_UNAUTHORISED);
+            return new ListOfItemDto(errorNotes);
         }
 
-        // If the user doesn't have access, return "null"
-        return null;
+        List<ItemDto> responseItems = await _itemRepo.GetAllItems(businessId);
+        
+        return new ListOfItemDto(responseItems);
     }
     
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
