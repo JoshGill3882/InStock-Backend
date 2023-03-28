@@ -45,7 +45,8 @@ public class CreateAccountService : ICreateAccountService {
             _passwordService.Encrypt(newAccountDto.Password),
             "Standard User",
             "",
-            new ()
+            "",
+            ""
         );
         
         _userRepo.Save(newUser);

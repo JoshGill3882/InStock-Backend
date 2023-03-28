@@ -12,9 +12,10 @@ public class UserDto {
     public string Password { get; }
     public string Role { get; }
     public string UserBusinessId { get; }
-    public Dictionary<string, string> RefreshToken { get; }
+    public string RefreshToken { get; }
+    public string RefreshTokenExpiry { get; }
 
-    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, Dictionary<string, string> refreshToken) {
+    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, string refreshToken, string refreshTokenExpiry) {
         UserId = userId;
         Email = email;
         AccountStatus = accountStatus;
@@ -25,6 +26,7 @@ public class UserDto {
         Role = role;
         UserBusinessId = userBusinessId;
         RefreshToken = refreshToken;
+        RefreshTokenExpiry = refreshTokenExpiry;
     }
     
     public UserDto(string userId, string userBusinessId) {
@@ -43,5 +45,6 @@ public class UserDto {
         Role = user.Role;
         UserBusinessId = user.BusinessId;
         RefreshToken = user.RefreshToken;
+        RefreshTokenExpiry = user.RefreshTokenExpiry;
     }
 }

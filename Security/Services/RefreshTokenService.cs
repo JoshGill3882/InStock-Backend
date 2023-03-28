@@ -12,24 +12,22 @@ public class RefreshTokenService : IRefreshTokenService {
 
     public RefreshTokenService(IUserRepo userRepo) { _userRepo = userRepo; }
     
-    public async Task<Dictionary<string, string>> CreateToken(RefreshTokenDto refreshTokenDto) {
+    public async Task<string> CreateToken(RefreshTokenDto refreshTokenDto) {
         // Get User Model from DTO
         User user = refreshTokenDto.User;
         
         // Create String List
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         // Generate Random String of length 500 based on characters
-        string token = new string(
+        string token = 
+        user.RefreshToken = new string(
             Enumerable.Repeat(chars, 500)
                 .Select(s => s[Random.Next(s.Length)])
                 .ToArray()
         );
-        user.RefreshToken = new() {
-            { "Token", token },
-            { "Expiry", DateTime.UtcNow.AddDays(7).ToString()}
-        };
-        
-        // Save User (with new token)
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7).ToString();
+
+    // Save User (with new token)
         _userRepo.Save(new UserDto(user));
         // Return the token
         return user.RefreshToken;
