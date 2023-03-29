@@ -10,17 +10,22 @@ public class UserRepo : IUserRepo {
 
     public UserRepo(IDynamoDBContext dynamoDbContext) { _dynamoDbContext = dynamoDbContext; }
 
-    public async Task<User?> GetByEmail(string email) {
+    public async Task<User> GetByEmail(string email) {
         User? user = _dynamoDbContext.QueryAsync<User>(
             email,
             new DynamoDBOperationConfig {IndexName = "Email"}
             ).GetRemainingAsync().Result.FirstOrDefault();
 
-        if (user == null) {
-            return new User();
-        }
+        return user ?? new User();
+    }
+    
+    public async Task<User> GetByRefreshToken(string token) {
+        User? user = _dynamoDbContext.QueryAsync<User>(
+            token,
+            new DynamoDBOperationConfig {IndexName = "RefreshToken"}
+        ).GetRemainingAsync().Result.FirstOrDefault();
 
-        return user;
+        return user ?? new User();
     }
 
     public async void Save(UserDto userDto) {
