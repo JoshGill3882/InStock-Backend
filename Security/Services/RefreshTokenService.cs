@@ -27,7 +27,7 @@ public class RefreshTokenService : IRefreshTokenService {
         return DateTime.UtcNow.AddDays(90).ToString();
     }
     
-    public async Task<string> CreateToken(RefreshTokenDto refreshTokenDto) {
+    public void CreateToken(RefreshTokenDto refreshTokenDto) {
         // Get User Model from DTO
         User user = refreshTokenDto.User;
 
@@ -36,7 +36,5 @@ public class RefreshTokenService : IRefreshTokenService {
 
         // Save User (with new token)
         _userRepo.Save(new UserDto(user));
-        // Return the token
-        return user.RefreshToken;
     }
 }

@@ -7,6 +7,7 @@ namespace instock_server_application.Users.Models;
 
 [DynamoDBTable("Users")]
 public class User {
+    [DynamoDBIgnore]
     public static string TableName = "Users";
     
     [DynamoDBHashKey]
@@ -71,5 +72,7 @@ public class User {
         Password = userDto.Password;
         Role = userDto.Role;
         BusinessId = userDto.UserBusinessId;
+        RefreshToken = userDto.RefreshToken;
+        RefreshTokenExpiry = userDto.RefreshTokenExpiry;
     }
 }
