@@ -15,7 +15,7 @@ public class ListOfItemDto : DataTransferObjectSuperType {
         ListOfItems = listOfItems;
     }
 
-    public List<Dictionary<string, object>> ToDictionaryForHttpResonse() {
+    public List<Dictionary<string, object>> ToDictionaryForHttpResponse() {
         var listOfItems = new List<Dictionary<string, object>>();
         
         foreach (ItemDto item in ListOfItems) {

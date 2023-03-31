@@ -49,7 +49,7 @@ public class ItemController : ControllerBase {
             return NotFound();
         }
         
-        return Ok(listOfItemDto.ToDictionaryForHttpResonse());
+        return Ok(listOfItemDto.ToDictionaryForHttpResponse());
     }
 
     /// <summary>
