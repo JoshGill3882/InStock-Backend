@@ -72,30 +72,13 @@ public class ItemRepo : IItemRepo{
         return response.Count > 0;
     }
     
-    public async Task<bool> IsSKUInUse(string SKU, string businessId)
-    {
-
-        var duplicateSKU = false;
-        
-        var request = new ScanRequest
-        {
-            TableName = Item.TableName,
-            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
-                {":Id", new AttributeValue(businessId)},
-                {":SKU", new AttributeValue(SKU)}
-            },
-
-            FilterExpression = "BusinessId = :Id and SKU = :SKU",
-        };
-        
-        var response = await _client.ScanAsync(request);
-        if (response.Items.Count > 0)
-        {
-            duplicateSKU = true;
-        }
-
-        return duplicateSKU;
-
+    public async Task<bool> IsSkuInUse(string sku) {
+        var response = await _context.ScanAsync<Item>(
+            new[] {
+                Item.ByBusinessSku(sku)
+            }).GetRemainingAsync();
+    
+        return response.Count > 0;
     }
 
     public void Delete(DeleteItemDto deleteItemDto) {

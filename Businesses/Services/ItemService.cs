@@ -70,7 +70,7 @@ public class ItemService : IItemService {
     private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
         const string errorKey = "duplicateSKU";
-        var isDuplicate = await _itemRepo.IsSKUInUse(newItemRequestDto.SKU, newItemRequestDto.BusinessId);
+        var isDuplicate = await _itemRepo.IsSkuInUse(newItemRequestDto.SKU);
         if (isDuplicate)
         {
             errorNotes.AddError(errorKey, "You already have an item with that SKU");

@@ -8,7 +8,7 @@ public interface IItemRepo {
     Task<List<ItemDto>> GetAllItems(string businessId);
     Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto);
     Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto);
-    Task<bool> IsSKUInUse(string SKU, string businessId);
+    Task<bool> IsSkuInUse(string sku);
     Task<ItemDto> SaveExistingItem(StoreItemDto itemToSaveDto);
     Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto stockUpdateDto);
     Task<ItemDto?> GetItem(string businessId, string itemSku);
