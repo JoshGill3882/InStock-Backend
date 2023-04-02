@@ -20,8 +20,6 @@ public class ItemRepo : IItemRepo{
     public async Task<List<ItemDto>> GetAllItems(string businessId) {
         
         // Get List of items
-        // List<Item> listOfItemModel = await _context.QueryAsync<Item>(businessId).GetRemainingAsync();
-        
         List<Item> listOfItemModel = await _context.ScanAsync<Item>(
             new [] {
                 Item.ByBusinessId(businessId)
@@ -65,30 +63,13 @@ public class ItemRepo : IItemRepo{
         return createdItemDto;
     }
     
-    public async Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto)
-    {
-        var duplicateName = false;
-        var request = new ScanRequest
-        {
-            TableName = Item.TableName,
-            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
-                {":Id", new AttributeValue(createItemRequestDto.BusinessId)},
-                {":name", new AttributeValue(createItemRequestDto.Name)}
-            },
-            // "Name" is protected in DynamoDB so Expression Attribute Name is required
-            ExpressionAttributeNames = new Dictionary<string,string> {
-                {"#n", "Name"},
-            },
-
-            FilterExpression = "BusinessId = :Id and #n = :name",
-        };
+    public async Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto) {
+        var response = await _context.ScanAsync<Item>(
+            new[] {
+                Item.ByBusinessName(createItemRequestDto.Name)
+            }).GetRemainingAsync();
         
-        var response = await _client.ScanAsync(request);
-        if (response.Items.Count > 0)
-        {
-            duplicateName = true;
-        }
-        return duplicateName;
+        return response.Count > 0;
     }
     
     public async Task<bool> IsSKUInUse(string SKU, string businessId)

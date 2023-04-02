@@ -79,4 +79,7 @@ public class Item {
     public static ScanCondition ByBusinessId(string businessId) {
         return new ScanCondition(nameof(BusinessId), ScanOperator.Equal, businessId);
     }
+    public static ScanCondition ByBusinessName(string businessName) {
+        return new ScanCondition(nameof(Name), ScanOperator.Equal, businessName);
+    }
 }
