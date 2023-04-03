@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
-
+using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace instock_server_application.Businesses.Controllers; 
@@ -9,7 +10,37 @@ namespace instock_server_application.Businesses.Controllers;
 [Route("/statistics")]
 public class StatisticsController : ControllerBase {
     
-    //Constructor not needed yet as this is just a mock that doesnt depend on services
+    private readonly IItemService _itemService;
+
+    public StatisticsController(IItemService itemService) {
+        _itemService = itemService;
+    }
+
+    [HttpGet]
+    [Route("{businessId}")]
+    public async Task<IActionResult> GetStatistics([FromRoute] string businessId)
+    {
+        // Get our current UserId and BusinessId to validate and pass to the business service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+            return Unauthorized();
+        }
+        
+        // Creating new userDto to pass into service
+        UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
+        
+        List<Dictionary<string, string>>? items = _itemService.GetItems(currentUserDto, businessId).Result;
+
+        if (items == null) {
+            return Unauthorized();
+        } if (items.Count == 0) {
+            return NotFound();
+        }
+        return Ok(items);
+    }
 
     /// <summary>
     /// Mock Function for getting stats which provide an overview for a businesses performance.
