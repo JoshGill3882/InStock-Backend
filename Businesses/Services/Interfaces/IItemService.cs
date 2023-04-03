@@ -13,5 +13,5 @@ public interface IItemService {
     
     public Task<List<Dictionary<string, string>>?> GetCategories(ValidateBusinessIdDto validateBusinessIdDto);
     
-    public Task<List<Dictionary<string, string>>?> GetItemsWithUpdates(UserDto userDto, string businessId);
+    public Task<List<StatItemDto>?> GetItemsWithUpdates(UserDto userDto, string businessId);
 }

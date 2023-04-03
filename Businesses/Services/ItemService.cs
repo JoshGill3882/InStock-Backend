@@ -108,22 +108,32 @@ public class ItemService : IItemService {
         return null;
     }
     
-    public async Task<List<Dictionary<string, string>>?> GetItemsWithUpdates(UserDto userDto, string businessId) {
+    public async Task<List<StatItemDto>?> GetItemsWithUpdates(UserDto userDto, string businessId) {
         
         if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<Dictionary<string, string>> items = new();
+            List<StatItemDto> statItemDtos = new();
 
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
                 // Return an empty list
-                return items;
+                return statItemDtos;
             }
 
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 if (item.ContainsKey("StockUpdates"))
                 {
                     string stock = item["Stock"].S ?? item["Stock"].N;
+                    StatItemDto statItemDto = new StatItemDto(
+                        item["SKU"].S,
+                        item["BusinessId"].S,
+                        item["Category"].S,
+                        item["Name"].S,
+                        stock,
+                        item["StockUpdates"].S
+                    );
+                    statItemDtos.Add(statItemDto);
                     items.Add(
                         new () {
                             {"SKU", item["SKU"].S},
@@ -138,7 +148,7 @@ public class ItemService : IItemService {
 
             }
 
-            return items;
+            return statItemDtos;
         }
 
         // If the user doesn't have access, return "null"

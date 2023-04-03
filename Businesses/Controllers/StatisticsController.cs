@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,7 @@ public class StatisticsController : ControllerBase {
         // Creating new userDto to pass into service
         UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
         
-        List<Dictionary<string, string>>? items = _itemService.GetItemsWithUpdates(currentUserDto, businessId).Result;
+        List<StatItemDto>? items = _itemService.GetItemsWithUpdates(currentUserDto, businessId).Result;
 
         if (items == null) {
             return Unauthorized();
