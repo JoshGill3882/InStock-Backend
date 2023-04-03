@@ -136,22 +136,14 @@ public class ItemService : IItemService {
     public async Task<List<Dictionary<string, string>>?> GetCategories(ValidateBusinessIdDto validateBusinessIdDto) {
 
         if (_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
-            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(validateBusinessIdDto).Result;
-            List<Dictionary<string, string>> categories = new();
+            List<Dictionary<string, string>> categories = _itemRepo.GetAllCategories(validateBusinessIdDto).Result;
 
             // User has access, but incorrect businessID or no items found
-            if (responseCategories.Count == 0) {
+            if (categories.Count == 0) {
                 // Return an empty list
                 return categories;
             }
-
-            foreach (Dictionary<string, AttributeValue> category in responseCategories) {
-                categories.Add(
-                    new() {
-                        { "Category", category["Category"].S }
-                    }
-                );
-            }
+            
             return categories;
         }
         

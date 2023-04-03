@@ -13,7 +13,7 @@ public interface IItemRepo {
     Task<StockUpdateDto> SaveStockUpdate(StoreStockUpdateDto stockUpdateDto);
     Task<ItemDto?> GetItem(string businessId, string itemSku);
     void Delete(DeleteItemDto deleteItemDto);
-    Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto);
+    Task<List<Dictionary<string, string>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto);
     Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto);
 
 }

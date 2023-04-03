@@ -86,27 +86,20 @@ public class ItemRepo : IItemRepo{
         _context.DeleteAsync(item);
     }
     
-    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto) {
-        var request = new ScanRequest
-        {
-            TableName = Item.TableName,
-            ProjectionExpression = "Category",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Id", new AttributeValue(validateBusinessIdDto.BusinessId)}
-            },
-            FilterExpression = "BusinessId = :Id",
-        };
-    
-        var response = await _client.ScanAsync(request);
-    
+    public async Task<List<Dictionary<string, string>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto) {
+        
+        List<Item> listOfItemModel = await _context.ScanAsync<Item>(
+            new [] {
+                Item.ByBusinessId(validateBusinessIdDto.BusinessId)
+            }).GetRemainingAsync();
+
         var categories = new HashSet<string>();
-        var categoryList = new List<Dictionary<string, AttributeValue>>();
-        foreach (var item in response.Items) {
-            var categoryValue = item["Category"];
-            var category = categoryValue.S;
+        var categoryList = new List<Dictionary<string, string>>();
+        foreach (var item in listOfItemModel) {
+            var category = item.Category;
             if (categories.Add(category)) {
-                categoryList.Add(new Dictionary<string, AttributeValue> {
-                    {"Category", categoryValue}
+                categoryList.Add(new Dictionary<string, string> {
+                    {"Category", category}
                 });
             }
         }
