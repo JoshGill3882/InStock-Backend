@@ -8,12 +8,12 @@ public class StatItemDto : DataTransferObjectSuperType {
     public string Category { get; }
     public string Name { get; }
     public string Stock { get; }
-    public string StockUpdates { get; }
+    public List<StatStockDto> StockUpdates { get; }
     
     public StatItemDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
 
-    public StatItemDto(string sku, string businessId, string category, string name, string stock, string stockUpdates)
+    public StatItemDto(string sku, string businessId, string category, string name, string stock, List<StatStockDto> stockUpdates)
     {
         SKU = sku;
         BusinessId = businessId;

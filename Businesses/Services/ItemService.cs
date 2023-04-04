@@ -1,10 +1,12 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Shared.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -112,7 +114,6 @@ public class ItemService : IItemService {
         
         if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
-            List<Dictionary<string, string>> items = new();
             List<StatItemDto> statItemDtos = new();
 
             // User has access, but incorrect businessID or no items found
@@ -124,6 +125,8 @@ public class ItemService : IItemService {
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 if (item.ContainsKey("StockUpdates"))
                 {
+                    string jsonString = item["StockUpdates"].S;
+                    List<StatStockDto> statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
                     string stock = item["Stock"].S ?? item["Stock"].N;
                     StatItemDto statItemDto = new StatItemDto(
                         item["SKU"].S,
@@ -131,19 +134,9 @@ public class ItemService : IItemService {
                         item["Category"].S,
                         item["Name"].S,
                         stock,
-                        item["StockUpdates"].S
+                        statStockDtos
                     );
                     statItemDtos.Add(statItemDto);
-                    items.Add(
-                        new () {
-                            {"SKU", item["SKU"].S},
-                            {"BusinessId", item["BusinessId"].S},
-                            {"Category", item["Category"].S},
-                            {"Name", item["Name"].S},
-                            {"Stock", stock},
-                            {"StockUpdates", item["StockUpdates"].S}
-                        }
-                    );
                 }
 
             }
