@@ -110,18 +110,22 @@ public class ItemService : IItemService {
         return null;
     }
     
-    public async Task<List<StatItemDto>?> GetItemsWithUpdates(UserDto userDto, string businessId) {
+    public async Task<Dictionary<string, object>?> GetStats(UserDto userDto, string businessId) {
         
         if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<StatItemDto> statItemDtos = new();
+            Dictionary<string, object> stats = new Dictionary<string, object>();
+            Dictionary<string, Dictionary<string, int>> categoryStats = new Dictionary<string, Dictionary<string, int>>();
+            Dictionary<string, int> overallShopPerformance = new Dictionary<string, int>();
 
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
                 // Return an empty list
-                return statItemDtos;
+                return stats;
             }
 
+            // Create list of item dtos with stock updates
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 if (item.ContainsKey("StockUpdates"))
                 {
@@ -138,10 +142,54 @@ public class ItemService : IItemService {
                     );
                     statItemDtos.Add(statItemDto);
                 }
-
             }
+            
+            // loop through StatItemDtos calculate stats
+            foreach (var statItemDto in statItemDtos)
+            {
+                string category = statItemDto.Category;
+                // loop through each statStockDto
+                foreach (var statStockDto in statItemDto.StockUpdates)
+                {
+                    // get reason for change 
+                    string reasonForChange = statStockDto.ReasonForChange;
+                    // get amount changed
+                    int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    
+                    // Update overallShopPerformance
+                    if (overallShopPerformance.ContainsKey(reasonForChange))
+                    {
+                        overallShopPerformance[reasonForChange] += amountChanged;
+                    }
+                    else if (!overallShopPerformance.ContainsKey(reasonForChange))
+                    {
+                        overallShopPerformance[reasonForChange] = amountChanged;
+                    }
 
-            return statItemDtos;
+                    // Update categoryStats
+                    if (categoryStats.ContainsKey(category))
+                    {
+                        if (categoryStats[category].ContainsKey(reasonForChange))
+                        {
+                            categoryStats[category][reasonForChange] += amountChanged;
+                        } else if (!categoryStats[category].ContainsKey(reasonForChange))
+                        {
+                           categoryStats[category].Add(reasonForChange, amountChanged); 
+                        }
+                    } else if (!categoryStats.ContainsKey(category))
+                    {
+                        categoryStats.Add(category, new Dictionary<string, int>()
+                        {
+                            {reasonForChange, amountChanged},
+                        });
+                    }
+                } 
+            }
+            
+            stats.Add("overallShopPerformance", overallShopPerformance);
+            stats.Add("performanceByCategory", categoryStats);
+            
+            return stats;
         }
 
         // If the user doesn't have access, return "null"
