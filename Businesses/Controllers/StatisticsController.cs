@@ -33,16 +33,12 @@ public class StatisticsController : ControllerBase {
         // Creating new userDto to pass into service
         UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
         
-        Dictionary<string, object>? stats = _itemService.GetStats(currentUserDto, businessId).Result;
+        AllStatsDto? stats = _itemService.GetStats(currentUserDto, businessId).Result;
 
         if (stats == null)
         {
             return Unauthorized();
         }
-
-        // } if (items.Count == 0) {
-        //     return NotFound();
-        // }
         return Ok(stats);
     }
 

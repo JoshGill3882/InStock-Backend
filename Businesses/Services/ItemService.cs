@@ -111,7 +111,7 @@ public class ItemService : IItemService {
         return null;
     }
     
-    public async Task<Dictionary<string, object>?> GetStats(UserDto userDto, string businessId) {
+    public async Task<AllStatsDto?> GetStats(UserDto userDto, string businessId) {
         
         if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
@@ -134,8 +134,7 @@ public class ItemService : IItemService {
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
                 // Return an empty stats object
-                // TODO - make stats 0 for every field
-                return stats;
+                return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth);
             }
 
             // Create list of item dtos with stock updates
@@ -157,7 +156,7 @@ public class ItemService : IItemService {
                 }
             }
             
-            // loop through StatItemDtos calculate stats
+            // loop through StatItemDtos and calculate stats
             foreach (var statItemDto in statItemDtos)
             {
                 // get category
@@ -208,8 +207,8 @@ public class ItemService : IItemService {
             stats.Add("overallShopPerformance", overallShopPerformance);
             stats.Add("performanceByCategory", categoryStats);
             stats.Add("salesByMonth", salesByMonth);
-            
-            return stats;
+            AllStatsDto allStatsDto = new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth);
+            return allStatsDto;
         }
 
         // If the user doesn't have access, return "null"
