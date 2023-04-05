@@ -80,8 +80,8 @@ public class StatisticsService : IStatisticsService
                     string monthAdded = dateAdded.ToString("MMM", CultureInfo.InvariantCulture);
                     
                     // Update overallShopPerformance
-                    overallShopPerformance.TryGetValue(reasonForChange, out int overallCount); //overallCount defaults to 0
-                    overallShopPerformance[reasonForChange] = overallCount + amountChanged;
+                    overallShopPerformance.TryGetValue(reasonForChange, out int reasonAmount); // reasonAmount defaults to 0
+                    overallShopPerformance[reasonForChange] = reasonAmount + amountChanged;
 
                     // Update categoryStats
                     if (!categoryStats.TryGetValue(category, out var categoryDict)) {
@@ -97,8 +97,8 @@ public class StatisticsService : IStatisticsService
                         categoryStats.Add(category, categoryDict);
                     }
 
-                    categoryDict.TryGetValue(reasonForChange, out int categoryCount);
-                    categoryDict[reasonForChange] = categoryCount + amountChanged;
+                    categoryDict.TryGetValue(reasonForChange, out int categoryAmount);
+                    categoryDict[reasonForChange] = categoryAmount + amountChanged;
                     
                     // Update sales per month
                     if (reasonForChange == "Sale") {
@@ -107,8 +107,8 @@ public class StatisticsService : IStatisticsService
                                 salesByMonth.Add(yearAdded, yearDict);
                             }
 
-                            yearDict.TryGetValue(monthAdded, out int monthCount);
-                            yearDict[monthAdded] = monthCount + amountChanged;
+                            yearDict.TryGetValue(monthAdded, out int monthAmount);
+                            yearDict[monthAdded] = monthAmount + amountChanged;
                     }
                     // Update deductions per month
                     if (reasonForChange != "Sale" && reasonForChange != "Order" && amountChangedWithNegative < 0) {
@@ -117,8 +117,8 @@ public class StatisticsService : IStatisticsService
                             deductionsByMonth.Add(yearAdded, yearDict);
                         }
 
-                        yearDict.TryGetValue(monthAdded, out int monthCount);
-                        yearDict[monthAdded] = monthCount + amountChanged;
+                        yearDict.TryGetValue(monthAdded, out int monthAmount);
+                        yearDict[monthAdded] = monthAmount + amountChanged;
                     }
                 } 
             }
