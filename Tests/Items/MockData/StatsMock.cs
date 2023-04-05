@@ -109,6 +109,16 @@ public class StatsMock
                         {"Mar", 518}
                     }
                 }
+            },
+            new Dictionary<int, Dictionary<string, int>>()
+            {
+                {
+                    2023, new Dictionary<string, int>()
+                    {
+                        {"Apr", 20},
+                        {"Mar", 345}
+                    }
+                }
             }
         );
     }

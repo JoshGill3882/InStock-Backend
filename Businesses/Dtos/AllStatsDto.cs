@@ -8,10 +8,14 @@ public class AllStatsDto
     
     public Dictionary<int, Dictionary<string, int>> salesByMonth { get; }
 
-    public AllStatsDto(Dictionary<string, int> overallShopPerformance, Dictionary<string, Dictionary<string, int>> categoryStats, Dictionary<int, Dictionary<string, int>> salesByMonth)
+    public Dictionary<int, Dictionary<string, int>> deductionsByMonth { get; }
+
+    public AllStatsDto(Dictionary<string, int> overallShopPerformance, Dictionary<string, Dictionary<string, int>> categoryStats, 
+        Dictionary<int, Dictionary<string, int>> salesByMonth, Dictionary<int, Dictionary<string, int>> deductionsByMonth)
     {
         this.overallShopPerformance = overallShopPerformance;
         this.categoryStats = categoryStats;
         this.salesByMonth = salesByMonth;
+        this.deductionsByMonth = deductionsByMonth;
     }
 }

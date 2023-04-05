@@ -17,6 +17,12 @@ public class StatisticsController : ControllerBase {
         _statitisticsService = statisticsService;
     }
 
+    /// <summary>
+    /// Function for getting stats for a specific business, providing the currently logged in user has access
+    /// </summary>
+    /// <param name="businessId"> The businessId to get the stats for </param>
+    /// <returns> A DTO containing stats for the business. Including overall performance, performance by
+    /// category, and sales/deductions per month</returns>
     [HttpGet]
     [Route("{businessId}")]
     public async Task<IActionResult> GetStatistics([FromRoute] string businessId)

@@ -26,6 +26,7 @@ public class StatisticsService : IStatisticsService
             List<StatItemDto> statItemDtos = new();
             Dictionary<string, Dictionary<string, int>> categoryStats = new Dictionary<string, Dictionary<string, int>>();
             Dictionary<int, Dictionary<string, int>> salesByMonth = new Dictionary<int, Dictionary<string, int>>();
+            Dictionary<int, Dictionary<string, int>> deductionsByMonth = new Dictionary<int, Dictionary<string, int>>();
             Dictionary<string, int> overallShopPerformance = new Dictionary<string, int>()
             {
                 // Add default values with 0 values
@@ -41,7 +42,7 @@ public class StatisticsService : IStatisticsService
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
                 // Return an empty stats object
-                return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth);
+                return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth);
             }
 
             // Create list of item dtos with stock updates
@@ -73,6 +74,7 @@ public class StatisticsService : IStatisticsService
                 {
                     string reasonForChange = statStockDto.ReasonForChange;
                     int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    int amountChangedWithNegative = statStockDto.AmountChanged;
                     DateTime dateAdded = DateTime.Parse(statStockDto.DateTimeAdded);
                     int yearAdded = dateAdded.Year;
                     string monthAdded = dateAdded.ToString("MMM", CultureInfo.InvariantCulture);
@@ -108,9 +110,19 @@ public class StatisticsService : IStatisticsService
                             yearDict.TryGetValue(monthAdded, out int monthCount);
                             yearDict[monthAdded] = monthCount + amountChanged;
                     }
+                    // Update deductions per month
+                    if (reasonForChange != "Sale" && reasonForChange != "Order" && amountChangedWithNegative < 0) {
+                        if (!deductionsByMonth.TryGetValue(yearAdded, out var yearDict)) {
+                            yearDict = new Dictionary<string, int>();
+                            deductionsByMonth.Add(yearAdded, yearDict);
+                        }
+
+                        yearDict.TryGetValue(monthAdded, out int monthCount);
+                        yearDict[monthAdded] = monthCount + amountChanged;
+                    }
                 } 
             }
-            return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth);
+            return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth);
         }
 
         // If the user doesn't have access, return "null"
