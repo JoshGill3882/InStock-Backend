@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
@@ -117,11 +118,23 @@ public class ItemService : IItemService {
             List<StatItemDto> statItemDtos = new();
             Dictionary<string, object> stats = new Dictionary<string, object>();
             Dictionary<string, Dictionary<string, int>> categoryStats = new Dictionary<string, Dictionary<string, int>>();
-            Dictionary<string, int> overallShopPerformance = new Dictionary<string, int>();
+            Dictionary<int, Dictionary<string, int>> salesByMonth = new Dictionary<int, Dictionary<string, int>>();
+            Dictionary<string, int> overallShopPerformance = new Dictionary<string, int>()
+            {
+                // Add default values with 0 values
+                {"Sale", 0},
+                {"Order", 0},
+                {"Return", 0},
+                {"Giveaway", 0},
+                {"Damaged", 0},
+                {"Restocked", 0},
+                {"Lost", 0},
+            };
 
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
-                // Return an empty list
+                // Return an empty stats object
+                // TODO - make stats 0 for every field
                 return stats;
             }
 
@@ -147,47 +160,54 @@ public class ItemService : IItemService {
             // loop through StatItemDtos calculate stats
             foreach (var statItemDto in statItemDtos)
             {
+                // get category
                 string category = statItemDto.Category;
                 // loop through each statStockDto
                 foreach (var statStockDto in statItemDto.StockUpdates)
                 {
-                    // get reason for change 
                     string reasonForChange = statStockDto.ReasonForChange;
-                    // get amount changed
                     int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    DateTime dateAdded = DateTime.Parse(statStockDto.DateTimeAdded);
+                    int yearAdded = dateAdded.Year;
+                    string monthAdded = dateAdded.ToString("MMM", CultureInfo.InvariantCulture);
                     
                     // Update overallShopPerformance
-                    if (overallShopPerformance.ContainsKey(reasonForChange))
-                    {
-                        overallShopPerformance[reasonForChange] += amountChanged;
-                    }
-                    else if (!overallShopPerformance.ContainsKey(reasonForChange))
-                    {
-                        overallShopPerformance[reasonForChange] = amountChanged;
-                    }
+                    overallShopPerformance.TryGetValue(reasonForChange, out int overallCount); //overallCount defaults to 0
+                    overallShopPerformance[reasonForChange] = overallCount + amountChanged;
 
                     // Update categoryStats
-                    if (categoryStats.ContainsKey(category))
-                    {
-                        if (categoryStats[category].ContainsKey(reasonForChange))
-                        {
-                            categoryStats[category][reasonForChange] += amountChanged;
-                        } else if (!categoryStats[category].ContainsKey(reasonForChange))
-                        {
-                           categoryStats[category].Add(reasonForChange, amountChanged); 
-                        }
-                    } else if (!categoryStats.ContainsKey(category))
-                    {
-                        categoryStats.Add(category, new Dictionary<string, int>()
-                        {
-                            {reasonForChange, amountChanged},
-                        });
+                    if (!categoryStats.TryGetValue(category, out var categoryDict)) {
+                        categoryDict = new Dictionary<string, int>() {
+                            {"Sale", 0},
+                            {"Order", 0},
+                            {"Return", 0},
+                            {"Giveaway", 0},
+                            {"Damaged", 0},
+                            {"Restocked", 0},
+                            {"Lost", 0},
+                        };
+                        categoryStats.Add(category, categoryDict);
+                    }
+
+                    categoryDict.TryGetValue(reasonForChange, out int categoryCount);
+                    categoryDict[reasonForChange] = categoryCount + amountChanged;
+                    
+                    // Update sales per month
+                    if (reasonForChange == "Sale") {
+                            if (!salesByMonth.TryGetValue(yearAdded, out var yearDict)) {
+                                yearDict = new Dictionary<string, int>();
+                                salesByMonth.Add(yearAdded, yearDict);
+                            }
+
+                            yearDict.TryGetValue(monthAdded, out int monthCount);
+                            yearDict[monthAdded] = monthCount + amountChanged;
                     }
                 } 
             }
             
             stats.Add("overallShopPerformance", overallShopPerformance);
             stats.Add("performanceByCategory", categoryStats);
+            stats.Add("salesByMonth", salesByMonth);
             
             return stats;
         }
