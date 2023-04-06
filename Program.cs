@@ -2,6 +2,9 @@ using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.S3;
+using instock_server_application.AwsS3.Services;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
@@ -60,6 +63,14 @@ var client = new AmazonDynamoDBClient(
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
+// AWS S3 Credential Setup
+using var s3Client = new AmazonS3Client(
+    builder.Configuration["AWS_S3_ACCESS_KEY"], 
+    builder.Configuration["AWS_S3_SECRET_KEY"],
+    RegionEndpoint.EUWest2
+);
+builder.Services.AddSingleton<IAmazonS3>(s3Client);
+
 // User Services & Repositories
 builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -78,6 +89,8 @@ builder.Services.AddScoped<IItemStockService, ItemStockService>();
 // Util Services & Repositories
 builder.Services.AddScoped<IUtilService, UtilService>();
 
+// AwsS3 Services & Repositories
+builder.Services.AddScoped<IStorageService, StorageService>();
 
 builder.Services.AddControllers(options => {
     options.Filters.Add<GlobalExceptionFilter>();
