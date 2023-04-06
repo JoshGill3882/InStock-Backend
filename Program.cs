@@ -3,6 +3,8 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
+using instock_server_application.AwsS3.Repositories;
+using instock_server_application.AwsS3.Repositories.Interfaces;
 using instock_server_application.AwsS3.Services;
 using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Repositories;
@@ -13,16 +15,13 @@ using instock_server_application.Security.Models;
 using instock_server_application.Security.Services;
 using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Shared.Filters;
-using instock_server_application.Shared.Formatters;
 using instock_server_application.Shared.Services;
 using instock_server_application.Shared.Services.Interfaces;
-using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -91,6 +90,7 @@ builder.Services.AddScoped<IUtilService, UtilService>();
 
 // AwsS3 Services & Repositories
 builder.Services.AddScoped<IStorageService, StorageService>();
+builder.Services.AddScoped<IStorageRepository, StorageRepository>();
 
 builder.Services.AddControllers(options => {
     options.Filters.Add<GlobalExceptionFilter>();
