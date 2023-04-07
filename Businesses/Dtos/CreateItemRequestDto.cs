@@ -8,8 +8,9 @@ public class CreateItemRequestDto
     public string Name { get; }
     public int Stock { get; }
     public string UserId { get; }
+    public IFormFile? ImageFile { get; }
 
-    public CreateItemRequestDto(string sku, string businessId, string category, string name, int stock, string userId)
+    public CreateItemRequestDto(string sku, string businessId, string category, string name, int stock, string userId, IFormFile? imageFile)
     {
         SKU = sku;
         BusinessId = businessId;
@@ -17,5 +18,6 @@ public class CreateItemRequestDto
         Name = name;
         Stock = stock;
         UserId = userId;
+        ImageFile = imageFile;
     }
 }

@@ -56,7 +56,7 @@ public class ItemController : ControllerBase {
     /// <returns> Item created, or error with relevant status code</returns>
     [HttpPost]
     [Route("items")]
-    public async Task<IActionResult> CreateItem([FromBody] CreateItemForm newItemForm, [FromRoute] string businessId) {
+    public async Task<IActionResult> CreateItem([FromForm] CreateItemForm newItemForm, [FromRoute] string businessId) {
 
         // Get our current UserId and BusinessId to validate and pass to the items service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
@@ -67,31 +67,39 @@ public class ItemController : ControllerBase {
         }
 
         // Creating CreateItemDTO to pass the details to the service for processing
-        CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(newItemForm.SKU,
-            businessId, newItemForm.Category, newItemForm.Name, newItemForm.Stock, currentUserId);
+        CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(
+            newItemForm.SKU,
+            businessId, 
+            newItemForm.Category, 
+            newItemForm.Name, 
+            newItemForm.Stock, 
+            currentUserId,
+            newItemForm.File
+        );
 
         // Attempting to create new item
-        ItemDto createdItemDTO = await _itemService.CreateItem(createItemRequestDto);
+        ItemDto createdItemDto = await _itemService.CreateItem(createItemRequestDto);
 
         // If errors then return 401 with the error messages
-        if (createdItemDTO.ErrorNotification.HasErrors) {
-            return new BadRequestObjectResult(createdItemDTO.ErrorNotification);
+        if (createdItemDto.ErrorNotification.HasErrors) {
+            return new BadRequestObjectResult(createdItemDto.ErrorNotification);
         }
         
         // If not errors then return 201 with the URI and newly created object details
         string? createdItemUrl = Url.Action(controller: "item", action: nameof(GetItem), values:new
         {
             businesses=Url.RouteUrl("businesses"),
-            businessId = createdItemDTO.BusinessId,
+            businessId = createdItemDto.BusinessId,
             items=Url.RouteUrl("items"),
-            itemId=createdItemDTO.SKU
+            itemId=createdItemDto.SKU
         }, protocol:Request.Scheme);
+        
         return Created(createdItemUrl ?? string.Empty, new {
-            sku = createdItemDTO.SKU,
-            businessId = createdItemDTO.BusinessId,
-            category = createdItemDTO.Category,
-            name = createdItemDTO.Name,
-            stock = createdItemDTO.Stock
+            sku = createdItemDto.SKU,
+            businessId = createdItemDto.BusinessId,
+            category = createdItemDto.Category,
+            name = createdItemDto.Name,
+            stock = createdItemDto.Stock
         });
     }
     
