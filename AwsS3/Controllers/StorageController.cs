@@ -1,4 +1,5 @@
-﻿using instock_server_application.AwsS3.Services.Interfaces;
+﻿using instock_server_application.AwsS3.Dtos;
+using instock_server_application.AwsS3.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace instock_server_application.AwsS3.Controllers; 
@@ -15,7 +16,7 @@ public class StorageController : ControllerBase {
     [Route("/upload")]
     public async Task<IActionResult> UploadFile(IFormFile file) {
         if (file.ContentType.StartsWith("image/")) {
-            var result = await _service.UploadFileAsync(file);
+            S3ResponseDto result = await _service.UploadFileAsync(file);
             return Ok(result);
         } else {
             return BadRequest("You can only upload images");

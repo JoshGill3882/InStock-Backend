@@ -12,9 +12,4 @@ public class S3Model {
         InputStream = inputStream;
         BucketName = bucketName;
     }
-
-    public S3Model(string name, MemoryStream inputStream) {
-        Name = name;
-        InputStream = inputStream;
-    }
 }

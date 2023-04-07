@@ -20,7 +20,7 @@ public class StorageRepository : IStorageRepository {
             var uploadRequest = new TransferUtilityUploadRequest() {
                 InputStream = s3Model.InputStream,
                 Key = s3Model.Name,
-                BucketName = S3Model.S3BucketName,
+                BucketName = s3Model.BucketName,
                 CannedACL = S3CannedACL.NoACL
             };
 
