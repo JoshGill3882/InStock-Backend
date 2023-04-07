@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using FluentAssertions;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Controllers;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
@@ -119,7 +120,8 @@ public class ItemControllerTest {
         var createItemForm = new CreateItemForm("Test-SKU-123",
             "Test Category",
             "Test Item Name",
-            10
+            10,
+            null
         );
         
         var mockUser = new ClaimsPrincipal(
@@ -132,7 +134,8 @@ public class ItemControllerTest {
             businessId,
             "Test Category",
             "Test Item Name",
-            10);
+            10, 
+            "https://image.png");
 
         // Mock url for url helper to return
         string returnedUrl = "http://returned/";
@@ -167,7 +170,8 @@ public class ItemControllerTest {
             new Claim("BusinessId", "TestBusinessId")
         }));
         var utilService = new UtilService();
-        var itemService = new ItemService(mockItemRepo.Object, utilService);
+        var mockStorageRepo = new Mock<IStorageService>();
+        var itemService = new ItemService(mockItemRepo.Object, utilService, mockStorageRepo.Object);
         var itemController = new ItemController(itemService) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
@@ -189,9 +193,9 @@ public class ItemControllerTest {
         string testBusinessId = "IncorrectId";
         string testItemId = "IncorrectId";
         var mockItemRepo = new Mock<IItemRepo>();
-        var mockBusinessService = new Mock<IBusinessService>();
+        var mockStorageRepo = new Mock<IStorageService>();
         var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new("BusinessId", "TestBusinessId") }));
-        var itemService = new ItemService(mockItemRepo.Object, new UtilService());
+        var itemService = new ItemService(mockItemRepo.Object, new UtilService(), mockStorageRepo.Object);
         var itemController = new ItemController(itemService) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
