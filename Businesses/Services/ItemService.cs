@@ -1,10 +1,13 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Shared.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -107,6 +110,8 @@ public class ItemService : IItemService {
         // If the user doesn't have access, return "null"
         return null;
     }
+    
+
     
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 

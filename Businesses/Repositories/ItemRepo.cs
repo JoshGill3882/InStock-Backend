@@ -27,7 +27,7 @@ public class ItemRepo : IItemRepo{
         var response = await _client.QueryAsync(request);
         return response.Items;
     }
-    
+
     public async Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto) {
         
         // Checking the Business Name is valid

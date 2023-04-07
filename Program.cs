@@ -77,6 +77,7 @@ builder.Services.AddScoped<ICreateAccountService, CreateAccountService>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IItemStockService, ItemStockService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 // Util Services & Repositories
 builder.Services.AddScoped<IUtilService, UtilService>();
