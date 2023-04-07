@@ -37,7 +37,13 @@ public class ItemRepo : IItemRepo{
         
         // Save the new item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
+            itemToSaveDto.SKU, 
+            itemToSaveDto.BusinessId, 
+            itemToSaveDto.Category,
+            itemToSaveDto.Name,
+            itemToSaveDto.Stock,
+            itemToSaveDto.ImageUrl
+        );
         await _context.SaveAsync(itemModel);
 
         ItemDto createdItemDto = new ItemDto(
@@ -45,7 +51,9 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.GetStock());
+            itemModel.GetStock(),
+            itemModel.ImageUrl
+        );
         
         return createdItemDto;
     }
@@ -156,7 +164,13 @@ public class ItemRepo : IItemRepo{
         
         // Save the new updated item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
+            itemToSaveDto.SKU, 
+            itemToSaveDto.BusinessId,
+            itemToSaveDto.Category,
+            itemToSaveDto.Name,
+            itemToSaveDto.Stock,
+            itemToSaveDto.ImageUrl
+        );
         await _context.SaveAsync(itemModel);
         
         // Return the updated Items details
@@ -165,7 +179,9 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.GetStock());
+            itemModel.GetStock(),
+            itemModel.ImageUrl
+        );
         
         return updatedItemDto;
     }
@@ -214,7 +230,7 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock());
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock(), item.ImageUrl);
         return itemDto;
     }
 }

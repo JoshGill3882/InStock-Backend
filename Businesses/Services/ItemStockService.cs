@@ -1,11 +1,8 @@
-﻿using System.Numerics;
-using System.Text.RegularExpressions;
-using Amazon.DynamoDBv2.Model;
+﻿using System.Text.RegularExpressions;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -102,7 +99,9 @@ public class ItemStockService : IItemStockService {
             businessId: existingItemDto.BusinessId, 
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
-            stock: newStockLevel);
+            stock: newStockLevel,
+            imageUrl: existingItemDto.ImageUrl
+        );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

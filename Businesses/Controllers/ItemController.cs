@@ -99,7 +99,8 @@ public class ItemController : ControllerBase {
             businessId = createdItemDto.BusinessId,
             category = createdItemDto.Category,
             name = createdItemDto.Name,
-            stock = createdItemDto.Stock
+            stock = createdItemDto.Stock,
+            imageUrl = createdItemDto.ImageUrl
         });
     }
     
