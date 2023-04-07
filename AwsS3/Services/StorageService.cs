@@ -16,8 +16,8 @@ public class StorageService : IStorageService {
         await using var memoryStr = new MemoryStream();
         await file.CopyToAsync(memoryStr);
 
-        var fileExt = Path.GetExtension(file.Name);
-        var objName = $"{Guid.NewGuid()}.{fileExt}";
+        var fileExt = Path.GetExtension(file.FileName);
+        var objName = $"{Guid.NewGuid()}{fileExt}";
         var s3Model = new S3Model(objName, memoryStr, S3Model.S3BucketName);
 
         S3ResponseDto response = _storageRepo.UploadFileAsync(s3Model).Result;
