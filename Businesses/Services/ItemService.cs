@@ -126,8 +126,7 @@ public class ItemService : IItemService {
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 
         ErrorNotification errorNotes = new ErrorNotification();
-        S3ResponseDto storageResponse = new S3ResponseDto();
-        
+
         // Check if the user Id is valid, they should be validated by this point so throw exception
         if (string.IsNullOrEmpty(newItemRequestDto.UserId)) {
             throw new NullReferenceException("The UserId cannot be null or empty.");
@@ -140,14 +139,14 @@ public class ItemService : IItemService {
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
         if (newItemRequestDto.ImageFile != null) {
             ValidateFileContentType(errorNotes, newItemRequestDto.ImageFile);
-            
-            storageResponse = await _storageService.UploadFileAsync(newItemRequestDto.ImageFile);
         }
 
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
             return new ItemDto(errorNotes);
         }
+        
+        S3ResponseDto storageResponse = await _storageService.UploadFileAsync(newItemRequestDto.ImageFile);
 
         // Calling repo to create the business for the user
         StoreItemDto itemToSaveDto = new StoreItemDto(
