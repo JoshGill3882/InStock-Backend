@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.AwsS3.Dtos;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -11,10 +13,12 @@ namespace instock_server_application.Businesses.Services;
 public class ItemService : IItemService {
     private readonly IItemRepo _itemRepo;
     private readonly IUtilService _utilService;
+    private readonly IStorageService _storageService;
 
-    public ItemService(IItemRepo itemRepo, IUtilService utilService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService, IStorageService storageService) {
         _itemRepo = itemRepo;
         _utilService = utilService;
+        _storageService = storageService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -54,6 +58,13 @@ public class ItemService : IItemService {
         
         if (!itemCategoryRegex.IsMatch(itemCategory)) {
             errorNotes.AddError(errorKey, "The item category is invalid.");
+        }
+    }
+
+    private void ValidateFileContentType(ErrorNotification errorNotes, IFormFile file) {
+        const string errorKey = "fileType";
+        if (!file.ContentType.StartsWith("image/")) {
+            errorNotes.AddError(errorKey, "You can only upload images.");
         }
     }
     
@@ -111,6 +122,7 @@ public class ItemService : IItemService {
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 
         ErrorNotification errorNotes = new ErrorNotification();
+        S3ResponseDto storageResponse = new S3ResponseDto();
         
         // Check if the user Id is valid, they should be validated by this point so throw exception
         if (string.IsNullOrEmpty(newItemRequestDto.UserId)) {
@@ -122,16 +134,26 @@ public class ItemService : IItemService {
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
-        
+        if (newItemRequestDto.ImageFile != null) {
+            ValidateFileContentType(errorNotes, newItemRequestDto.ImageFile);
+            
+            storageResponse = await _storageService.UploadFileAsync(newItemRequestDto.ImageFile);
+        }
+
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
             return new ItemDto(errorNotes);
         }
-        
+
         // Calling repo to create the business for the user
-        StoreItemDto itemToSaveDto =
-            new StoreItemDto(newItemRequestDto.SKU, newItemRequestDto.BusinessId, newItemRequestDto.Category, 
-                newItemRequestDto.Name, newItemRequestDto.Stock);
+        StoreItemDto itemToSaveDto = new StoreItemDto(
+            newItemRequestDto.SKU, 
+            newItemRequestDto.BusinessId, 
+            newItemRequestDto.Category,
+            newItemRequestDto.Name, 
+            newItemRequestDto.Stock,
+            storageResponse.Message
+        );
         
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 
@@ -231,7 +253,9 @@ public class ItemService : IItemService {
             businessId: existingItemDto.BusinessId, 
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
-            stock: newStockLevel);
+            stock: newStockLevel,
+            imageUrl: existingItemDto.ImageUrl
+        );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         
