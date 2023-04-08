@@ -6,19 +6,18 @@ public class CreateItemForm
     public string Category { get; set; }
     public string Name { get; set; }
     public int Stock { get; set; }
-    public IFormFile? File { get; set; }
+    public IFormFile? ImageFile { get; set; }
     
-    public CreateItemForm(string sku, string category, string name, int stock, IFormFile? file)
+    public CreateItemForm(string sku, string category, string name, int stock, IFormFile? imageFile)
     {
         SKU = sku;
         Category = category;
         Name = name;
         Stock = stock;
-        File = file;
+        ImageFile = imageFile;
     }
 
-    public CreateItemForm()
-    {
+    public CreateItemForm() {
         // Parameterless constructor required for model binding
     }
 }

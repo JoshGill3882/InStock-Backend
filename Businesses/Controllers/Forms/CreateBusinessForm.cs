@@ -3,12 +3,12 @@
 public class CreateBusinessForm {
     public string BusinessName { get; set; }
     public string BusinessDescription { get; set; }
-    public IFormFile? File { get; set; }
+    public IFormFile? ImageFile { get; set; }
 
-    public CreateBusinessForm(string businessName, string businessDescription, IFormFile? file) {
+    public CreateBusinessForm(string businessName, string businessDescription, IFormFile? imageFile) {
         BusinessName = businessName;
         BusinessDescription = businessDescription;
-        File = file;
+        ImageFile = imageFile;
     }
 
     public CreateBusinessForm() {

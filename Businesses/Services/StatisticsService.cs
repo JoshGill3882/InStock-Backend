@@ -4,7 +4,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
+using instock_server_application.Util.Services.Interfaces;
 using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services;

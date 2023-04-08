@@ -74,7 +74,7 @@ public class ItemController : ControllerBase {
             newItemForm.Name, 
             newItemForm.Stock, 
             currentUserId,
-            newItemForm.File
+            newItemForm.ImageFile
         );
 
         // Attempting to create new item
