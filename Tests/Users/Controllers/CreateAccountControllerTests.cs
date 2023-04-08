@@ -1,12 +1,12 @@
 ﻿using FluentAssertions;
 using instock_server_application.Security.Services.Interfaces;
-using instock_server_application.Shared.Services;
-using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Tests.Users.MockData;
 using instock_server_application.Users.Controllers;
 using instock_server_application.Users.Services;
 using instock_server_application.Users.Services.Interfaces;
+using instock_server_application.Util.Services;
+using instock_server_application.Util.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;

@@ -8,7 +8,7 @@ using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services;
+using instock_server_application.Util.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;

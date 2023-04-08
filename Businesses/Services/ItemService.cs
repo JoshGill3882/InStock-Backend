@@ -6,7 +6,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
+using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -61,13 +61,6 @@ public class ItemService : IItemService {
         }
     }
 
-    public static void ValidateFileContentType(ErrorNotification errorNotes, IFormFile file) {
-        const string errorKey = "fileType";
-        if (!file.ContentType.StartsWith("image/")) {
-            errorNotes.AddError(errorKey, "You can only upload images.");
-        }
-    }
-    
     private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto){
         const string errorKey = "duplicateItemName";
         var isDuplicate = await _itemRepo.IsNameInUse(newItemRequestDto);
@@ -138,7 +131,7 @@ public class ItemService : IItemService {
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
         if (newItemRequestDto.ImageFile != null) {
-            ValidateFileContentType(errorNotes, newItemRequestDto.ImageFile);
+            _utilService.ValidateImageFileContentType(errorNotes, newItemRequestDto.ImageFile);
         }
 
         // If we've got errors then return the notes and not make a repo call

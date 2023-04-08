@@ -5,7 +5,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
+using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -79,7 +79,7 @@ public class BusinessService : IBusinessService {
         ValidateBusinessName(errorNotes, newBusinessRequest.BusinessName);
         
         if (newBusinessRequest.ImageFile != null) {
-            ItemService.ValidateFileContentType(errorNotes, newBusinessRequest.ImageFile);
+            _utilService.ValidateImageFileContentType(errorNotes, newBusinessRequest.ImageFile);
         }
 
         // If we've got errors then return the notes and not make a repo call
