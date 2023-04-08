@@ -61,7 +61,7 @@ public class ItemService : IItemService {
         }
     }
 
-    private void ValidateFileContentType(ErrorNotification errorNotes, IFormFile file) {
+    public static void ValidateFileContentType(ErrorNotification errorNotes, IFormFile file) {
         const string errorKey = "fileType";
         if (!file.ContentType.StartsWith("image/")) {
             errorNotes.AddError(errorKey, "You can only upload images.");

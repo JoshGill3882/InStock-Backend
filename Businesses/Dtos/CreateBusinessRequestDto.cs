@@ -4,12 +4,12 @@ public class CreateBusinessRequestDto {
     public string BusinessName { get; }
     public string BusinessDescription { get; }
     public string UserId { get; }
-    public IFormFile? File { get; }
+    public IFormFile? ImageFile { get; }
     
-    public CreateBusinessRequestDto(string businessName, string userId, string businessDescription, IFormFile? file) {
+    public CreateBusinessRequestDto(string businessName, string userId, string businessDescription, IFormFile? imageFile) {
         BusinessName = businessName;
         UserId = userId;
         BusinessDescription = businessDescription;
-        File = file;
+        ImageFile = imageFile;
     }
 }

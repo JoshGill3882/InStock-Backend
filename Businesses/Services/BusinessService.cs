@@ -1,4 +1,6 @@
 using System.Text.RegularExpressions;
+using instock_server_application.AwsS3.Dtos;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -10,10 +12,12 @@ namespace instock_server_application.Businesses.Services;
 public class BusinessService : IBusinessService {
     private readonly IBusinessRepository _businessRepository;
     private readonly IUtilService _utilService;
+    private readonly IStorageService _storageService;
 
-    public BusinessService(IBusinessRepository businessRepository, IUtilService utilService) {
+    public BusinessService(IBusinessRepository businessRepository, IUtilService utilService, IStorageService storageService) {
         _businessRepository = businessRepository;
         _utilService = utilService;
+        _storageService = storageService;
     }
 
     public async Task<BusinessDto> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto) {
@@ -73,15 +77,25 @@ public class BusinessService : IBusinessService {
         
         // Validate and clean the Business Name
         ValidateBusinessName(errorNotes, newBusinessRequest.BusinessName);
+        
+        if (newBusinessRequest.ImageFile != null) {
+            ItemService.ValidateFileContentType(errorNotes, newBusinessRequest.ImageFile);
+        }
 
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
             return new BusinessDto(errorNotes);
         }
         
+        S3ResponseDto storageResponse = await _storageService.UploadFileAsync(newBusinessRequest.ImageFile);
+        
         // Calling repo to create the business for the user
-        StoreBusinessDto businessToSave =
-            new StoreBusinessDto(newBusinessRequest.BusinessName, newBusinessRequest.UserId, newBusinessRequest.BusinessDescription);
+        StoreBusinessDto businessToSave = new StoreBusinessDto(
+            newBusinessRequest.BusinessName,
+            newBusinessRequest.UserId,
+            newBusinessRequest.BusinessDescription,
+            storageResponse.Message
+        );
         
         BusinessDto createdBusiness = await _businessRepository.SaveNewBusiness(businessToSave);
 
