@@ -21,7 +21,7 @@ public class BusinessController : ControllerBase {
 
     [HttpPost]
     [Route("/business")]
-    public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessForm newBusinessForm) {
+    public async Task<IActionResult> CreateBusiness([FromForm] CreateBusinessForm newBusinessForm) {
 
         // Get our current User details from the ClaimsPrinciple Object
         string? currentUserId = User.FindFirstValue("Id") ?? null;

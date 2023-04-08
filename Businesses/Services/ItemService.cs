@@ -138,8 +138,12 @@ public class ItemService : IItemService {
         if (errorNotes.HasErrors) {
             return new ItemDto(errorNotes);
         }
+
+        S3ResponseDto storageResponse = new S3ResponseDto();
         
-        S3ResponseDto storageResponse = await _storageService.UploadFileAsync(newItemRequestDto.ImageFile);
+        if (newItemRequestDto.ImageFile != null) {
+            storageResponse = await _storageService.UploadFileAsync(newItemRequestDto.ImageFile);
+        }
 
         // Calling repo to create the business for the user
         StoreItemDto itemToSaveDto = new StoreItemDto(

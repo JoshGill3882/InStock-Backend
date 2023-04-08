@@ -86,8 +86,12 @@ public class BusinessService : IBusinessService {
         if (errorNotes.HasErrors) {
             return new BusinessDto(errorNotes);
         }
+
+        S3ResponseDto storageResponse = new S3ResponseDto();
         
-        S3ResponseDto storageResponse = await _storageService.UploadFileAsync(newBusinessRequest.ImageFile);
+        if (newBusinessRequest.ImageFile != null) {
+            storageResponse = await _storageService.UploadFileAsync(newBusinessRequest.ImageFile);
+        }
         
         // Calling repo to create the business for the user
         StoreBusinessDto businessToSave = new StoreBusinessDto(

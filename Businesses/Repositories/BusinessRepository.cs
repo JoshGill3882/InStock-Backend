@@ -25,7 +25,8 @@ public class BusinessRepository : IBusinessRepository {
             businessId: existingBusiness.BusinessId,
             businessName: existingBusiness.BusinessName,
             businessDescription: existingBusiness.BusinessDescription,
-            businessOwnerId: existingBusiness.OwnerId
+            businessOwnerId: existingBusiness.OwnerId,
+            imageUrl: existingBusiness.ImageUrl
         );
         
         return businessDto;
@@ -52,7 +53,12 @@ public class BusinessRepository : IBusinessRepository {
         
         // Save the new business
         BusinessModel businessModel = new BusinessModel(
-            Guid.NewGuid(), businessToSave.BusinessName, businessToSave.UserId, businessToSave.BusinessDescription);
+            Guid.NewGuid(), 
+            businessToSave.BusinessName, 
+            businessToSave.UserId, 
+            businessToSave.BusinessDescription,
+            businessToSave.ImageUrl
+        );
         await _context.SaveAsync(businessModel);
         
         // Update the user table to include new business
@@ -63,7 +69,9 @@ public class BusinessRepository : IBusinessRepository {
             businessModel.BusinessId.ToString(), 
             businessModel.BusinessName, 
             businessModel.OwnerId.ToString(),
-            businessModel.BusinessDescription);
+            businessModel.BusinessDescription,
+            businessModel.ImageUrl
+        );
         
         return createdBusiness;
     }
