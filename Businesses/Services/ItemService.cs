@@ -60,7 +60,7 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "The item category is invalid.");
         }
     }
-
+    
     private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto){
         const string errorKey = "duplicateItemName";
         var isDuplicate = await _itemRepo.IsNameInUse(newItemRequestDto);
@@ -119,7 +119,7 @@ public class ItemService : IItemService {
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 
         ErrorNotification errorNotes = new ErrorNotification();
-
+        
         // Check if the user Id is valid, they should be validated by this point so throw exception
         if (string.IsNullOrEmpty(newItemRequestDto.UserId)) {
             throw new NullReferenceException("The UserId cannot be null or empty.");
