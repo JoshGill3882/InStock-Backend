@@ -58,21 +58,22 @@ public class StatisticsService : IStatisticsService
 
             // Create list of item dtos with stock updates
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
+                string stock = item["Stock"].S ?? item["Stock"].N;
+                StatItemDto statItemDto = new StatItemDto(
+                    item["SKU"].S,
+                    item["BusinessId"].S,
+                    item["Category"].S,
+                    item["Name"].S,
+                    stock,
+                    null
+                );
                 if (item.ContainsKey("StockUpdates"))
                 {
                     string jsonString = item["StockUpdates"].S;
                     List<StatStockDto> statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
-                    string stock = item["Stock"].S ?? item["Stock"].N;
-                    StatItemDto statItemDto = new StatItemDto(
-                        item["SKU"].S,
-                        item["BusinessId"].S,
-                        item["Category"].S,
-                        item["Name"].S,
-                        stock,
-                        statStockDtos
-                    );
-                    statItemDtos.Add(statItemDto);
+                    statItemDto.StockUpdates = statStockDtos;
                 }
+                statItemDtos.Add(statItemDto);
             }
             
             // calculate suggestions
@@ -84,7 +85,7 @@ public class StatisticsService : IStatisticsService
                 // get category
                 string category = statItemDto.Category;
                 // loop through each statStockDto
-                foreach (var statStockDto in statItemDto.StockUpdates)
+                foreach (var statStockDto in statItemDto.StockUpdates?? Enumerable.Empty<StatStockDto>())
                 {
                     string reasonForChange = statStockDto.ReasonForChange;
                     int amountChanged = Math.Abs(statStockDto.AmountChanged);

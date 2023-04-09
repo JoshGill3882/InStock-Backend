@@ -8,7 +8,7 @@ public class StatItemDto : DataTransferObjectSuperType {
     public string Category { get; }
     public string Name { get; }
     public string Stock { get; }
-    public List<StatStockDto> StockUpdates { get; }
+    public List<StatStockDto> StockUpdates { get; set; }
     
     public StatItemDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
