@@ -15,11 +15,17 @@ public class StorageService : IStorageService {
         _utilService = utilService;
     }
     
-    public async Task<S3ResponseDto> UploadFileAsync(IFormFile file) {
+    public async Task<S3ResponseDto> UploadFileAsync(UploadFileRequestDto uploadFileRequestDto) {
+        
+        // Check if the user Id is valid, they should be validated by this point so throw exception
+        if (string.IsNullOrEmpty(uploadFileRequestDto.UserId)) {
+            throw new NullReferenceException("The UserId cannot be null or empty.");
+        }
+        
         await using var memoryStr = new MemoryStream();
-        await file.CopyToAsync(memoryStr);
+        await uploadFileRequestDto.File.CopyToAsync(memoryStr);
 
-        var fileExt = Path.GetExtension(file.FileName);
+        var fileExt = Path.GetExtension(uploadFileRequestDto.File.FileName);
         var objName = $"{_utilService.GenerateUUID()}{fileExt}";
         var s3Model = new S3Model(objName, memoryStr, S3Model.S3BucketName);
 

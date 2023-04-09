@@ -3,5 +3,5 @@
 namespace instock_server_application.AwsS3.Services.Interfaces; 
 
 public interface IStorageService {
-    Task<S3ResponseDto> UploadFileAsync(IFormFile file);
+    Task<S3ResponseDto> UploadFileAsync(UploadFileRequestDto uploadFileRequestDto);
 }

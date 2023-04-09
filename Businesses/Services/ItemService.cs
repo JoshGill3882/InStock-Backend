@@ -142,7 +142,7 @@ public class ItemService : IItemService {
         S3ResponseDto storageResponse = new S3ResponseDto();
         
         if (newItemRequestDto.ImageFile != null) {
-            storageResponse = await _storageService.UploadFileAsync(newItemRequestDto.ImageFile);
+            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newItemRequestDto.UserId, newItemRequestDto.ImageFile));
         }
 
         // Calling repo to create the business for the user

@@ -90,7 +90,7 @@ public class BusinessService : IBusinessService {
         S3ResponseDto storageResponse = new S3ResponseDto();
         
         if (newBusinessRequest.ImageFile != null) {
-            storageResponse = await _storageService.UploadFileAsync(newBusinessRequest.ImageFile);
+            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newBusinessRequest.UserId, newBusinessRequest.ImageFile));
         }
         
         // Calling repo to create the business for the user
