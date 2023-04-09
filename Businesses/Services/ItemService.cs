@@ -1,23 +1,24 @@
-﻿using System.Collections;
-using System.Globalization;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.AwsS3.Dtos;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
-using Newtonsoft.Json;
+using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemService : IItemService {
     private readonly IItemRepo _itemRepo;
     private readonly IUtilService _utilService;
+    private readonly IStorageService _storageService;
 
-    public ItemService(IItemRepo itemRepo, IUtilService utilService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService, IStorageService storageService) {
         _itemRepo = itemRepo;
         _utilService = utilService;
+        _storageService = storageService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -93,13 +94,17 @@ public class ItemService : IItemService {
 
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 string stock = item["Stock"].S ?? item["Stock"].N;
+                // Checks if imageUrl exists for the item and returns url, otherwise returns empty string
+                string imageUrl = item.ContainsKey("ImageUrl") ? item["ImageUrl"].S ?? "" : "";
+                
                 items.Add(
                     new () {
                         {"SKU", item["SKU"].S},
                         {"BusinessId", item["BusinessId"].S},
                         {"Category", item["Category"].S},
                         {"Name", item["Name"].S},
-                        {"Stock", stock}
+                        {"Stock", stock},
+                        {"ImageUrl", imageUrl}
                     }
                 );
             }
@@ -110,8 +115,6 @@ public class ItemService : IItemService {
         // If the user doesn't have access, return "null"
         return null;
     }
-    
-
     
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 
@@ -127,16 +130,30 @@ public class ItemService : IItemService {
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
-        
+        if (newItemRequestDto.ImageFile != null) {
+            _utilService.ValidateImageFileContentType(errorNotes, newItemRequestDto.ImageFile);
+        }
+
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
             return new ItemDto(errorNotes);
         }
+
+        S3ResponseDto storageResponse = new S3ResponseDto();
         
+        if (newItemRequestDto.ImageFile != null) {
+            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newItemRequestDto.UserId, newItemRequestDto.ImageFile));
+        }
+
         // Calling repo to create the business for the user
-        StoreItemDto itemToSaveDto =
-            new StoreItemDto(newItemRequestDto.SKU, newItemRequestDto.BusinessId, newItemRequestDto.Category, 
-                newItemRequestDto.Name, newItemRequestDto.Stock);
+        StoreItemDto itemToSaveDto = new StoreItemDto(
+            newItemRequestDto.SKU, 
+            newItemRequestDto.BusinessId, 
+            newItemRequestDto.Category,
+            newItemRequestDto.Name, 
+            newItemRequestDto.Stock,
+            storageResponse.Message
+        );
         
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 
@@ -236,7 +253,9 @@ public class ItemService : IItemService {
             businessId: existingItemDto.BusinessId, 
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
-            stock: newStockLevel);
+            stock: newStockLevel,
+            imageUrl: existingItemDto.ImageUrl
+        );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

@@ -5,7 +5,6 @@ using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
-using instock_server_application.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -32,7 +31,7 @@ public class ItemStockControllerTest {
                     new Claim("BusinessId", userBusinessId)
                 }, "mockUserAuth"));
         
-        var existingItem = new ItemDto(requestItemSku, userBusinessId, "category", "name", 50);
+        var existingItem = new ItemDto(requestItemSku, userBusinessId, "category", "name", 50, "https://image.png");
         var storedItemStockUpdate = new StockUpdateDto(int.Parse(changeStockAmountBy), reasonForChange, DateTime.Today);
 
         var mockItemRepo = new Mock<IItemRepo>();
