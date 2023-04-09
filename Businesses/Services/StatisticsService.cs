@@ -38,11 +38,16 @@ public class StatisticsService : IStatisticsService
                 {"Restocked", 0},
                 {"Lost", 0},
             };
+            
+            // Create default stats suggestions
+            StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(null, null,
+                null, null, null, "No Best Selling Category",
+                "No Worst Selling Category", null);
 
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
                 // Return an empty stats object
-                return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth);
+                return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth, statsSuggestionsDto);
             }
 
             // Create list of item dtos with stock updates
@@ -63,6 +68,9 @@ public class StatisticsService : IStatisticsService
                     statItemDtos.Add(statItemDto);
                 }
             }
+            
+            // calculate suggestions
+            statsSuggestionsDto = getSuggestions(statItemDtos);
             
             // loop through StatItemDtos and calculate stats
             foreach (var statItemDto in statItemDtos)
@@ -122,10 +130,18 @@ public class StatisticsService : IStatisticsService
                     }
                 } 
             }
-            return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth);
+            return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth, statsSuggestionsDto);
         }
 
         // If the user doesn't have access, return "null"
         return null;
     }
+
+        public StatsSuggestionsDto getSuggestions(List<StatItemDto> statItemDtos)
+        {
+            StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(null, null,
+                null, null, null, "No Best Selling Category",
+                "No Worst Selling Category", null);
+            return statsSuggestionsDto;
+        }
 }

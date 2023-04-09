@@ -10,4 +10,16 @@ public class StatsSuggestionsDto
     public string BestSellingCategory { get; }
     public string WorstSellingCategory { get; }
     public StatItemDto MostReturns { get; }
+
+    public StatsSuggestionsDto(StatItemDto bestSellingItem, StatItemDto worstSellingItem, StatItemDto highestSaleStockRatio, StatItemDto lowestSaleStockRatio, StatItemDto longestNoSales, string bestSellingCategory, string worstSellingCategory, StatItemDto mostReturns)
+    {
+        BestSellingItem = bestSellingItem;
+        WorstSellingItem = worstSellingItem;
+        HighestSaleStockRatio = highestSaleStockRatio;
+        LowestSaleStockRatio = lowestSaleStockRatio;
+        LongestNoSales = longestNoSales;
+        BestSellingCategory = bestSellingCategory;
+        WorstSellingCategory = worstSellingCategory;
+        MostReturns = mostReturns;
+    }
 }
