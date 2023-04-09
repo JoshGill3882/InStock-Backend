@@ -56,7 +56,7 @@ public class StatisticsService : IStatisticsService
                 return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth, statsSuggestionsDto);
             }
 
-            // Create list of item dtos with stock updates
+            // Create list of item dtos
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 string stock = item["Stock"].S ?? item["Stock"].N;
                 StatItemDto statItemDto = new StatItemDto(
@@ -75,6 +75,28 @@ public class StatisticsService : IStatisticsService
                 }
                 statItemDtos.Add(statItemDto);
             }
+            
+            // Create list of stat item dtos only if stock updates have been made
+            // use this version if we only want stats on items with at least one stock change
+            
+            // foreach (Dictionary<string, AttributeValue> item in responseItems) {
+            //     if (item.ContainsKey("StockUpdates"))
+            //     {
+            //         string jsonString = item["StockUpdates"].S;
+            //         List<StatStockDto> statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
+            //         string stock = item["Stock"].S ?? item["Stock"].N;
+            //         StatItemDto statItemDto = new StatItemDto(
+            //             item["SKU"].S,
+            //             item["BusinessId"].S,
+            //             item["Category"].S,
+            //             item["Name"].S,
+            //             stock,
+            //             statStockDtos
+            //         );
+            //         statItemDtos.Add(statItemDto);
+            //     }
+            // }
+
             
             // calculate suggestions
             statsSuggestionsDto = getSuggestions(statItemDtos);
@@ -146,7 +168,35 @@ public class StatisticsService : IStatisticsService
 
         public StatsSuggestionsDto getSuggestions(List<StatItemDto> statItemDtos)
         {
-            StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(null, null,
+            SortedDictionary<int, StatItemDto> itemSalesDict = new SortedDictionary<int, StatItemDto>()
+            {
+                {0, null}
+            };
+            // Loop through items
+            foreach (var statItemDto in statItemDtos)
+            {
+                string itemName = statItemDto.Name;
+                int itemSales = 0;
+                // loop through stock updates
+                foreach (var statStockDto in statItemDto.StockUpdates?? Enumerable.Empty<StatStockDto>())
+                {
+                    int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    // calculate item sales
+                    if (statStockDto.ReasonForChange == "Sale")
+                    {
+                        itemSales += amountChanged;
+                    }
+                }
+                // update item sales dict
+                itemSalesDict[itemSales] = statItemDto;
+            }
+
+            Dictionary<int, StatItemDto> bestSellingItem = new Dictionary<int, StatItemDto>()
+                { { itemSalesDict.Last().Key, itemSalesDict.Last().Value } };
+            Dictionary<int, StatItemDto> worstSellingItem = new Dictionary<int, StatItemDto>()
+                { { itemSalesDict.First().Key, itemSalesDict.First().Value } };
+
+            return new StatsSuggestionsDto(bestSellingItem, worstSellingItem,
                 null, null, null, new Dictionary<int, string>()
                 {
                     {0, "No Best Selling Category"}
@@ -155,9 +205,5 @@ public class StatisticsService : IStatisticsService
                 {
                     {0, "No Worst Selling Category"}
                 }, null);
-            // Calculate Best Selling Item
-            
-            
-            return statsSuggestionsDto;
         }
 }
