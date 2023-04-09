@@ -70,8 +70,11 @@ using var s3Client = new AmazonS3Client(
 );
 builder.Services.AddSingleton<IAmazonS3>(s3Client);
 
-// User Services & Repositories
+// Security Services and Repositories
 builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
+// User Services & Repositories
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IUserService, UserService>();

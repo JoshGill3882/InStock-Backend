@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Util.Services.Interfaces;
 using Newtonsoft.Json;
@@ -12,16 +13,15 @@ namespace instock_server_application.Businesses.Services;
 public class StatisticsService : IStatisticsService
 {
     private readonly IItemRepo _itemRepo;
-    private readonly IUtilService _utilService;
+    private readonly IAccessTokenService _accessTokenService;
     
-    public StatisticsService(IItemRepo itemRepo, IUtilService utilService) {
+    public StatisticsService(IItemRepo itemRepo, IAccessTokenService accessTokenService) {
         _itemRepo = itemRepo;
-        _utilService = utilService;
+        _accessTokenService = accessTokenService;
     }
     
-        public async Task<AllStatsDto?> GetStats(UserDto userDto, string businessId) {
-        
-        if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
+    public async Task<AllStatsDto?> GetStats(UserDto userDto, string businessId) {
+        if (_accessTokenService.CheckBusiness(userDto.UserBusinessId, businessId)) {
             List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
             List<StatItemDto> statItemDtos = new();
             Dictionary<string, Dictionary<string, int>> categoryStats = new Dictionary<string, Dictionary<string, int>>();
