@@ -41,8 +41,14 @@ public class StatisticsService : IStatisticsService
             
             // Create default stats suggestions
             StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(null, null,
-                null, null, null, "No Best Selling Category",
-                "No Worst Selling Category", null);
+                null, null, null, new Dictionary<int, string>()
+                {
+                    {0, "No Best Selling Category"}
+                },
+                new Dictionary<int, string>()
+                {
+                    {0, "No Worst Selling Category"}
+                }, null);
 
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
@@ -140,8 +146,17 @@ public class StatisticsService : IStatisticsService
         public StatsSuggestionsDto getSuggestions(List<StatItemDto> statItemDtos)
         {
             StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(null, null,
-                null, null, null, "No Best Selling Category",
-                "No Worst Selling Category", null);
+                null, null, null, new Dictionary<int, string>()
+                {
+                    {0, "No Best Selling Category"}
+                },
+                new Dictionary<int, string>()
+                {
+                    {0, "No Worst Selling Category"}
+                }, null);
+            // Calculate Best Selling Item
+            
+            
             return statsSuggestionsDto;
         }
 }
