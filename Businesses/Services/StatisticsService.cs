@@ -5,6 +5,7 @@ using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Shared.Services.Interfaces;
+using instock_server_application.Util.Comparers;
 using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services;
@@ -143,7 +144,6 @@ public class StatisticsService : IStatisticsService
                                 yearDict = new Dictionary<string, int>();
                                 salesByMonth.Add(yearAdded, yearDict);
                             }
-
                             yearDict.TryGetValue(monthAdded, out int monthAmount);
                             yearDict[monthAdded] = monthAmount + amountChanged;
                     }
@@ -153,7 +153,6 @@ public class StatisticsService : IStatisticsService
                             yearDict = new Dictionary<string, int>();
                             deductionsByMonth.Add(yearAdded, yearDict);
                         }
-
                         yearDict.TryGetValue(monthAdded, out int monthAmount);
                         yearDict[monthAdded] = monthAmount + amountChanged;
                     }
@@ -172,10 +171,12 @@ public class StatisticsService : IStatisticsService
             SortedDictionary<int, StatItemDto> itemReturnsDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
             SortedDictionary<int, StatItemDto> timeNoSalesDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
             Dictionary<string, int> categorySalesDict = new Dictionary<string, int>() { {"No Categories Found", 0} };
+            Dictionary<string, StatItemDto> salesStockRatioDict = new();
             // Loop through items
             foreach (var statItemDto in statItemDtos)
             {
                 string category = statItemDto.Category;
+                string itemStock = statItemDto.Stock;
                 int categorySales = 0;
                 int itemSales = 0;
                 int itemReturns = 0;
@@ -208,12 +209,17 @@ public class StatisticsService : IStatisticsService
                 }
                 categorySalesDict[category] = categorySales;
                 itemReturnsDict[itemReturns] = statItemDto;
+                string salesStockRatio = itemSales + ":" + itemStock;
+                salesStockRatioDict[salesStockRatio] = statItemDto;
             }
             
             var sortedCategoryDict = categorySalesDict.OrderByDescending(x => x.Value)
                 .ToDictionary(x => x.Key, x => x.Value);
+            
+            var sortedRatioDict = new SortedDictionary<string, StatItemDto>(salesStockRatioDict, new SalesToStockRatioComparer());
 
 
+            
             Dictionary<int, StatItemDto> bestSellingItem = new Dictionary<int, StatItemDto>()
                 { { itemSalesDict.Last().Key, itemSalesDict.Last().Value } };
             Dictionary<int, StatItemDto> worstSellingItem = new Dictionary<int, StatItemDto>()
@@ -226,9 +232,13 @@ public class StatisticsService : IStatisticsService
                 { { itemReturnsDict.Last().Key, itemReturnsDict.Last().Value } };
             Dictionary<string, StatItemDto> longestNoSales = new Dictionary<string, StatItemDto>()
                 { { timeNoSalesDict.Last().Key + " days", timeNoSalesDict.Last().Value } };
+            Dictionary<string, StatItemDto> highestSaleStockRatio = new Dictionary<string, StatItemDto>()
+                { { sortedRatioDict.Last().Key, sortedRatioDict.Last().Value } };
+            Dictionary<string, StatItemDto> lowestSaleStockRatio = new Dictionary<string, StatItemDto>()
+                { { sortedRatioDict.First().Key, sortedRatioDict.First().Value } };
 
             return new StatsSuggestionsDto(bestSellingItem, worstSellingItem,
-                null, null, longestNoSales, bestSellingCategory,
+                highestSaleStockRatio, lowestSaleStockRatio, longestNoSales, bestSellingCategory,
                 worstSellingCategory, mostReturnedItem);
         }
 
