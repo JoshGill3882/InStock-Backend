@@ -87,4 +87,27 @@ public class BusinessRepository : IBusinessRepository {
 
         return !string.IsNullOrEmpty(existingUser.BusinessId);
     }
+    
+    public async Task<ConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto) {
+        // Validating details
+        if (string.IsNullOrEmpty(storeConnectionDto.BusinessId)) {
+            throw new NullReferenceException("The connection business ID cannot be null.");
+        }
+        
+        // Getting the existing connections
+        ConnectionModel existingConnections =
+            await _context.LoadAsync<ConnectionModel>(storeConnectionDto.BusinessId);
+
+        // Adding to the existing connections
+        existingConnections.AddConnectionDetails("Test Shop", "Beep Boop Bap");
+
+        // Saving all of the updates
+        await _context.SaveAsync(existingConnections);
+
+        ConnectionDto connectionDto =
+            new ConnectionDto(storeConnectionDto.ShopName, storeConnectionDto.AuthenticationToken);
+
+        // Returning the new object that was saved
+        return connectionDto;
+    }
 }
