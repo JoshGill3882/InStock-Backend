@@ -172,38 +172,57 @@ public class StatisticsService : IStatisticsService
             {
                 {0, null}
             };
+            SortedDictionary<int, StatItemDto> itemReturnsDict = new SortedDictionary<int, StatItemDto>()
+            {
+                {0, null}
+            };
+            Dictionary<string, int> categorySalesDict = new Dictionary<string, int>()
+            {
+                {"No Categories Found", 0}
+            };
             // Loop through items
             foreach (var statItemDto in statItemDtos)
             {
-                string itemName = statItemDto.Name;
+                string category = statItemDto.Category;
+                int categorySales = 0;
                 int itemSales = 0;
+                int itemReturns = 0;
                 // loop through stock updates
                 foreach (var statStockDto in statItemDto.StockUpdates?? Enumerable.Empty<StatStockDto>())
                 {
                     int amountChanged = Math.Abs(statStockDto.AmountChanged);
-                    // calculate item sales
                     if (statStockDto.ReasonForChange == "Sale")
                     {
                         itemSales += amountChanged;
+                        categorySales += amountChanged;
+                    }
+                    if (statStockDto.ReasonForChange == "Returned")
+                    {
+                        itemReturns += amountChanged;
                     }
                 }
-                // update item sales dict
                 itemSalesDict[itemSales] = statItemDto;
+                categorySalesDict[category] = categorySales;
+                itemReturnsDict[itemReturns] = statItemDto;
             }
+            
+            var sortedCategoryDict = categorySalesDict.OrderByDescending(x => x.Value)
+                .ToDictionary(x => x.Key, x => x.Value);
+
 
             Dictionary<int, StatItemDto> bestSellingItem = new Dictionary<int, StatItemDto>()
                 { { itemSalesDict.Last().Key, itemSalesDict.Last().Value } };
             Dictionary<int, StatItemDto> worstSellingItem = new Dictionary<int, StatItemDto>()
                 { { itemSalesDict.First().Key, itemSalesDict.First().Value } };
+            Dictionary<int, string> bestSellingCategory = new Dictionary<int, string>()
+                { { sortedCategoryDict.First().Value, sortedCategoryDict.First().Key } };
+            Dictionary<int, string> worstSellingCategory = new Dictionary<int, string>()
+                { { sortedCategoryDict.Last().Value, sortedCategoryDict.Last().Key } };
+            Dictionary<int, StatItemDto> mostReturnedItem = new Dictionary<int, StatItemDto>()
+                { { itemReturnsDict.Last().Key, itemReturnsDict.Last().Value } };
 
             return new StatsSuggestionsDto(bestSellingItem, worstSellingItem,
-                null, null, null, new Dictionary<int, string>()
-                {
-                    {0, "No Best Selling Category"}
-                },
-                new Dictionary<int, string>()
-                {
-                    {0, "No Worst Selling Category"}
-                }, null);
+                null, null, null, bestSellingCategory,
+                worstSellingCategory, mostReturnedItem);
         }
 }
