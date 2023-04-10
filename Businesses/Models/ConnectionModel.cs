@@ -6,6 +6,8 @@ namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Businesses")]
 public class ConnectionModel {
+    public static readonly string TableName = "Businesses";
+
     [DynamoDBRangeKey]
     [DynamoDBProperty("BusinessId")]
     public string BusinessId { get; set; }

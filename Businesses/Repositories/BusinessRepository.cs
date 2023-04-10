@@ -94,16 +94,32 @@ public class BusinessRepository : IBusinessRepository {
             throw new NullReferenceException("The connection business ID cannot be null.");
         }
         
+        
+        Console.WriteLine("Phase 3");
+        Console.WriteLine(storeConnectionDto.BusinessId);
+        Console.WriteLine("Test");
         // Getting the existing connections
-        ConnectionModel existingConnections =
-            await _context.LoadAsync<ConnectionModel>(storeConnectionDto.BusinessId);
 
+        ConnectionModel existingConnections =
+        await _context.LoadAsync<ConnectionModel>("storeConnectionDto.BusinessId");
+        
+        
+        Console.WriteLine("Phase 3.5");
+
+        
         // Adding to the existing connections
         existingConnections.AddConnectionDetails("Test Shop", "Beep Boop Bap");
 
+        Console.WriteLine("Phase 4");
+
+        
         // Saving all of the updates
         await _context.SaveAsync(existingConnections);
 
+        
+        Console.WriteLine("Phase 5");
+
+        
         ConnectionDto connectionDto =
             new ConnectionDto(storeConnectionDto.ShopName, storeConnectionDto.AuthenticationToken);
 

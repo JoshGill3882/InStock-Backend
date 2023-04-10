@@ -1,5 +1,6 @@
 ﻿using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -10,76 +11,55 @@ public class ConnectionsService {
         _businessRepository = businessRepository;
     }
     
-    public async Task<ConnectionDto> CreateStockUpdate(CreateStockUpdateRequestDto createStockUpdateRequestDto) {
+    public async Task<ConnectionDto> CreateConnection(CreateConnectionRequestDto createConnectionRequestDto) {
+        
+        Console.WriteLine("Phase 0.5");
+        Console.WriteLine(createConnectionRequestDto.BusinessId);
+        
         
         // Validation
         // Check if the user and business Ids are valid, they should be validated by this point so throw exception
-        if (string.IsNullOrEmpty(createStockUpdateRequestDto.UserId)) {
+        if (string.IsNullOrEmpty(createConnectionRequestDto.UserId)) {
             throw new NullReferenceException("The UserId cannot be null or empty.");
         }
-        if (string.IsNullOrEmpty(createStockUpdateRequestDto.UserBusinessId)) {
+        if (string.IsNullOrEmpty(createConnectionRequestDto.UserBusinessId)) {
             throw new NullReferenceException("The BusinessId cannot be null or empty.");
         }
-        if (string.IsNullOrEmpty(createStockUpdateRequestDto.ItemSku)) {
-            throw new NullReferenceException("The ItemId cannot be null or empty.");
-        }
-
+        
         ErrorNotification errorNotes = new ErrorNotification();
         
         // Check if the user is allowed to edit the business, return as no need to do anymore validation
-        if (!createStockUpdateRequestDto.UserBusinessId.Equals(createStockUpdateRequestDto.BusinessId)) {
-            errorNotes.AddError(StockUpdateDto.USER_UNAUTHORISED_ERROR);
-            return new StockUpdateDto(errorNotes);
+        if (!createConnectionRequestDto.UserBusinessId.Equals(createConnectionRequestDto.BusinessId)) {
+            errorNotes.AddError(ConnectionDto.USER_UNAUTHORISED_ERROR);
+            return new ConnectionDto(errorNotes);
         }
         
-        // Check that the item exists, return as no need to do anymore validation
-        ItemDto? existingItemDto =
-            await _itemRepo.GetItem(createStockUpdateRequestDto.BusinessId, createStockUpdateRequestDto.ItemSku);
-        
-        if (existingItemDto == null) {
-            errorNotes.AddError("This item does not exist");
-            return new StockUpdateDto(errorNotes);
-        }
-        
-        // Validate the amount we're updating
-        ValidateAmountChangeBy(errorNotes, createStockUpdateRequestDto.ChangeStockAmountBy, existingItemDto);
-
-        // Validate the update's reason text
-        ValidateReasonForChange(errorNotes, createStockUpdateRequestDto.ReasonForChange);
-        
-        // If we have had any errors then return them
-        if (errorNotes.HasErrors) {
-            return new StockUpdateDto(errorNotes);
-        }
+        //
+        // // If we have had any errors then return them
+        // if (errorNotes.HasErrors) {
+        //     return new StockUpdateDto(errorNotes);
+        // }
         
         // Saving to database
         // Create new Stock Update record
-        StoreStockUpdateDto stockUpdateDtoToSave = new StoreStockUpdateDto(
-            businessId: createStockUpdateRequestDto.BusinessId,
-            itemSku: createStockUpdateRequestDto.ItemSku, 
-            changeStockAmountBy: createStockUpdateRequestDto.ChangeStockAmountBy,
-            reasonForChange: createStockUpdateRequestDto.ReasonForChange, 
-            dateTimeAdded: DateTime.Now);
         
-        StockUpdateDto stockUpdateDtoSaved = await _itemRepo.SaveStockUpdate(stockUpdateDtoToSave);
-
-        // Update the Item's details with new stock level after the update
-        int newStockLevel = existingItemDto.Stock + stockUpdateDtoSaved.ChangeStockAmountBy;
+        Console.WriteLine("Phase 1");
         
-        StoreItemDto updatedItemDto = new StoreItemDto(
-            sku: existingItemDto.SKU, 
-            businessId: existingItemDto.BusinessId, 
-            category: existingItemDto.Category,
-            name: existingItemDto.Name, 
-            stock: newStockLevel,
-            imageUrl: existingItemDto.ImageUrl
+        StoreConnectionDto storeConnectionDtoToSave = new StoreConnectionDto(
+            businessId: createConnectionRequestDto.BusinessId,
+            shopName: createConnectionRequestDto.ShopName,
+            authenticationToken: createConnectionRequestDto.AuthenticationToken
         );
+
+        Console.WriteLine(storeConnectionDtoToSave.BusinessId);
         
-        await _itemRepo.SaveExistingItem(updatedItemDto);
+        Console.WriteLine("Phase 2");
+
+        ConnectionDto connectionDtoSaved = await _businessRepository.SaveNewConnection(storeConnectionDtoToSave);
         
         // Returning results
         // Return newly created stock update
-        return stockUpdateDtoSaved;
+        return connectionDtoSaved;
     }
     
     
