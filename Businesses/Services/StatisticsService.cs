@@ -168,18 +168,10 @@ public class StatisticsService : IStatisticsService
 
         public StatsSuggestionsDto getSuggestions(List<StatItemDto> statItemDtos)
         {
-            SortedDictionary<int, StatItemDto> itemSalesDict = new SortedDictionary<int, StatItemDto>()
-            {
-                {0, null}
-            };
-            SortedDictionary<int, StatItemDto> itemReturnsDict = new SortedDictionary<int, StatItemDto>()
-            {
-                {0, null}
-            };
-            Dictionary<string, int> categorySalesDict = new Dictionary<string, int>()
-            {
-                {"No Categories Found", 0}
-            };
+            SortedDictionary<int, StatItemDto> itemSalesDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
+            SortedDictionary<int, StatItemDto> itemReturnsDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
+            SortedDictionary<int, StatItemDto> timeNoSalesDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
+            Dictionary<string, int> categorySalesDict = new Dictionary<string, int>() { {"No Categories Found", 0} };
             // Loop through items
             foreach (var statItemDto in statItemDtos)
             {
@@ -187,21 +179,33 @@ public class StatisticsService : IStatisticsService
                 int categorySales = 0;
                 int itemSales = 0;
                 int itemReturns = 0;
+                DateTime mostRecentSale = DateTime.MinValue;
                 // loop through stock updates
                 foreach (var statStockDto in statItemDto.StockUpdates?? Enumerable.Empty<StatStockDto>())
                 {
                     int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    DateTime dateAdded = DateTime.Parse(statStockDto.DateTimeAdded);
                     if (statStockDto.ReasonForChange == "Sale")
                     {
                         itemSales += amountChanged;
                         categorySales += amountChanged;
+                        if (dateAdded > mostRecentSale)
+                        {
+                            mostRecentSale = dateAdded;
+                        }
                     }
                     if (statStockDto.ReasonForChange == "Returned")
                     {
                         itemReturns += amountChanged;
                     }
                 }
-                itemSalesDict[itemSales] = statItemDto;
+                // if there were sales to compare to 
+                if (mostRecentSale != DateTime.MinValue)
+                {
+                    int daysNoSales = DifferenceInDays(mostRecentSale, DateTime.Now);
+                    timeNoSalesDict[daysNoSales] = statItemDto;
+                    itemSalesDict[itemSales] = statItemDto;  
+                }
                 categorySalesDict[category] = categorySales;
                 itemReturnsDict[itemReturns] = statItemDto;
             }
@@ -220,9 +224,18 @@ public class StatisticsService : IStatisticsService
                 { { sortedCategoryDict.Last().Value, sortedCategoryDict.Last().Key } };
             Dictionary<int, StatItemDto> mostReturnedItem = new Dictionary<int, StatItemDto>()
                 { { itemReturnsDict.Last().Key, itemReturnsDict.Last().Value } };
+            Dictionary<string, StatItemDto> longestNoSales = new Dictionary<string, StatItemDto>()
+                { { timeNoSalesDict.Last().Key + " days", timeNoSalesDict.Last().Value } };
 
             return new StatsSuggestionsDto(bestSellingItem, worstSellingItem,
-                null, null, null, bestSellingCategory,
+                null, null, longestNoSales, bestSellingCategory,
                 worstSellingCategory, mostReturnedItem);
+        }
+
+        public int DifferenceInDays(DateTime date1, DateTime date2)
+        {
+            TimeSpan difference = date2 - date1;
+            int differenceInDays = difference.Days;
+            return differenceInDays;
         }
 }
