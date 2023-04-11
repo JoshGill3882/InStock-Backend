@@ -3,6 +3,8 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using instock_server_application.AwsS3.Repositories;
 using instock_server_application.AwsS3.Repositories.Interfaces;
 using instock_server_application.AwsS3.Services;
@@ -69,6 +71,15 @@ using var s3Client = new AmazonS3Client(
     RegionEndpoint.EUWest2
 );
 builder.Services.AddSingleton<IAmazonS3>(s3Client);
+
+// Firebase setup
+builder.Services.AddSingleton(
+    FirebaseApp.Create(
+        new AppOptions() { 
+            Credential = GoogleCredential.FromFile(builder.Configuration["FIREBASE_SECRET_KEY"]) 
+        }
+    )
+);
 
 // Security Services and Repositories
 builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
