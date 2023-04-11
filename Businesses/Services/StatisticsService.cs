@@ -42,7 +42,7 @@ public class StatisticsService : IStatisticsService
             
             // Create default stats suggestions
             StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(null, null,
-                null, null, null, new Dictionary<int, string>()
+                null, null, new Dictionary<int, string>()
                 {
                     {0, "No Best Selling Category"}
                 },
@@ -100,7 +100,7 @@ public class StatisticsService : IStatisticsService
 
             
             // calculate suggestions
-            statsSuggestionsDto = getSuggestions(statItemDtos);
+            statsSuggestionsDto = GetSuggestions(statItemDtos);
             
             // loop through StatItemDtos and calculate stats
             foreach (var statItemDto in statItemDtos)
@@ -165,7 +165,7 @@ public class StatisticsService : IStatisticsService
         return null;
     }
 
-        public StatsSuggestionsDto getSuggestions(List<StatItemDto> statItemDtos)
+        public StatsSuggestionsDto GetSuggestions(List<StatItemDto> statItemDtos)
         {
             SortedDictionary<int, StatItemDto> itemSalesDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
             SortedDictionary<int, StatItemDto> itemReturnsDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
@@ -180,45 +180,55 @@ public class StatisticsService : IStatisticsService
                 int categorySales = 0;
                 int itemSales = 0;
                 int itemReturns = 0;
+                List<DateTime> saleDates = new List<DateTime>();
                 DateTime mostRecentSale = DateTime.MinValue;
                 // loop through stock updates
                 foreach (var statStockDto in statItemDto.StockUpdates?? Enumerable.Empty<StatStockDto>())
                 {
                     int amountChanged = Math.Abs(statStockDto.AmountChanged);
                     DateTime dateAdded = DateTime.Parse(statStockDto.DateTimeAdded);
+                    // update sales numbers
                     if (statStockDto.ReasonForChange == "Sale")
                     {
                         itemSales += amountChanged;
+                        saleDates.Add(dateAdded);
                         categorySales += amountChanged;
+                        // calculate most recent sale
                         if (dateAdded > mostRecentSale)
                         {
                             mostRecentSale = dateAdded;
                         }
                     }
+                    // calculate return numbers
                     if (statStockDto.ReasonForChange == "Returned")
                     {
                         itemReturns += amountChanged;
                     }
                 }
-                // if there were sales to compare to 
+                // if there were sales to compare, then work out item with longest no sales period
                 if (mostRecentSale != DateTime.MinValue)
                 {
                     int daysNoSales = DifferenceInDays(mostRecentSale, DateTime.Now);
                     timeNoSalesDict[daysNoSales] = statItemDto;
-                    itemSalesDict[itemSales] = statItemDto;  
                 }
+                itemSalesDict[itemSales] = statItemDto;  
                 categorySalesDict[category] = categorySales;
                 itemReturnsDict[itemReturns] = statItemDto;
-                string salesStockRatio = itemSales + ":" + itemStock;
-                salesStockRatioDict[salesStockRatio] = statItemDto;
+                // if business has multiple sales to compare dates with
+                if (saleDates.Count > 1)
+                {
+                    saleDates.Add(DateTime.Now);
+                    int timeBetweenSales = AverageDaysBetweenSales(saleDates);
+                    string salesStockRatio = timeBetweenSales + ":" + itemStock;
+                    salesStockRatioDict[salesStockRatio] = statItemDto;
+                }
+
             }
             
             var sortedCategoryDict = categorySalesDict.OrderByDescending(x => x.Value)
                 .ToDictionary(x => x.Key, x => x.Value);
             
             var sortedRatioDict = new SortedDictionary<string, StatItemDto>(salesStockRatioDict, new SalesToStockRatioComparer());
-
-
             
             Dictionary<int, StatItemDto> bestSellingItem = new Dictionary<int, StatItemDto>()
                 { { itemSalesDict.Last().Key, itemSalesDict.Last().Value } };
@@ -232,13 +242,11 @@ public class StatisticsService : IStatisticsService
                 { { itemReturnsDict.Last().Key, itemReturnsDict.Last().Value } };
             Dictionary<string, StatItemDto> longestNoSales = new Dictionary<string, StatItemDto>()
                 { { timeNoSalesDict.Last().Key + " days", timeNoSalesDict.Last().Value } };
-            Dictionary<string, StatItemDto> highestSaleStockRatio = new Dictionary<string, StatItemDto>()
+            Dictionary<string, StatItemDto> itemToRestock = new Dictionary<string, StatItemDto>()
                 { { sortedRatioDict.Last().Key, sortedRatioDict.Last().Value } };
-            Dictionary<string, StatItemDto> lowestSaleStockRatio = new Dictionary<string, StatItemDto>()
-                { { sortedRatioDict.First().Key, sortedRatioDict.First().Value } };
 
             return new StatsSuggestionsDto(bestSellingItem, worstSellingItem,
-                highestSaleStockRatio, lowestSaleStockRatio, longestNoSales, bestSellingCategory,
+                itemToRestock, longestNoSales, bestSellingCategory,
                 worstSellingCategory, mostReturnedItem);
         }
 
@@ -247,5 +255,18 @@ public class StatisticsService : IStatisticsService
             TimeSpan difference = date2 - date1;
             int differenceInDays = difference.Days;
             return differenceInDays;
+        }
+
+        public int AverageDaysBetweenSales(List<DateTime> saleDates)
+        {
+            var sortedSaleDates = saleDates.OrderBy(d => d).ToList();
+            int totalDays = 0;
+            for (int i = 0; i < sortedSaleDates.Count - 1; i++)
+            {
+                TimeSpan timeDiff = sortedSaleDates[i + 1] - sortedSaleDates[i];
+                totalDays += timeDiff.Days;
+            }
+            int avgDays = totalDays / (sortedSaleDates.Count - 1);
+            return avgDays;
         }
 }

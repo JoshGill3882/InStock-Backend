@@ -141,12 +141,6 @@ public class StatsMock
                 },
                 new Dictionary<string, StatItemDto>()
                 {
-                    {"20: 100", new StatItemDto("CRD-CKT-RLB", "2a36f726-b3a2-11ed-afa1-0242ac120002", "Cards",
-                        "Birthday Cockatoo", "50", new List<StatStockDto>{new StatStockDto(-100, "Giveaway", 
-                            "2023-03-23T14:52:11.2945412+00:00")})}
-                },
-                new Dictionary<string, StatItemDto>()
-                {
                     {"100 days", new StatItemDto("CRD-CKT-RLB", "2a36f726-b3a2-11ed-afa1-0242ac120002", "Cards",
                         "Birthday Cockatoo", "50", new List<StatStockDto>{new StatStockDto(-100, "Giveaway", 
                             "2023-03-23T14:52:11.2945412+00:00")})}
