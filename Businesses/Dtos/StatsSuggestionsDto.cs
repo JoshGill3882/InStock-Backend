@@ -1,6 +1,8 @@
+using instock_server_application.Shared.Dto;
+
 namespace instock_server_application.Businesses.Dtos;
 
-public class StatsSuggestionsDto
+public class StatsSuggestionsDto : DataTransferObjectSuperType
 {
     public Dictionary<int, StatItemDto> BestSellingItem { get; }
     public Dictionary<int, StatItemDto> WorstSellingItem { get; }
@@ -10,6 +12,9 @@ public class StatsSuggestionsDto
     public Dictionary<int, string> BestSellingCategory { get; }
     public Dictionary<int, string> WorstSellingCategory { get; }
     public Dictionary<int, StatItemDto> MostReturns { get; }
+    
+    public StatsSuggestionsDto(ErrorNotification errorNotes) : base(errorNotes) {
+    }
 
     public StatsSuggestionsDto(Dictionary<int, StatItemDto> bestSellingItem, Dictionary<int, StatItemDto> worstSellingItem, 
         Dictionary<string, StatItemDto> itemToRestock, Dictionary<string, StatItemDto> longestNoSales, 

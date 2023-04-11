@@ -41,15 +41,9 @@ public class StatisticsService : IStatisticsService
             };
             
             // Create default stats suggestions
-            StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(null, null,
-                null, null, new Dictionary<int, string>()
-                {
-                    {0, "No Best Selling Category"}
-                },
-                new Dictionary<int, string>()
-                {
-                    {0, "No Worst Selling Category"}
-                }, null);
+            var error = new ErrorNotification();
+            error.AddError("No Stats Suggestions");
+            StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(error);
 
             // User has access, but incorrect businessID or no items found
             if (responseItems.Count == 0) {
@@ -97,7 +91,6 @@ public class StatisticsService : IStatisticsService
             //         statItemDtos.Add(statItemDto);
             //     }
             // }
-
             
             // calculate suggestions
             statsSuggestionsDto = GetSuggestions(statItemDtos);
