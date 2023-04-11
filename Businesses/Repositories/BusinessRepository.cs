@@ -88,7 +88,7 @@ public class BusinessRepository : IBusinessRepository {
         return !string.IsNullOrEmpty(existingUser.BusinessId);
     }
     
-    public async Task<ConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto) {
+    public async Task<StoreConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto) {
         // Validating details
         if (string.IsNullOrEmpty(storeConnectionDto.BusinessId)) {
             throw new NullReferenceException("The connection business ID cannot be null.");
@@ -100,9 +100,18 @@ public class BusinessRepository : IBusinessRepository {
         Console.WriteLine("Test");
         // Getting the existing connections
 
-        ConnectionModel existingConnections =
-        await _context.LoadAsync<ConnectionModel>("storeConnectionDto.BusinessId");
         
+        
+        ConnectionModel connection = new ConnectionModel(
+        storeConnectionDto.BusinessId
+            ); 
+        
+        Console.WriteLine("Phase 3.2");
+
+        ConnectionModel existingConnections =
+        await _context.LoadAsync<ConnectionModel>(connection.BusinessId);
+        
+        Console.WriteLine(existingConnections.ToString());
         
         Console.WriteLine("Phase 3.5");
 
@@ -118,12 +127,29 @@ public class BusinessRepository : IBusinessRepository {
 
         
         Console.WriteLine("Phase 5");
-
         
-        ConnectionDto connectionDto =
-            new ConnectionDto(storeConnectionDto.ShopName, storeConnectionDto.AuthenticationToken);
+        // Return existing connections as store dto
+        StoreConnectionDto allConnections = existingConnections.ToStoreConnectionDto();
+        
 
         // Returning the new object that was saved
-        return connectionDto;
+        return allConnections;
+    }
+    
+    public async Task<StoreConnectionDto> GetConnections(string businessId)
+    {
+        // Validating details
+        if (string.IsNullOrEmpty(businessId)) 
+        {
+            throw new NullReferenceException("The business ID cannot be null.");
+        }
+    
+        // Getting the existing connections
+        ConnectionModel connection = new ConnectionModel(businessId);
+        ConnectionModel existingConnections = await _context.LoadAsync<ConnectionModel>(connection.BusinessId);
+        StoreConnectionDto allConnections = existingConnections.ToStoreConnectionDto();
+        
+        // Returning the DTOs
+        return allConnections;
     }
 }

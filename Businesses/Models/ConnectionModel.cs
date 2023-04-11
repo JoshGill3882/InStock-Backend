@@ -1,14 +1,13 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using instock_server_application.Businesses.Dtos;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Businesses")]
 public class ConnectionModel {
-    public static readonly string TableName = "Businesses";
-
-    [DynamoDBRangeKey]
+    [DynamoDBHashKey]
     [DynamoDBProperty("BusinessId")]
     public string BusinessId { get; set; }
 
@@ -30,6 +29,19 @@ public class ConnectionModel {
         Connections.Add(new ConnectionObject(shopName, authenticationToken));
     }
 
+    public override string ToString() {
+        return $"ConnectionModel{{ BusinessId='{BusinessId}', Connections='{JsonSerializer.Serialize(Connections)}' }}";
+    }
+    
+    public StoreConnectionDto ToStoreConnectionDto() {
+        List<ConnectionDto> connectionDtos = new List<ConnectionDto>();
+
+        foreach (ConnectionObject connection in Connections) {
+            connectionDtos.Add(new ConnectionDto(connection.ShopName, connection.AuthenticationToken));
+        }
+
+        return new StoreConnectionDto(BusinessId, connectionDtos);
+    }
     
     public class ConnectionObject {
         public string ShopName { get; set; }

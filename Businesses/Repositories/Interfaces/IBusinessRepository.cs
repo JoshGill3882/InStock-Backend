@@ -6,6 +6,8 @@ public interface IBusinessRepository {
     Task<BusinessDto?> GetBusiness(ValidateBusinessIdDto validateBusinessIdDto);
     Task<BusinessDto> SaveNewBusiness(StoreBusinessDto businessToSave);
     Task<bool> DoesUserOwnABusiness(Guid userId);
-    Task<ConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto);
+    Task<StoreConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto);
+    
+    Task<StoreConnectionDto> GetConnections(String businessId);
 
 }

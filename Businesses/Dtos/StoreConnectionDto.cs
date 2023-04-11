@@ -1,17 +1,22 @@
 ﻿
+using instock_server_application.Shared.Dto;
+
 namespace instock_server_application.Businesses.Dtos
 {
-    public class StoreConnectionDto
+    public class StoreConnectionDto : DataTransferObjectSuperType
     {
         public string BusinessId { get; }
-        public string ShopName { get; }
-        public string AuthenticationToken { get; }
+        public List<ConnectionDto> Connections { get; }
+        
+        public const string USER_UNAUTHORISED_ERROR = "You are not authorized to edit this business's connections.";
 
-        public StoreConnectionDto(string businessId, string shopName, string authenticationToken)
+        public StoreConnectionDto(ErrorNotification errorNotes) : base(errorNotes)
         {
+        }
+
+        public StoreConnectionDto(string businessId, List<ConnectionDto> connections) {
             BusinessId = businessId;
-            ShopName = shopName;
-            AuthenticationToken = authenticationToken;
+            Connections = connections;
         }
     }
 }

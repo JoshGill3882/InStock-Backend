@@ -84,11 +84,11 @@ public class ConnectionsController : ControllerBase {
             "6b416f45-2ac1-462f-b6d8-94fef82e5925",
             "Hello",
             "Hello");
-        var res = await connectionService.CreateConnection(createConnectionRequestDto);
+        var allConnections = await connectionService.CreateConnection(createConnectionRequestDto);
         Console.WriteLine("res");
-        Console.WriteLine(res);
+        Console.WriteLine(allConnections);
         
-        return Ok("Posting");
+        return Ok(allConnections);
     }
     
 }

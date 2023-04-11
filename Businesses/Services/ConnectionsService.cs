@@ -11,7 +11,7 @@ public class ConnectionsService {
         _businessRepository = businessRepository;
     }
     
-    public async Task<ConnectionDto> CreateConnection(CreateConnectionRequestDto createConnectionRequestDto) {
+    public async Task<StoreConnectionDto> CreateConnection(CreateConnectionRequestDto createConnectionRequestDto) {
         
         Console.WriteLine("Phase 0.5");
         Console.WriteLine(createConnectionRequestDto.BusinessId);
@@ -30,8 +30,8 @@ public class ConnectionsService {
         
         // Check if the user is allowed to edit the business, return as no need to do anymore validation
         if (!createConnectionRequestDto.UserBusinessId.Equals(createConnectionRequestDto.BusinessId)) {
-            errorNotes.AddError(ConnectionDto.USER_UNAUTHORISED_ERROR);
-            return new ConnectionDto(errorNotes);
+            errorNotes.AddError(StoreConnectionDto.USER_UNAUTHORISED_ERROR);
+            return new StoreConnectionDto(errorNotes);
         }
         
         //
@@ -44,22 +44,29 @@ public class ConnectionsService {
         // Create new Stock Update record
         
         Console.WriteLine("Phase 1");
+
+        List<ConnectionDto> connectionDtos = new List<ConnectionDto>();
+
+        ConnectionDto connectionDto = new ConnectionDto(
+            shopName: createConnectionRequestDto.ShopName,
+            authenticationToken: createConnectionRequestDto.AuthenticationToken
+        );
+        connectionDtos.Add(connectionDto);
         
         StoreConnectionDto storeConnectionDtoToSave = new StoreConnectionDto(
             businessId: createConnectionRequestDto.BusinessId,
-            shopName: createConnectionRequestDto.ShopName,
-            authenticationToken: createConnectionRequestDto.AuthenticationToken
+            connections: connectionDtos
         );
 
         Console.WriteLine(storeConnectionDtoToSave.BusinessId);
         
         Console.WriteLine("Phase 2");
 
-        ConnectionDto connectionDtoSaved = await _businessRepository.SaveNewConnection(storeConnectionDtoToSave);
+        StoreConnectionDto storeConnectionDto = await _businessRepository.SaveNewConnection(storeConnectionDtoToSave);
         
         // Returning results
         // Return newly created stock update
-        return connectionDtoSaved;
+        return storeConnectionDto;
     }
     
     
