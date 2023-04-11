@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using FirebaseAdmin.Messaging;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -8,9 +9,11 @@ namespace instock_server_application.Businesses.Services;
 
 public class ItemStockService : IItemStockService {
     private readonly IItemRepo _itemRepo;
+    private readonly IBusinessRepository _businessRepository;
 
-    public ItemStockService(IItemRepo itemRepo) {
+    public ItemStockService(IItemRepo itemRepo, IBusinessRepository businessRepository) {
         _itemRepo = itemRepo;
+        _businessRepository = businessRepository;
     }
 
     private void ValidateAmountChangeBy(ErrorNotification errorNotes, int changeAmountBy, ItemDto existingItem) {
@@ -104,9 +107,59 @@ public class ItemStockService : IItemStockService {
         );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
+
+        switch (newStockLevel) {
+            case 5:
+                LowStockNotification(updatedItemDto);
+                break;
+            case 0:
+                NoStockNotification(updatedItemDto);
+                break;
+        }
         
         // Returning results
         // Return newly created stock update
         return stockUpdateDtoSaved;
+    }
+
+    private void LowStockNotification(StoreItemDto itemDto) {
+        var message = new MulticastMessage() {
+            Notification = new Notification() {
+                Title = "Low Stock",
+                Body = "You are low on: " + itemDto.Name
+            },
+            Data = new Dictionary<string, string>() {
+                { "SKU", itemDto.SKU },
+                { "BusinessId", itemDto.BusinessId },
+                { "Category", itemDto.Category },
+                { "Name", itemDto.Name },
+                { "Stock", itemDto.Stock.ToString() }
+            },
+            Tokens = GetClientDeviceTokens(itemDto.BusinessId)
+        };
+        FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+    }
+
+    private void NoStockNotification(StoreItemDto itemDto) {
+        var message = new MulticastMessage() {
+            Notification = new Notification() {
+                Title = "Out of Stock",
+                Body = "You are out of Stock on: " + itemDto.Name
+            },
+            Data = new Dictionary<string, string>() {
+                { "SKU", itemDto.SKU },
+                { "BusinessId", itemDto.BusinessId },
+                { "Category", itemDto.Category },
+                { "Name", itemDto.Name },
+                { "Stock", itemDto.Stock.ToString() }
+            },
+            Tokens = GetClientDeviceTokens(itemDto.BusinessId)
+        };
+        FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+    }
+
+    private List<string> GetClientDeviceTokens(string businessId) {
+        BusinessDto businessDto = _businessRepository.GetBusiness(new(null, businessId)).Result;
+        return businessDto!.DeviceKeys;
     }
 }

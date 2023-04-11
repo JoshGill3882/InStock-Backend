@@ -37,8 +37,9 @@ public class ItemStockControllerTest {
         var mockItemRepo = new Mock<IItemRepo>();
         mockItemRepo.Setup(s => s.GetItem(userBusinessId, requestItemSku)).Returns(Task.FromResult(existingItem)!);
         mockItemRepo.Setup(s => s.SaveStockUpdate(It.IsAny<StoreStockUpdateDto>())).Returns(Task.FromResult(storedItemStockUpdate)!);
-
-        var itemStockService = new ItemStockService(mockItemRepo.Object);
+        var mockBusinessRepo = new Mock<IBusinessRepository>();
+        
+        var itemStockService = new ItemStockService(mockItemRepo.Object, mockBusinessRepo.Object);
         
         var controller = new ItemStockController(itemStockService) {
             ControllerContext = new ControllerContext() {
