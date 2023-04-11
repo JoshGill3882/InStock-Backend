@@ -22,11 +22,12 @@ public class BusinessRepository : IBusinessRepository {
         }
         
         BusinessDto businessDto = new BusinessDto(
-            businessId: existingBusiness.BusinessId,
-            businessName: existingBusiness.BusinessName,
-            businessDescription: existingBusiness.BusinessDescription,
-            businessOwnerId: existingBusiness.OwnerId,
-            imageUrl: existingBusiness.ImageUrl
+            existingBusiness.BusinessId,
+            existingBusiness.BusinessName,
+            existingBusiness.OwnerId,
+            existingBusiness.BusinessDescription,
+            existingBusiness.ImageUrl,
+            existingBusiness.DeviceKeys
         );
         
         return businessDto;
@@ -57,7 +58,8 @@ public class BusinessRepository : IBusinessRepository {
             businessToSave.BusinessName, 
             businessToSave.UserId, 
             businessToSave.BusinessDescription,
-            businessToSave.ImageUrl
+            businessToSave.ImageUrl,
+            businessToSave.DeviceKeys
         );
         await _context.SaveAsync(businessModel);
         
@@ -70,7 +72,8 @@ public class BusinessRepository : IBusinessRepository {
             businessModel.BusinessName, 
             businessModel.OwnerId.ToString(),
             businessModel.BusinessDescription,
-            businessModel.ImageUrl
+            businessModel.ImageUrl,
+            businessModel.DeviceKeys
         );
         
         return createdBusiness;

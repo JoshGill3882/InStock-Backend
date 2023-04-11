@@ -98,7 +98,8 @@ public class BusinessService : IBusinessService {
             newBusinessRequest.BusinessName,
             newBusinessRequest.UserId,
             newBusinessRequest.BusinessDescription,
-            storageResponse.Message
+            storageResponse.Message,
+            newBusinessRequest.DeviceKeys
         );
         
         BusinessDto createdBusiness = await _businessRepository.SaveNewBusiness(businessToSave);

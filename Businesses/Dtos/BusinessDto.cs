@@ -8,15 +8,17 @@ public class BusinessDto : DataTransferObjectSuperType {
     public string BusinessDescription { get; }
     public string BusinessOwnerId { get; }
     public string? ImageUrl { get; }
+    public List<string> DeviceKeys { get; }
 
     public BusinessDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
 
-    public BusinessDto(string businessId, string businessName, string businessOwnerId, string businessDescription, string? imageUrl) {
+    public BusinessDto(string businessId, string businessName, string businessOwnerId, string businessDescription, string? imageUrl, List<string> deviceKeys) {
         BusinessId = businessId;
         BusinessName = businessName;
         BusinessOwnerId = businessOwnerId;
         BusinessDescription = businessDescription;
         ImageUrl = imageUrl;
+        DeviceKeys = deviceKeys;
     }
 }
