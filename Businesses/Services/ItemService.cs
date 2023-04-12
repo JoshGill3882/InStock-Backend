@@ -42,7 +42,6 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "The item name is invalid.");
         }
     }
-    
     private void ValidateItemCategory(ErrorNotification errorNotes, string itemCategory) {
         // Item Name Variables
         const string errorKey = "itemCategory";
@@ -61,7 +60,6 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "The item category is invalid.");
         }
     }
-    
     private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto){
         const string errorKey = "duplicateItemName";
         var isDuplicate = await _itemRepo.IsNameInUse(newItemRequestDto);
@@ -70,7 +68,6 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "You already have an item with that name");
         }
     }
-
     private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
         const string errorKey = "duplicateSKU";
@@ -78,6 +75,11 @@ public class ItemService : IItemService {
         if (isDuplicate)
         {
             errorNotes.AddError(errorKey, "You already have an item with that SKU");
+        }
+    }
+    private void ValidateItemStock(ErrorNotification errorNotes, int stockValue) {
+        if (stockValue == 0) {
+            errorNotes.AddError("stockIsZero");
         }
     }
 
@@ -131,6 +133,7 @@ public class ItemService : IItemService {
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
+        ValidateItemStock(errorNotes, newItemRequestDto.Stock);
         if (newItemRequestDto.ImageFile != null) {
             _utilService.ValidateImageFileContentType(errorNotes, newItemRequestDto.ImageFile);
         }
@@ -231,6 +234,7 @@ public class ItemService : IItemService {
         if (existingItemDto == null) {
             errorNotes.AddError("This item does not exist");
         }
+        ValidateItemStock(errorNotes, existingItemDto!.Stock + createStockUpdateRequestDto.ChangeStockAmountBy);
 
         // If we have had any errors then return this
         if (errorNotes.HasErrors) {
