@@ -32,7 +32,8 @@ public class UserController : ControllerBase {
         AccountDetailsDto accountDetailsDto = new AccountDetailsDto(
             firstName: user.FirstName,
             lastName: user.LastName,
-            email: user.Email
+            email: user.Email,
+            imageUrl: user.ImageUrl
         );
 
         return Ok(accountDetailsDto);
