@@ -4,12 +4,14 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemStockService : IItemStockService {
     private readonly IItemRepo _itemRepo;
     private readonly IBusinessRepository _businessRepository;
+    private readonly INotificationService _notificationService;
 
     public ItemStockService(IItemRepo itemRepo, IBusinessRepository businessRepository) {
         _itemRepo = itemRepo;
@@ -110,56 +112,41 @@ public class ItemStockService : IItemStockService {
 
         switch (newStockLevel) {
             case 5:
-                LowStockNotification(updatedItemDto);
+                _notificationService.SendNotification(
+                    new Notification() {
+                        Title = "Low Stock",
+                        Body = "You are low on stock on: " + updatedItemDto.Name
+                    },
+                    new Dictionary<string, string> {
+                        { "SKU", updatedItemDto.SKU },
+                        { "BusinessId", updatedItemDto.BusinessId },
+                        { "Category", updatedItemDto.Category },
+                        { "Name", updatedItemDto.Name },
+                        { "Stock", updatedItemDto.Stock.ToString() }
+                    },
+                    createStockUpdateRequestDto.BusinessId
+                );
                 break;
             case 0:
-                NoStockNotification(updatedItemDto);
+                _notificationService.SendNotification(
+                    new Notification() {
+                        Title = "Out of Stock",
+                        Body = "You are out of stock on: " + updatedItemDto.Name
+                    },
+                    new Dictionary<string, string> {
+                        { "SKU", updatedItemDto.SKU },
+                        { "BusinessId", updatedItemDto.BusinessId },
+                        { "Category", updatedItemDto.Category },
+                        { "Name", updatedItemDto.Name },
+                        { "Stock", updatedItemDto.Stock.ToString() }
+                    },
+                    createStockUpdateRequestDto.BusinessId
+                );
                 break;
         }
         
         // Returning results
         // Return newly created stock update
         return stockUpdateDtoSaved;
-    }
-
-    private void LowStockNotification(StoreItemDto itemDto) {
-        var message = new MulticastMessage() {
-            Notification = new Notification() {
-                Title = "Low Stock",
-                Body = "You are low on: " + itemDto.Name
-            },
-            Data = new Dictionary<string, string>() {
-                { "SKU", itemDto.SKU },
-                { "BusinessId", itemDto.BusinessId },
-                { "Category", itemDto.Category },
-                { "Name", itemDto.Name },
-                { "Stock", itemDto.Stock.ToString() }
-            },
-            Tokens = GetClientDeviceTokens(itemDto.BusinessId)
-        };
-        FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
-    }
-
-    private void NoStockNotification(StoreItemDto itemDto) {
-        var message = new MulticastMessage() {
-            Notification = new Notification() {
-                Title = "Out of Stock",
-                Body = "You are out of Stock on: " + itemDto.Name
-            },
-            Data = new Dictionary<string, string>() {
-                { "SKU", itemDto.SKU },
-                { "BusinessId", itemDto.BusinessId },
-                { "Category", itemDto.Category },
-                { "Name", itemDto.Name },
-                { "Stock", itemDto.Stock.ToString() }
-            },
-            Tokens = GetClientDeviceTokens(itemDto.BusinessId)
-        };
-        FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
-    }
-
-    private List<string> GetClientDeviceTokens(string businessId) {
-        BusinessDto businessDto = _businessRepository.GetBusiness(new(null, businessId)).Result;
-        return businessDto!.DeviceKeys;
     }
 }

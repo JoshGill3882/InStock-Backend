@@ -106,6 +106,7 @@ builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 // Util Services & Repositories
 builder.Services.AddScoped<IUtilService, UtilService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // AwsS3 Services & Repositories
 builder.Services.AddScoped<IStorageService, StorageService>();
