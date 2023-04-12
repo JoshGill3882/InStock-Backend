@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services; 
 
-public class ConnectionsService {
+public class ConnectionsService : IConnectionsService {
     private readonly IBusinessRepository _businessRepository;
 
     public ConnectionsService(IBusinessRepository businessRepository)
@@ -21,13 +21,7 @@ public class ConnectionsService {
     public async Task<StoreConnectionDto> CreateConnections(CreateConnectionRequestDto createConnectionRequestDto) {
         
         // Validation
-        // Check if the user and business Ids are valid, they should be validated by this point so throw exception
-        if (string.IsNullOrEmpty(createConnectionRequestDto.UserId)) {
-            throw new NullReferenceException("The UserId cannot be null or empty.");
-        }
-        if (string.IsNullOrEmpty(createConnectionRequestDto.UserBusinessId)) {
-            throw new NullReferenceException("The BusinessId cannot be null or empty.");
-        }
+        ValidateConnectionRequest(createConnectionRequestDto);
         
         ErrorNotification errorNotes = new ErrorNotification();
         
@@ -36,27 +30,32 @@ public class ConnectionsService {
             errorNotes.AddError(StoreConnectionDto.USER_UNAUTHORISED_ERROR);
             return new StoreConnectionDto(errorNotes);
         }
-        
-        //
-        // // If we have had any errors then return them
-        // if (errorNotes.HasErrors) {
-        //     return new StockUpdateDto(errorNotes);
-        // }
-        
-        // Saving to database
-        // Create new Stock Update record
-        
-        List<ConnectionDto> connectionDtos = new List<ConnectionDto>();
 
+        GetConnectionsRequestDto getConnectionsRequestDto = createConnectionRequestDto.ToGetConnectionsRequest();
+        StoreConnectionDto connections = await GetConnections(getConnectionsRequestDto);
+        // Get connections
+        List<ConnectionDto> connectionsList = connections.Connections;
+        
         ConnectionDto connectionDto = new ConnectionDto(
             shopName: createConnectionRequestDto.ShopName,
             authenticationToken: createConnectionRequestDto.AuthenticationToken
         );
-        connectionDtos.Add(connectionDto);
+        
+        //Check for duplicates
+        foreach (ConnectionDto existingConnection in connectionsList)
+        {
+            if (existingConnection.ShopName == connectionDto.ShopName)
+            {
+                errorNotes.AddError("You are already connected to this shop.");
+                return new StoreConnectionDto(errorNotes);
+            }
+        }
+        
+        connectionsList.Add(connectionDto);
         
         StoreConnectionDto storeConnectionDtoToSave = new StoreConnectionDto(
             businessId: createConnectionRequestDto.BusinessId,
-            connections: connectionDtos
+            connections: connectionsList
         );
         
         StoreConnectionDto storeConnectionDto = await _businessRepository.SaveNewConnection(storeConnectionDtoToSave);
@@ -91,22 +90,40 @@ public class ConnectionsService {
         return storeConnectionDto;
     }
 
-    public async Task<String> ConnectToExternalShop(CreateConnectionForm connectionRequestDetails) {
+    public async Task<ExternalShopAuthenticationTokenDto> ConnectToExternalShop(CreateConnectionForm connectionRequestDetails) {
 
         //Create a class for calling with an interface
-        Console.WriteLine("Connecting");
+        try { 
         ExternalServiceConnectorFactory externalServiceConnectorFactory = new ExternalServiceConnectorFactory();
         ExternalShopAuthenticator authenticator =
             externalServiceConnectorFactory.CreateAuthenticator(connectionRequestDetails);
 
-        ExternalShopLoginDto loginDetails = new ExternalShopLoginDto(
-            shopUsername: connectionRequestDetails.ShopUsername,
-            shopUserPassword: connectionRequestDetails.ShopUserPassword
-        );
-        var res = await authenticator.LoginToShop(loginDetails);
-        Console.WriteLine("Ree working");
-        Console.WriteLine(res);
-        return res;
+        
+            ExternalShopLoginDto loginDetails = new ExternalShopLoginDto(
+                shopUsername: connectionRequestDetails.ShopUsername,
+                shopUserPassword: connectionRequestDetails.ShopUserPassword
+            );
+            ExternalShopAuthenticationTokenDto authenticationToken = await authenticator.LoginToShop(loginDetails);
+            return authenticationToken;
+        }
+        catch (Exception e) {
+            ErrorNotification errorNote = new ErrorNotification();
+            errorNote.AddError(e.Message);
+            return new ExternalShopAuthenticationTokenDto(errorNote);
+        }
     }
+    
+    private void ValidateConnectionRequest(CreateConnectionRequestDto createConnectionRequestDto)
+    {
+        if (string.IsNullOrEmpty(createConnectionRequestDto.UserId))
+        {
+            throw new NullReferenceException("The UserId cannot be null or empty.");
+        }
+        if (string.IsNullOrEmpty(createConnectionRequestDto.UserBusinessId))
+        {
+            throw new NullReferenceException("The BusinessId cannot be null or empty.");
+        }
+    }
+    
 }
    

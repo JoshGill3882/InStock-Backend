@@ -1,5 +1,12 @@
-﻿namespace instock_server_application.Businesses.Services.Interfaces; 
+﻿using instock_server_application.Businesses.Controllers.forms;
+using instock_server_application.Businesses.Dtos;
 
-public class IConnectionService {
-    
+namespace instock_server_application.Businesses.Services.Interfaces
+{
+    public interface IConnectionsService
+    {
+        Task<StoreConnectionDto> CreateConnections(CreateConnectionRequestDto createConnectionRequestDto);
+        Task<StoreConnectionDto> GetConnections(GetConnectionsRequestDto getConnectionsRequestDto);
+        Task<ExternalShopAuthenticationTokenDto> ConnectToExternalShop(CreateConnectionForm connectionRequestDetails);
+    }
 }

@@ -60,21 +60,39 @@ public class ConnectionsController : ControllerBase {
         //
         ConnectionsService connectionService = new ConnectionsService(_businessRepository);
 
-        Console.WriteLine("Calling");
-        String res = await connectionService.ConnectToExternalShop(createConnectionForm);
-        Console.WriteLine("Called");
-        Console.WriteLine(res);
+
         
+        
+           ExternalShopAuthenticationTokenDto authenticationToken = await connectionService.ConnectToExternalShop(createConnectionForm);
+            // Handle the successful result, e.g., display the result or perform further actions
+        
+        if (authenticationToken.ErrorNotification.HasErrors) {
+            if (authenticationToken.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+                if (authenticationToken.ErrorNotification.Errors["otherErrors"].Contains("Unauthorized")) {
+                    return Unauthorized();
+                }
+            }
+            return new BadRequestObjectResult(authenticationToken.ErrorNotification);
+        }
         
         CreateConnectionRequestDto createConnectionRequestDto = new CreateConnectionRequestDto(
             currentUserId!, 
             currentUserBusinessId!,
              businessId,
             createConnectionForm.ShopNameConnectingTo,
-            "SampleToken123");
-        var allConnections = await connectionService.CreateConnections(createConnectionRequestDto);
-        Console.WriteLine("res");
-        Console.WriteLine(allConnections);
+            authenticationToken.AuthenticationToken);
+        
+        
+        StoreConnectionDto allConnections = await connectionService.CreateConnections(createConnectionRequestDto);
+      
+        if (allConnections.ErrorNotification.HasErrors) {
+            if (allConnections.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+                if (allConnections.ErrorNotification.Errors["otherErrors"].Contains("Unauthorized")) {
+                    return Unauthorized();
+                }
+            }
+            return new BadRequestObjectResult(allConnections.ErrorNotification);
+        }
         
         return Ok(allConnections);
     }

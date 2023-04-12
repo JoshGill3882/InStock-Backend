@@ -19,5 +19,17 @@ namespace instock_server_application.Businesses.Dtos
             ShopName = shopName;
             AuthenticationToken = authenticationToken;
         }
+        
+        public CreateConnectionRequestDto(ErrorNotification errorNotes) : base(errorNotes) {
+        }
+        
+        public GetConnectionsRequestDto ToGetConnectionsRequest()
+        {
+            return new GetConnectionsRequestDto(
+                userId: UserId,
+                userBusinessId: UserBusinessId,
+                businessId: BusinessId
+            );
+        }
     }
 }
