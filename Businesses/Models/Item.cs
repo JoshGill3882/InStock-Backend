@@ -1,5 +1,3 @@
-﻿using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 
@@ -25,6 +23,9 @@ public class Item {
     
     [DynamoDBProperty("Name")]
     public string Name { get; set; }
+    
+    [DynamoDBProperty("ImageUrl")]
+    public string? ImageUrl { get; set; }
 
     [DynamoDBProperty("Stock")]
     public String TotalStock {
@@ -69,12 +70,14 @@ public class Item {
     /// <param name="businessId"> Item's Business Id </param>
     /// <param name="category"> Item's Category </param>
     /// <param name="name"> Item's Name </param>
-    /// <param name="totalStock">Item's Stock Level</param>
-    public Item(string sku, string businessId, string category, string name, int totalStock, int totalOrders) {
+    /// <param name="stock">Item's Stock Level</param>
+    /// <param name="imageUrl">Item's Image</param>
+    public Item(string sku, string businessId, string category, string name, int totalStock, int totalOrders, string? imageUrl) {
         SKU = sku;
         BusinessId = businessId;
         Category = category;
         Name = name;
+        ImageUrl = imageUrl;
         _totalStock = totalStock;
         _totalOrders = totalStock;
     }

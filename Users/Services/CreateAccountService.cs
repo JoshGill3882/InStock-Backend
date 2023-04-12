@@ -1,10 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
 using instock_server_application.Users.Dtos;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services.Interfaces;
+using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Users.Services; 
 
@@ -12,13 +13,15 @@ public class CreateAccountService : ICreateAccountService {
     private readonly IUserRepo _userRepo;
     private readonly IUtilService _utilService;
     private readonly IPasswordService _passwordService;
-    private readonly IJwtService _jwtService;
+    private readonly IAccessTokenService _accessTokenService;
+    private readonly IRefreshTokenService _refreshTokenService;
 
-    public CreateAccountService(IUserRepo userRepo, IUtilService utilService, IPasswordService passwordService, IJwtService jwtService) {
+    public CreateAccountService(IUserRepo userRepo, IUtilService utilService, IPasswordService passwordService, IAccessTokenService accessTokenService, IRefreshTokenService refreshTokenService) {
         _userRepo = userRepo;
         _utilService = utilService;
         _passwordService = passwordService;
-        _jwtService = jwtService;
+        _accessTokenService = accessTokenService;
+        _refreshTokenService = refreshTokenService;
     }
 
     /// <summary>
@@ -43,12 +46,14 @@ public class CreateAccountService : ICreateAccountService {
             newAccountDto.LastName,
             _passwordService.Encrypt(newAccountDto.Password),
             "Standard User",
-            ""
+            "",
+            _refreshTokenService.GenerateRandString(),
+            _refreshTokenService.GenerateExpiry()
         );
         
         _userRepo.Save(newUser);
 
-        return _jwtService.CreateToken(newUser.UserId, newUser.Email, newUser.UserBusinessId);
+        return _accessTokenService.CreateToken(newUser.UserId, newUser.Email, newUser.UserBusinessId);
     }
 
     /// <summary>
@@ -105,12 +110,7 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="email"> The entered email to be checked </param>
     /// <returns> true/false if the email is found </returns>
     private bool DuplicateAccount(string email) {
-        User user = _userRepo.GetByEmail(email).Result!;
-        // If the user is null (there wasn't one found using the given email), return false 
-        if (string.IsNullOrEmpty(user.UserId)) {
-            return false;
-        }
-        // Otherwise return true
-        return true;
+        User user = _userRepo.GetByEmail(email).Result;
+        return !string.IsNullOrEmpty(user.UserId);
     }
 }

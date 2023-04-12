@@ -1,11 +1,8 @@
-﻿using System.Numerics;
-using System.Text.RegularExpressions;
-using Amazon.DynamoDBv2.Model;
+﻿using System.Text.RegularExpressions;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -23,8 +20,8 @@ public class ItemStockService : IItemStockService {
         if (newStockLevel > int.MaxValue) {
             errorNotes.AddError(errorKey, $"The stock level cannot be more than {int.MaxValue}.");
         }
-        if (newStockLevel < int.MinValue) {
-            errorNotes.AddError(errorKey, $"The stock level cannot be less than {int.MinValue}.");
+        if (newStockLevel < 0) {
+            errorNotes.AddError(errorKey, "The stock level cannot be less than 0.");
         }
     }    
     private void ValidateReasonForChange(ErrorNotification errorNotes, string reasonForChange) {
@@ -103,7 +100,8 @@ public class ItemStockService : IItemStockService {
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
             totalStock: newStockLevel,
-            totalOrders: existingItemDto.TotalOrders);
+            totalOrders: existingItemDto.TotalOrders,
+            imageUrl: existingItemDto.ImageUrl);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

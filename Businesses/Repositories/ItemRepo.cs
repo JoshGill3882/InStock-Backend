@@ -1,10 +1,9 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Globalization;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
-using Microsoft.AspNetCore.Connections;
 
 namespace instock_server_application.Businesses.Repositories; 
 
@@ -37,12 +36,49 @@ public class ItemRepo : IItemRepo{
                     name: itemModel.Name,
                     totalStock: itemModel.GetTotalStock(),
                     totalOrders: itemModel.GetTotalOrders(),
-                    availableStock: itemModel.GetTotalStock() - itemModel.GetTotalOrders()));
+                    availableStock: itemModel.GetTotalStock() - itemModel.GetTotalOrders(),
+                    imageUrl: itemModel.ImageUrl));
         }
         
         return listOfItemDto;
-    }
+    }    
     
+    public async Task<List<StatItemDto>> GetAllItemsStatsDetails(string businessId) {
+        
+        // Get List of items
+        List<ItemStatsDetailsModel> listOfItemModel = await _context.ScanAsync<ItemStatsDetailsModel>(
+            new [] {
+                ItemStatsDetailsModel.ByBusinessId(businessId)
+            }).GetRemainingAsync();
+
+        // Convert list of items
+        List<StatItemDto> listOfStatItemDto = new List<StatItemDto>();
+        
+        foreach (ItemStatsDetailsModel itemModel in listOfItemModel) {
+
+            List<StatStockDto> listOfStatStockDtos = new List<StatStockDto>();
+            
+            if (itemModel.StockUpdates != null) {
+                foreach (ItemStockUpdateModel.StockUpdateObject stockObject in itemModel.StockUpdates) {
+                    StatStockDto statStockDto = new StatStockDto(stockObject.AmountChanged, stockObject.ReasonForChange,
+                        stockObject.DateTimeAdded.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"));
+                    listOfStatStockDtos.Add(statStockDto);
+                }    
+            }
+
+            listOfStatItemDto.Add(
+                new StatItemDto(
+                    sku: itemModel.SKU,
+                    businessId: itemModel.BusinessId,
+                    category: itemModel.Category,
+                    name: itemModel.Name,
+                    stock: itemModel.TotalStock,
+                    stockUpdates: listOfStatStockDtos));
+        }
+        
+        return listOfStatItemDto;
+    }
+
     public async Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto) {
         
         // Checking the Business Name is valid
@@ -52,7 +88,14 @@ public class ItemRepo : IItemRepo{
         
         // Save the new item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.TotalStock, itemToSaveDto.TotalOrders);
+            itemToSaveDto.SKU, 
+            itemToSaveDto.BusinessId, 
+            itemToSaveDto.Category,
+            itemToSaveDto.Name,
+            itemToSaveDto.TotalStock,
+            itemToSaveDto.TotalOrders,
+            itemToSaveDto.ImageUrl
+        );
         await _context.SaveAsync(itemModel);
 
         ItemDto createdItemDto = new ItemDto(
@@ -62,7 +105,9 @@ public class ItemRepo : IItemRepo{
             itemModel.Name,
             itemModel.GetTotalStock(),
             itemModel.GetTotalOrders(),
-             itemModel.GetTotalStock() - itemModel.GetTotalOrders());
+            itemModel.GetTotalStock() - itemModel.GetTotalOrders(),
+            itemModel.ImageUrl
+        );
         
         return createdItemDto;
     }
@@ -132,7 +177,14 @@ public class ItemRepo : IItemRepo{
         
         // Save the new updated item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.TotalStock, itemToSaveDto.TotalOrders);
+            itemToSaveDto.SKU, 
+            itemToSaveDto.BusinessId,
+            itemToSaveDto.Category,
+            itemToSaveDto.Name,
+            itemToSaveDto.TotalStock, 
+            itemToSaveDto.TotalOrders,
+            itemToSaveDto.ImageUrl
+        );
         await _context.SaveAsync(itemModel);
         
         // Return the updated Items details
@@ -143,7 +195,8 @@ public class ItemRepo : IItemRepo{
             itemModel.Name,
             itemModel.GetTotalStock(),
             itemModel.GetTotalOrders(),
-            itemModel.GetTotalStock()-itemModel.GetTotalOrders());
+            itemModel.GetTotalStock()-itemModel.GetTotalOrders(),
+            itemModel.ImageUrl);
         
         return updatedItemDto;
     }
@@ -192,10 +245,9 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetTotalStock(), item.GetTotalOrders(), item.GetTotalStock() - item.GetTotalOrders());
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetTotalStock(), item.GetTotalOrders(), item.GetTotalStock() - item.GetTotalOrders(), item.ImageUrl);
         return itemDto;
     }
-    
     
     public async Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto) {
         // Validating details

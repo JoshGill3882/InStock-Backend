@@ -60,7 +60,7 @@ public class ItemController : ControllerBase {
     /// <returns> Item created, or error with relevant status code</returns>
     [HttpPost]
     [Route("items")]
-    public async Task<IActionResult> CreateItem([FromBody] CreateItemForm newItemForm, [FromRoute] string businessId) {
+    public async Task<IActionResult> CreateItem([FromForm] CreateItemForm newItemForm, [FromRoute] string businessId) {
 
         // Get our current UserId and BusinessId to validate and pass to the items service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
@@ -71,8 +71,15 @@ public class ItemController : ControllerBase {
         }
 
         // Creating CreateItemDTO to pass the details to the service for processing
-        CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(newItemForm.SKU,
-            businessId, newItemForm.Category, newItemForm.Name, newItemForm.Stock, currentUserId);
+        CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(
+            newItemForm.SKU,
+            businessId, 
+            newItemForm.Category, 
+            newItemForm.Name, 
+            newItemForm.Stock, 
+            currentUserId,
+            newItemForm.ImageFile
+        );
 
         // Attempting to create new item
         ItemDto createdItemDto = await _itemService.CreateItem(createItemRequestDto);
@@ -90,12 +97,14 @@ public class ItemController : ControllerBase {
             items=Url.RouteUrl("items"),
             itemId=createdItemDto.SKU
         }, protocol:Request.Scheme);
+        
         return Created(createdItemUrl ?? string.Empty, new {
             sku = createdItemDto.SKU,
             businessId = createdItemDto.BusinessId,
             category = createdItemDto.Category,
             name = createdItemDto.Name,
-            stock = createdItemDto.Stock
+            stock = createdItemDto.TotalStock,
+            imageUrl = createdItemDto.ImageUrl
         });
     }
     

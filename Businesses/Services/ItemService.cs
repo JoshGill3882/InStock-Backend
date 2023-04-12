@@ -1,21 +1,25 @@
 ﻿using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
+using instock_server_application.AwsS3.Dtos;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
-using instock_server_application.Shared.Services.Interfaces;
+using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemService : IItemService {
     private readonly IItemRepo _itemRepo;
     private readonly IUtilService _utilService;
+    private readonly IStorageService _storageService;
 
-    public ItemService(IItemRepo itemRepo, IUtilService utilService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService, IStorageService storageService) {
         _itemRepo = itemRepo;
         _utilService = utilService;
+        _storageService = storageService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -76,6 +80,12 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "You already have an item with that SKU");
         }
     }
+    
+    private void ValidateItemStock(ErrorNotification errorNotes, int stockValue) {
+        if (stockValue == 0) {
+            errorNotes.AddError("stockIsZero");
+        }
+    }
 
     public async Task<ListOfItemDto> GetItems(UserDto userDto, string businessId) {
         
@@ -104,17 +114,34 @@ public class ItemService : IItemService {
         ValidateItemCategory(errorNotes, newItemRequestDto.Category);
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
+        ValidateItemStock(errorNotes, newItemRequestDto.Stock);
         
+        if (newItemRequestDto.ImageFile != null) {
+            _utilService.ValidateImageFileContentType(errorNotes, newItemRequestDto.ImageFile);
+        }
+
         // If we've got errors then return the notes and not make a repo call
         if (errorNotes.HasErrors) {
             return new ItemDto(errorNotes);
         }
+
+        S3ResponseDto storageResponse = new S3ResponseDto();
         
+        if (newItemRequestDto.ImageFile != null) {
+            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newItemRequestDto.UserId, newItemRequestDto.ImageFile));
+        }
+
         // Calling repo to create the business for the user
-        StoreItemDto itemToSaveDto =
-            new StoreItemDto(newItemRequestDto.SKU, newItemRequestDto.BusinessId, newItemRequestDto.Category, 
-                newItemRequestDto.Name, newItemRequestDto.Stock, 0);
-        
+        StoreItemDto itemToSaveDto = new StoreItemDto(
+            newItemRequestDto.SKU, 
+            newItemRequestDto.BusinessId, 
+            newItemRequestDto.Category,
+            newItemRequestDto.Name, 
+            newItemRequestDto.Stock,
+            0,
+            storageResponse.Message
+        );
+
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 
         return createdItem;
@@ -180,6 +207,7 @@ public class ItemService : IItemService {
         if (existingItemDto == null) {
             errorNotes.AddError("This item does not exist");
         }
+        ValidateItemStock(errorNotes, existingItemDto!.Stock + createStockUpdateRequestDto.ChangeStockAmountBy);
 
         // If we have had any errors then return this
         if (errorNotes.HasErrors) {
@@ -206,8 +234,9 @@ public class ItemService : IItemService {
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
             totalStock: newStockLevel,
-            totalOrders: existingItemDto.TotalOrders);
-        
+            totalOrders: existingItemDto.TotalOrders,
+            imageUrl: existingItemDto.ImageUrl);
+
         await _itemRepo.SaveExistingItem(updatedItemDto);
         
         // Returning results

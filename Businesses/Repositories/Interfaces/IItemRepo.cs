@@ -6,6 +6,7 @@ namespace instock_server_application.Businesses.Repositories.Interfaces;
 
 public interface IItemRepo {
     Task<List<ItemDto>> GetAllItems(string businessId);
+    Task<List<StatItemDto>> GetAllItemsStatsDetails(string businessId);
     Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto);
     Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto);
     Task<bool> IsSkuInUse(string sku);

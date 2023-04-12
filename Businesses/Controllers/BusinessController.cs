@@ -2,6 +2,7 @@
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Security.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,27 +11,34 @@ namespace instock_server_application.Businesses.Controllers;
 [ApiController]
 [Authorize]
 public class BusinessController : ControllerBase {
-    private IBusinessService _businessService;
+    private readonly IBusinessService _businessService;
+    private readonly IAccessTokenService _accessTokenService;
 
-    public BusinessController(IBusinessService businessService) {
+    public BusinessController(IBusinessService businessService, IAccessTokenService accessTokenService) {
         _businessService = businessService;
+        _accessTokenService = accessTokenService;
     }
 
     [HttpPost]
     [Route("/business")]
-    public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessForm newBusinessForm) {
+    public async Task<IActionResult> CreateBusiness([FromForm] CreateBusinessForm newBusinessForm) {
 
-        // Get our current UserId and BusinessId to validate and pass to the business service
+        // Get our current User details from the ClaimsPrinciple Object
         string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserEmail = User.FindFirstValue("Email") ?? null;
 
-        // Check there are no issues with the userId
-        if (string.IsNullOrEmpty(currentUserId)) {
+        // Check there are no issues with the ID or Email
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserEmail)) {
             return Unauthorized();
         }
 
         // Creating CreateBusinessDto to pass the details to the service for processing
-        CreateBusinessRequestDto businessRequestToCreate = new CreateBusinessRequestDto(newBusinessForm.BusinessName, 
-            currentUserId, newBusinessForm.BusinessDescription);
+        CreateBusinessRequestDto businessRequestToCreate = new CreateBusinessRequestDto(
+            newBusinessForm.BusinessName, 
+            currentUserId, 
+            newBusinessForm.BusinessDescription,
+            newBusinessForm.ImageFile
+        );
 
         // Attempting to create new business, it returns success of failure
         BusinessDto createdBusiness = await _businessService.CreateBusiness(businessRequestToCreate);
@@ -40,13 +48,17 @@ public class BusinessController : ControllerBase {
             return new BadRequestObjectResult(createdBusiness.ErrorNotification);
         }
         
-        // If not errors then return 201 with the URI and newly created object details
+        // If not errors then return 201 with the URI and newly created object details and a new JWT
         string? createdBusinessUrl = Url.Action(controller: "business", action: nameof(GetBusiness), values:new {businessId=createdBusiness.BusinessId}, protocol:Request.Scheme);
+        string newJwtToken = _accessTokenService.CreateToken(currentUserId, currentUserEmail, createdBusiness.BusinessId);
+        
         return Created(createdBusinessUrl ?? string.Empty, new {
             businessId = createdBusiness.BusinessId,
             businessName = createdBusiness.BusinessName,
             businessDescription = createdBusiness.BusinessDescription,
-            businessOwnerId = createdBusiness.BusinessOwnerId
+            businessOwnerId = createdBusiness.BusinessOwnerId,
+            imageUrl = createdBusiness.ImageUrl,
+            newJwtToken
         });
     }
 
