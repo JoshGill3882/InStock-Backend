@@ -197,15 +197,17 @@ public class StatisticsService : IStatisticsService
                         itemReturns += amountChanged;
                     }
                 }
-                // if there were sales to compare, then work out item with longest no sales period
+                // if there were sales to compare, 
                 if (mostRecentSale != DateTime.MinValue)
                 {
+                    //then work out item with longest no sales period
                     int daysNoSales = DifferenceInDays(mostRecentSale, DateTime.Now);
                     timeNoSalesDict[daysNoSales] = statItemDto;
                     if (saleDates.Count > 1)
                     {
                         saleDates.Add(DateTime.Now);
                         int timeBetweenSales = AverageDaysBetweenSales(saleDates);
+                        // If there were multiple sale dates, calculate time between sales
                         string salesStockRatio = timeBetweenSales + ":" + itemStock;
                         salesStockRatioDict[salesStockRatio] = statItemDto;
                     }
