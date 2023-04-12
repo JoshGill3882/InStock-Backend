@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using instock_server_application.AwsS3.Dtos;
 using instock_server_application.AwsS3.Models;
@@ -28,7 +29,7 @@ public class StorageRepository : IStorageRepository {
             await transferUtility.UploadAsync(uploadRequest);
 
             response.StatusCode = 200;
-            response.Message = $"https://{s3Model.BucketName}.s3.eu-west-2.amazonaws.com/{s3Model.Name}";
+            response.Message = s3Model.Name;
         }
         catch (AmazonS3Exception e) {
             response.StatusCode = (int)e.StatusCode;
@@ -40,5 +41,20 @@ public class StorageRepository : IStorageRepository {
         }
 
         return response;
+    }
+    
+    public S3ResponseDto GetFilePresignedUrl(string bucketName, string fileName) {
+        var responseDto = new S3ResponseDto();
+       
+        var request = new GetPreSignedUrlRequest {
+            BucketName = bucketName,
+            Key = fileName,
+            Expires = DateTime.UtcNow.AddSeconds(3600)
+        };
+
+        responseDto.StatusCode = 200;
+        responseDto.Message = _client.GetPreSignedURL(request);
+    
+        return responseDto;
     }
 }

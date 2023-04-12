@@ -33,4 +33,8 @@ public class StorageService : IStorageService {
 
         return response;
     }
+
+    public S3ResponseDto GetFilePresignedUrl(string bucketName, string fileName) {
+        return _storageRepo.GetFilePresignedUrl(bucketName, fileName);
+    }
 }

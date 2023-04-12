@@ -96,8 +96,8 @@ public class ItemService : IItemService {
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 string stock = item["Stock"].S ?? item["Stock"].N;
                 // Checks if imageUrl exists for the item and returns url, otherwise returns empty string
-                string imageUrl = item.ContainsKey("ImageUrl") ? item["ImageUrl"].S ?? "" : "";
-                
+                string imageUrl = item.ContainsKey("ImageUrl") ? _storageService.GetFilePresignedUrl("instock-photos", item["ImageUrl"].S).Message : "";
+
                 items.Add(
                     new () {
                         {"SKU", item["SKU"].S},

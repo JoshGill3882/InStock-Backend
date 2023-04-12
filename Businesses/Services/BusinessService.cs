@@ -37,7 +37,9 @@ public class BusinessService : IBusinessService {
             errorNote.AddError("Unauthorized");
             return new BusinessDto(errorNote);
         }
-        
+
+        responseItems.ImageUrl = responseItems.ImageUrl != null ? _storageService.GetFilePresignedUrl("instock-photos", responseItems.ImageUrl).Message : "";
+
         return responseItems;
     }
 
