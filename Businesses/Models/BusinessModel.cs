@@ -20,6 +20,7 @@ public class BusinessModel {
     
     [DynamoDBProperty("DeviceKeys")]
     public List<string> DeviceKeys { get; set; }
+    
     [DynamoDBProperty("ImageFilename")]
     public string? ImageFilename { get; set; }
 
