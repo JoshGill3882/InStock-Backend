@@ -20,7 +20,7 @@ public class LoginControllerTest {
         const string token = "jwt-t0k3n";
         const string email = "johnbarnes@gmail.com";
         const string plainTextPassword = "Test123";
-        Login login = new Login(email, plainTextPassword);
+        Login login = new Login(email, plainTextPassword, "");
 
         
         var mockLoginService = new Mock<ILoginService>();
@@ -28,7 +28,7 @@ public class LoginControllerTest {
         var mockAccessTokenService = new Mock<IAccessTokenService>();
         var mockUserService = new Mock<IUserService>();
         
-        mockLoginService.Setup(service => service.Login(email, plainTextPassword)).Returns(Task.FromResult(token));
+        mockLoginService.Setup(service => service.Login(email, plainTextPassword, "")).Returns(Task.FromResult(token));
         mockUserService.Setup(service => service.FindUserByEmail(email)).Returns(Task.FromResult(SingleUser())!);
         mockPasswordService.Setup(service => service.Verify(plainTextPassword, SingleUser().Password)).Returns(true);
         mockAccessTokenService.Setup(service => service.CreateToken(SingleUser().UserId, SingleUser().Email, SingleUser().BusinessId)).Returns(token);
@@ -52,10 +52,10 @@ public class LoginControllerTest {
         const string token = "jwt-t0k3n";
         const string email = "incorrectEmail@gmail.com";
         const string plainTextPassword = "Test123";
-        Login login = new Login(email, plainTextPassword);
+        Login login = new Login(email, plainTextPassword, "");
         
         var mockLoginService = new Mock<ILoginService>();
-        mockLoginService.Setup(service => service.Login("CorrectEmail@gmail.com", plainTextPassword)).Returns(Task.FromResult(token));
+        mockLoginService.Setup(service => service.Login("CorrectEmail@gmail.com", plainTextPassword, "")).Returns(Task.FromResult(token));
         var controller = new LoginController(mockLoginService.Object);
         
         // Act
@@ -72,10 +72,10 @@ public class LoginControllerTest {
         const string token = "jwt-t0k3n";
         const string email = "johnbarnes@gmail.com";
         const string plainTextPassword = "IncorrectPassword";
-        Login login = new Login(email, plainTextPassword);
+        Login login = new Login(email, plainTextPassword, "");
         
         var mockLoginService = new Mock<ILoginService>();
-        mockLoginService.Setup(service => service.Login(email, "CorrectPassword")).Returns(Task.FromResult(token));
+        mockLoginService.Setup(service => service.Login(email, "CorrectPassword", "")).Returns(Task.FromResult(token));
         var controller = new LoginController(mockLoginService.Object);
         
         // Act

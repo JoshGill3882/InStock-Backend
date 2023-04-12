@@ -90,4 +90,8 @@ public class BusinessRepository : IBusinessRepository {
 
         return !string.IsNullOrEmpty(existingUser.BusinessId);
     }
+
+    public void UpdateBusinessDeviceTokens(BusinessDeviceKeysUpdateModel businessDeviceKeysUpdateModel) {
+        _context.SaveAsync(businessDeviceKeysUpdateModel);
+    }
 }
