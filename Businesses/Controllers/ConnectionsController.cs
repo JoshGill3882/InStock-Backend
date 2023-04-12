@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
@@ -20,8 +21,6 @@ public class ConnectionsController : ControllerBase {
     [HttpGet]
     [Route("connections")]
     public async Task<IActionResult> GetAllConnections([FromRoute] string businessId) {
-        Console.WriteLine("Its working");
-        Console.WriteLine(businessId);
         // Get our current UserId and BusinessId to validate and pass to the business service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
         string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
@@ -31,27 +30,23 @@ public class ConnectionsController : ControllerBase {
             return Unauthorized();
         }
         
-        //Code to get all current connections
-        
-        // Creating new userDto to pass into service
-        // UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
-        
-        // List<Dictionary<string, string>>? items = _itemService.GetItems(currentUserDto, businessId).Result;
 
-        // if (items == null) {
-            // return Unauthorized();
-        // } if (items.Count == 0) {
-            // return NotFound();
-        // }
+        ConnectionsService connectionService = new ConnectionsService(_businessRepository);
 
-        return Ok("Nice");
+        GetConnectionsRequestDto getConnectionsRequestDto = new GetConnectionsRequestDto(
+            userId : currentUserId!,
+            userBusinessId: currentUserBusinessId!,
+            businessId: businessId);
+        
+
+        var allConnections = await connectionService.GetConnections(getConnectionsRequestDto);
+      
+        return Ok(allConnections);
     }
     
     [HttpPost]
     [Route("connections")]
-    public async Task<IActionResult> AddConnections([FromRoute] string businessId) {
-        Console.WriteLine("This is working too");
-        Console.WriteLine(businessId);
+    public async Task<IActionResult> AddConnections([FromBody] CreateConnectionForm createConnectionForm, [FromRoute] string businessId) {
         // Get our current UserId and BusinessId to validate and pass to the business service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
         string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
@@ -61,30 +56,23 @@ public class ConnectionsController : ControllerBase {
             return Unauthorized();
         }
         
-        //Code to get all current connections
-        
-        // Creating CreateItemDTO to pass the details to the service for processing
-        // CreateItemRequestDto createItemRequestDto = new CreateItemRequestDto(
-        //     newItemForm.SKU,
-        //     businessId, 
-        //     newItemForm.Category, 
-        //     newItemForm.Name, 
-        //     newItemForm.Stock, 
-        //     currentUserId,
-        //     newItemForm.ImageFile
-        // );
+        //Service pinging for mock server for auth token
         //
-        // ItemDto createdItemDto = await _itemService.CreateItem(createItemRequestDto);
-      
-
         ConnectionsService connectionService = new ConnectionsService(_businessRepository);
+
+        Console.WriteLine("Calling");
+        String res = await connectionService.ConnectToExternalShop(createConnectionForm);
+        Console.WriteLine("Called");
+        Console.WriteLine(res);
+        
+        
         CreateConnectionRequestDto createConnectionRequestDto = new CreateConnectionRequestDto(
-            "34ddad47-45ad-429d-97d9-5095d310e815", 
-            "6b416f45-2ac1-462f-b6d8-94fef82e5925",
-            "6b416f45-2ac1-462f-b6d8-94fef82e5925",
-            "Hello",
-            "Hello");
-        var allConnections = await connectionService.CreateConnection(createConnectionRequestDto);
+            currentUserId!, 
+            currentUserBusinessId!,
+             businessId,
+            createConnectionForm.ShopNameConnectingTo,
+            "SampleToken123");
+        var allConnections = await connectionService.CreateConnections(createConnectionRequestDto);
         Console.WriteLine("res");
         Console.WriteLine(allConnections);
         

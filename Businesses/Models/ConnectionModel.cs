@@ -12,7 +12,7 @@ public class ConnectionModel {
     public string BusinessId { get; set; }
 
     [DynamoDBProperty(typeof(ConnectionObjectConverter))]
-    public List<ConnectionObject> Connections { get; set; }
+    public List<ConnectionObject>? Connections { get; set; }
     
     
     public ConnectionModel() {
@@ -36,12 +36,16 @@ public class ConnectionModel {
     public StoreConnectionDto ToStoreConnectionDto() {
         List<ConnectionDto> connectionDtos = new List<ConnectionDto>();
 
-        foreach (ConnectionObject connection in Connections) {
-            connectionDtos.Add(new ConnectionDto(connection.ShopName, connection.AuthenticationToken));
+        // By default businesses have null connections
+        if (Connections != null) {
+            foreach (ConnectionObject connection in Connections) {
+                connectionDtos.Add(new ConnectionDto(connection.ShopName, connection.AuthenticationToken));
+            }
         }
 
         return new StoreConnectionDto(BusinessId, connectionDtos);
     }
+
     
     public class ConnectionObject {
         public string ShopName { get; set; }
