@@ -13,6 +13,9 @@ public class ExternalServiceConnectorFactory {
         {
             case "mockshop":
                 return new MockShopAuthenticator(connectionRequestDetails.ShopUsername, connectionRequestDetails.ShopUserPassword);
+            case "mockmarket":
+                return new MockMarketAuthenticator(connectionRequestDetails.ShopUsername,
+                    connectionRequestDetails.ShopUserPassword);
             default:
                 throw new ArgumentException($"Shop '{connectionRequestDetails.ShopNameConnectingTo}' is not supported.");
         }

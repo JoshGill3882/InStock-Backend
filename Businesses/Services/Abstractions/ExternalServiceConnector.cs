@@ -3,8 +3,6 @@
 namespace instock_server_application.Businesses.Services.Interfaces; 
 
 public abstract class ExternalShopAuthenticator {
-
-    public ExternalShops ExternalShops;
     
     public String Username;
 

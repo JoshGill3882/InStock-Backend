@@ -80,7 +80,7 @@ public class ConnectionsService : IConnectionsService {
         // Check if the user is allowed to edit the business, return as no need to do anymore validation
         if (!getConnectionsRequestDto.UserBusinessId.Equals(getConnectionsRequestDto.BusinessId)) {
             ErrorNotification errorNotes = new ErrorNotification();
-            errorNotes.AddError("You are already connected to this shop");
+            errorNotes.AddError("You do not have permissions to interact with this businesses connections");
             return new StoreConnectionDto(errorNotes);
         }
         
