@@ -12,7 +12,44 @@ public class NotificationService : INotificationService {
         _businessRepository = businessRepository;
     }
 
-    public void SendNotification(Notification notification, Dictionary<string, string> data, string businessId) {
+    public void StockNotificationChecker(StoreItemDto itemDto) {
+        switch (itemDto.Stock) {
+            case 5:
+                SendNotification(
+                    new Notification() {
+                        Title = "Low Stock",
+                        Body = "You are low on stock on: " + itemDto.Name
+                    },
+                    new Dictionary<string, string> {
+                        { "SKU", itemDto.SKU },
+                        { "BusinessId", itemDto.BusinessId },
+                        { "Category", itemDto.Category },
+                        { "Name", itemDto.Name },
+                        { "Stock", itemDto.Stock.ToString() }
+                    },
+                    itemDto.BusinessId
+                );
+                break;
+            case 0:
+                SendNotification(
+                    new Notification() {
+                        Title = "Out of Stock",
+                        Body = "You are out of stock on: " + itemDto.Name
+                    },
+                    new Dictionary<string, string> {
+                        { "SKU", itemDto.SKU },
+                        { "BusinessId", itemDto.BusinessId },
+                        { "Category", itemDto.Category },
+                        { "Name", itemDto.Name },
+                        { "Stock", itemDto.Stock.ToString() }
+                    },
+                    itemDto.BusinessId
+                );
+                break;
+        }
+    }
+
+    private void SendNotification(Notification notification, Dictionary<string, string> data, string businessId) {
         var message = new MulticastMessage() {
             Notification = notification,
             Data = data,

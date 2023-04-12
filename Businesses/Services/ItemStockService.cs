@@ -109,42 +109,9 @@ public class ItemStockService : IItemStockService {
         );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
-
-        switch (newStockLevel) {
-            case 5:
-                _notificationService.SendNotification(
-                    new Notification() {
-                        Title = "Low Stock",
-                        Body = "You are low on stock on: " + updatedItemDto.Name
-                    },
-                    new Dictionary<string, string> {
-                        { "SKU", updatedItemDto.SKU },
-                        { "BusinessId", updatedItemDto.BusinessId },
-                        { "Category", updatedItemDto.Category },
-                        { "Name", updatedItemDto.Name },
-                        { "Stock", updatedItemDto.Stock.ToString() }
-                    },
-                    createStockUpdateRequestDto.BusinessId
-                );
-                break;
-            case 0:
-                _notificationService.SendNotification(
-                    new Notification() {
-                        Title = "Out of Stock",
-                        Body = "You are out of stock on: " + updatedItemDto.Name
-                    },
-                    new Dictionary<string, string> {
-                        { "SKU", updatedItemDto.SKU },
-                        { "BusinessId", updatedItemDto.BusinessId },
-                        { "Category", updatedItemDto.Category },
-                        { "Name", updatedItemDto.Name },
-                        { "Stock", updatedItemDto.Stock.ToString() }
-                    },
-                    createStockUpdateRequestDto.BusinessId
-                );
-                break;
-        }
         
+        _notificationService.StockNotificationChecker(updatedItemDto);
+
         // Returning results
         // Return newly created stock update
         return stockUpdateDtoSaved;
