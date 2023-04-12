@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2.DataModel;
 
 namespace instock_server_application.Businesses.Models; 
 [DynamoDBTable("Items")]
@@ -22,6 +21,9 @@ public class Item {
     
     [DynamoDBProperty("Name")]
     public string Name { get; set; }
+    
+    [DynamoDBProperty("ImageUrl")]
+    public string? ImageUrl { get; set; }
 
     [DynamoDBProperty("Stock")]
     public String Stock {
@@ -55,12 +57,14 @@ public class Item {
     /// <param name="category"> Item's Category </param>
     /// <param name="name"> Item's Name </param>
     /// <param name="stock">Item's Stock Level</param>
-    public Item(string sku, string businessId, string category, string name, int stock) {
+    /// <param name="imageUrl">Item's Image</param>
+    public Item(string sku, string businessId, string category, string name, int stock, string? imageUrl) {
         SKU = sku;
         BusinessId = businessId;
         Category = category;
         Name = name;
         _stock = stock;
+        ImageUrl = imageUrl;
     }
 
     public Item(string sku, string businessId) {

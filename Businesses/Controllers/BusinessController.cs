@@ -1,10 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Security.Services.Interfaces;
-using instock_server_application.Users.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +21,7 @@ public class BusinessController : ControllerBase {
 
     [HttpPost]
     [Route("/business")]
-    public async Task<IActionResult> CreateBusiness([FromBody] CreateBusinessForm newBusinessForm) {
+    public async Task<IActionResult> CreateBusiness([FromForm] CreateBusinessForm newBusinessForm) {
 
         // Get our current User details from the ClaimsPrinciple Object
         string? currentUserId = User.FindFirstValue("Id") ?? null;
@@ -35,8 +33,12 @@ public class BusinessController : ControllerBase {
         }
 
         // Creating CreateBusinessDto to pass the details to the service for processing
-        CreateBusinessRequestDto businessRequestToCreate = new CreateBusinessRequestDto(newBusinessForm.BusinessName, 
-            currentUserId, newBusinessForm.BusinessDescription);
+        CreateBusinessRequestDto businessRequestToCreate = new CreateBusinessRequestDto(
+            newBusinessForm.BusinessName, 
+            currentUserId, 
+            newBusinessForm.BusinessDescription,
+            newBusinessForm.ImageFile
+        );
 
         // Attempting to create new business, it returns success of failure
         BusinessDto createdBusiness = await _businessService.CreateBusiness(businessRequestToCreate);
@@ -49,11 +51,13 @@ public class BusinessController : ControllerBase {
         // If not errors then return 201 with the URI and newly created object details and a new JWT
         string? createdBusinessUrl = Url.Action(controller: "business", action: nameof(GetBusiness), values:new {businessId=createdBusiness.BusinessId}, protocol:Request.Scheme);
         string newJwtToken = _accessTokenService.CreateToken(currentUserId, currentUserEmail, createdBusiness.BusinessId);
+        
         return Created(createdBusinessUrl ?? string.Empty, new {
             businessId = createdBusiness.BusinessId,
             businessName = createdBusiness.BusinessName,
             businessDescription = createdBusiness.BusinessDescription,
             businessOwnerId = createdBusiness.BusinessOwnerId,
+            imageUrl = createdBusiness.ImageUrl,
             newJwtToken
         });
     }

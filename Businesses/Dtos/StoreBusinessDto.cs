@@ -4,10 +4,12 @@ public class StoreBusinessDto {
     public string BusinessName { get; }
     public string BusinessDescription { get; }
     public string UserId { get; }
+    public string? ImageUrl { get; }
 
-    public StoreBusinessDto(string businessName, string userId, string businessDescription) {
+    public StoreBusinessDto(string businessName, string userId, string businessDescription, string? imageUrl) {
         BusinessName = businessName;
         UserId = userId;
         BusinessDescription = businessDescription;
+        ImageUrl = imageUrl;
     }
 }
