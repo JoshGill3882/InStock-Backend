@@ -49,7 +49,7 @@ public class StorageRepository : IStorageRepository {
         var request = new GetPreSignedUrlRequest {
             BucketName = bucketName,
             Key = fileName,
-            Expires = DateTime.UtcNow.AddSeconds(3600)
+            Expires = DateTime.UtcNow.AddHours(1)
         };
 
         responseDto.StatusCode = 200;
