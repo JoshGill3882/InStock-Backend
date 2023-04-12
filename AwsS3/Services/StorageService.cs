@@ -27,7 +27,7 @@ public class StorageService : IStorageService {
 
         var fileExt = Path.GetExtension(uploadFileRequestDto.File.FileName);
         var objName = $"{_utilService.GenerateUUID()}{fileExt}";
-        var s3Model = new S3Model(objName, memoryStr, S3Model.S3BucketName);
+        var s3Model = new S3Model(objName, memoryStr, uploadFileRequestDto.BucketName);
 
         S3ResponseDto response = _storageRepo.UploadFileAsync(s3Model).Result;
 

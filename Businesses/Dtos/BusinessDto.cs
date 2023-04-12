@@ -7,7 +7,7 @@ public class BusinessDto : DataTransferObjectSuperType {
     public string BusinessName { get; }
     public string BusinessDescription { get; }
     public string BusinessOwnerId { get; }
-    public string? ImageUrl { get; }
+    public string? ImageUrl { get; set; }
 
     public BusinessDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
