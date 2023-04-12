@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using Amazon;
 using Amazon.DynamoDBv2;
@@ -13,6 +15,8 @@ using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Email.Services;
+using instock_server_application.Email.Services.Interfaces;
 using instock_server_application.Security.Models;
 using instock_server_application.Security.Services;
 using instock_server_application.Security.Services.Interfaces;
@@ -106,6 +110,18 @@ builder.Services.AddScoped<IUtilService, UtilService>();
 // AwsS3 Services & Repositories
 builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddScoped<IStorageRepository, StorageRepository>();
+
+// Email Services & Repositories
+var smtpClient = new SmtpClient("smtp.gmail.com", 587) {
+    EnableSsl = true,
+    UseDefaultCredentials = false,
+    Credentials = new NetworkCredential(
+        builder.Configuration["SENDER_EMAIL"],
+        builder.Configuration["SENDER_PASSWORD"]
+    )
+};
+builder.Services.AddSingleton<SmtpClient>(smtpClient);
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 builder.Services.AddControllers(options => {
     options.Filters.Add<GlobalExceptionFilter>();

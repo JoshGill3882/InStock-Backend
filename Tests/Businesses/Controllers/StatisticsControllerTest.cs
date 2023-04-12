@@ -3,7 +3,7 @@ using FluentAssertions;
 using instock_server_application.Businesses.Controllers;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
-using instock_server_application.Shared.Dto;
+using instock_server_application.Util.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;

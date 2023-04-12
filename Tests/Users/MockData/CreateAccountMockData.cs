@@ -1,4 +1,4 @@
-﻿using instock_server_application.Users.Dtos;
+﻿using instock_server_application.Users.Controllers.Forms;
 using instock_server_application.Users.Models;
 
 namespace instock_server_application.Tests.Users.MockData; 
@@ -16,16 +16,18 @@ public static class CreateAccountMockData {
             "Standard User",
             "",
             "RefreshToken",
-            "90Days"
+            "90Days",
+            "https://image.png"
         );
     }
 
-    public static NewAccountDto SampleDto(string firstName, string lastName, string email, string password) {
-        return new NewAccountDto (
+    public static CreateAccountForm SampleDto(string firstName, string lastName, string email, string password) {
+        return new CreateAccountForm(
             firstName,
             lastName,
             email,
-            password
+            password,
+            null
         );
     }
 

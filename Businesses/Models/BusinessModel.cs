@@ -18,39 +18,38 @@ public class BusinessModel {
     [DynamoDBProperty("Owner")] 
     public string OwnerId { get; set; }
     
-    [DynamoDBProperty("ImageUrl")]
-    public string? ImageUrl { get; set; }
-    
     [DynamoDBProperty("DeviceKeys")]
     public List<string> DeviceKeys { get; set; }
+    [DynamoDBProperty("ImageFilename")]
+    public string? ImageFilename { get; set; }
 
     public BusinessModel() {
     }
 
-    public BusinessModel(string id, string name, string owner, string businessDescription, string? imageUrl, List<string> deviceKeys) {
+    public BusinessModel(string id, string name, string owner, string businessDescription, string? imageFilename, List<string> deviceKeys) {
         BusinessId = id;
         BusinessName = name;
         BusinessDescription = businessDescription;
         OwnerId = owner;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
         DeviceKeys = deviceKeys;
     }
     
-    public BusinessModel(Guid id, string name, string owner, string businessDescription, string? imageUrl, List<string> deviceKeys) {
+    public BusinessModel(Guid id, string name, string owner, string businessDescription, string? imageFilename, List<string> deviceKeys) {
         BusinessId = id.ToString();
         BusinessName = name;
         BusinessDescription = businessDescription;
         OwnerId = new Guid(owner).ToString();
-        ImageUrl = imageUrl;
         DeviceKeys = deviceKeys;
+        ImageFilename = imageFilename;
     }
     
-    public BusinessModel(Guid id, string name, Guid owner, string businessDescription, string? imageUrl, List<string> deviceKeys) {
+    public BusinessModel(Guid id, string name, Guid owner, string businessDescription, string? imageFilename, List<string> deviceKeys) {
         BusinessId = id.ToString();
         BusinessName = name;
         OwnerId = owner.ToString();
         BusinessDescription = businessDescription;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
         DeviceKeys = deviceKeys;
     }
 }

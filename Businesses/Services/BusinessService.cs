@@ -37,8 +37,19 @@ public class BusinessService : IBusinessService {
             errorNote.AddError("Unauthorized");
             return new BusinessDto(errorNote);
         }
-        
-        return responseItems;
+
+        string imageUrl = responseItems.ImageUrl != null ? _storageService.GetFilePresignedUrl("instock-business-logos", responseItems.ImageUrl).Message : "";
+
+        BusinessDto businessDto = new BusinessDto(
+            responseItems.BusinessId,
+            responseItems.BusinessName,
+            responseItems.BusinessOwnerId,
+            responseItems.BusinessDescription,
+            imageUrl,
+            responseItems.DeviceKeys
+        );
+
+        return businessDto;
     }
 
     private void ValidateBusinessName(ErrorNotification errorNotes, string businessName) {
@@ -90,7 +101,9 @@ public class BusinessService : IBusinessService {
         S3ResponseDto storageResponse = new S3ResponseDto();
         
         if (newBusinessRequest.ImageFile != null) {
-            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newBusinessRequest.UserId, newBusinessRequest.ImageFile));
+            storageResponse = await _storageService.UploadFileAsync(
+                new UploadFileRequestDto(newBusinessRequest.UserId, "instock-business-logos", newBusinessRequest.ImageFile)
+            );
         }
         
         // Calling repo to create the business for the user

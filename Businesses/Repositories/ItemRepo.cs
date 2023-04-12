@@ -42,7 +42,7 @@ public class ItemRepo : IItemRepo{
             itemToSaveDto.Category,
             itemToSaveDto.Name,
             itemToSaveDto.Stock,
-            itemToSaveDto.ImageUrl
+            itemToSaveDto.ImageFilename
         );
         await _context.SaveAsync(itemModel);
 
@@ -52,7 +52,7 @@ public class ItemRepo : IItemRepo{
             itemModel.Category,
             itemModel.Name,
             itemModel.GetStock(),
-            itemModel.ImageUrl
+            itemModel.ImageFilename
         );
         
         return createdItemDto;
@@ -169,7 +169,7 @@ public class ItemRepo : IItemRepo{
             itemToSaveDto.Category,
             itemToSaveDto.Name,
             itemToSaveDto.Stock,
-            itemToSaveDto.ImageUrl
+            itemToSaveDto.ImageFilename
         );
         await _context.SaveAsync(itemModel);
         
@@ -180,7 +180,7 @@ public class ItemRepo : IItemRepo{
             itemModel.Category,
             itemModel.Name,
             itemModel.GetStock(),
-            itemModel.ImageUrl
+            itemModel.ImageFilename
         );
         
         return updatedItemDto;
@@ -230,7 +230,7 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock(), item.ImageUrl);
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock(), item.ImageFilename);
         return itemDto;
     }
 }

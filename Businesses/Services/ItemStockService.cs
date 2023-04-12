@@ -103,7 +103,7 @@ public class ItemStockService : IItemStockService {
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
             stock: newStockLevel,
-            imageUrl: existingItemDto.ImageUrl
+            imageFilename: existingItemDto.ImageFilename
         );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);

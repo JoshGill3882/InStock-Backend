@@ -6,6 +6,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Util.Dto;
 using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
@@ -97,8 +98,8 @@ public class ItemService : IItemService {
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 string stock = item["Stock"].S ?? item["Stock"].N;
                 // Checks if imageUrl exists for the item and returns url, otherwise returns empty string
-                string imageUrl = item.ContainsKey("ImageUrl") ? item["ImageUrl"].S ?? "" : "";
-                
+                string imageUrl = item.ContainsKey("ImageFilename") ? _storageService.GetFilePresignedUrl("instock-item-images", item["ImageFilename"].S).Message : "";
+
                 items.Add(
                     new () {
                         {"SKU", item["SKU"].S},
@@ -145,7 +146,9 @@ public class ItemService : IItemService {
         S3ResponseDto storageResponse = new S3ResponseDto();
         
         if (newItemRequestDto.ImageFile != null) {
-            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newItemRequestDto.UserId, newItemRequestDto.ImageFile));
+            storageResponse = await _storageService.UploadFileAsync(
+                new UploadFileRequestDto(newItemRequestDto.UserId, "instock-item-images", newItemRequestDto.ImageFile)
+            );
         }
 
         // Calling repo to create the business for the user
@@ -258,7 +261,7 @@ public class ItemService : IItemService {
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
             stock: newStockLevel,
-            imageUrl: existingItemDto.ImageUrl
+            imageFilename: existingItemDto.ImageFilename
         );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);

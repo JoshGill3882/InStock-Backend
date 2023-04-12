@@ -26,7 +26,7 @@ public class BusinessRepository : IBusinessRepository {
             existingBusiness.BusinessName,
             existingBusiness.OwnerId,
             existingBusiness.BusinessDescription,
-            existingBusiness.ImageUrl,
+            existingBusiness.ImageFilename,
             existingBusiness.DeviceKeys
         );
         
@@ -72,7 +72,7 @@ public class BusinessRepository : IBusinessRepository {
             businessModel.BusinessName, 
             businessModel.OwnerId.ToString(),
             businessModel.BusinessDescription,
-            businessModel.ImageUrl,
+            businessModel.ImageFilename,
             businessModel.DeviceKeys
         );
         

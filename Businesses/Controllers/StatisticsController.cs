@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
-using instock_server_application.Shared.Dto;
+using instock_server_application.Util.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace instock_server_application.Businesses.Controllers; 
