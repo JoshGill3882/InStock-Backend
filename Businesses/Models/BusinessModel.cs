@@ -18,33 +18,33 @@ public class BusinessModel {
     [DynamoDBProperty("Owner")] 
     public String OwnerId { get; set; }
     
-    [DynamoDBProperty("ImageUrl")]
-    public string? ImageUrl { get; set; }
+    [DynamoDBProperty("ImageFilename")]
+    public string? ImageFilename { get; set; }
 
     public BusinessModel() {
     }
 
-    public BusinessModel(string id, string name, string owner, string businessDescription, string? imageUrl) {
+    public BusinessModel(string id, string name, string owner, string businessDescription, string? imageFilename) {
         BusinessId = id;
         BusinessName = name;
         BusinessDescription = businessDescription;
         OwnerId = owner;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
     }
     
-    public BusinessModel(Guid id, string name, string owner, string businessDescription, string? imageUrl) {
+    public BusinessModel(Guid id, string name, string owner, string businessDescription, string? imageFilename) {
         BusinessId = id.ToString();
         BusinessName = name;
         BusinessDescription = businessDescription;
         OwnerId = new Guid(owner).ToString();
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
     }
     
-    public BusinessModel(Guid id, string name, Guid owner, string businessDescription, string? imageUrl) {
+    public BusinessModel(Guid id, string name, Guid owner, string businessDescription, string? imageFilename) {
         BusinessId = id.ToString();
         BusinessName = name;
         OwnerId = owner.ToString();
         BusinessDescription = businessDescription;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
     }
 }

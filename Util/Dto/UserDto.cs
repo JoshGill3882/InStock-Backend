@@ -1,6 +1,6 @@
 ﻿using instock_server_application.Users.Models;
 
-namespace instock_server_application.Shared.Dto; 
+namespace instock_server_application.Util.Dto; 
 
 public class UserDto {
     public string UserId { get; }
@@ -14,8 +14,9 @@ public class UserDto {
     public string UserBusinessId { get; }
     public string RefreshToken { get; }
     public string RefreshTokenExpiry { get; }
+    public string? ImageFilename { get; }
 
-    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, string refreshToken, string refreshTokenExpiry) {
+    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, string refreshToken, string refreshTokenExpiry, string? imageFilename) {
         UserId = userId;
         Email = email;
         AccountStatus = accountStatus;
@@ -27,6 +28,7 @@ public class UserDto {
         UserBusinessId = userBusinessId;
         RefreshToken = refreshToken;
         RefreshTokenExpiry = refreshTokenExpiry;
+        ImageFilename = imageFilename;
     }
     
     public UserDto(string userId, string userBusinessId) {
@@ -46,5 +48,6 @@ public class UserDto {
         UserBusinessId = user.BusinessId;
         RefreshToken = user.RefreshToken;
         RefreshTokenExpiry = user.RefreshTokenExpiry;
+        ImageFilename = user.ImageFilename;
     }
 }

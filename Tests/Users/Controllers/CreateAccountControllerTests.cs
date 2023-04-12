@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Security.Dtos;
 using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Users.Repositories.Interfaces;
@@ -66,6 +67,7 @@ public class CreateAccountTests {
         var mockRefreshTokenService = new Mock<IRefreshTokenService>();
         var mockPasswordService = new Mock<IPasswordService>();
         var mockUtilService = new Mock<IUtilService>();
+        var mockStorageService = new Mock<IStorageService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
         mockAccessTokenService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockRefreshTokenService.Setup(service => service.GenerateRandString()).Returns("RefreshToken");
@@ -78,7 +80,8 @@ public class CreateAccountTests {
             new UtilService(),
             new PasswordService(),
             mockAccessTokenService.Object,
-            mockRefreshTokenService.Object
+            mockRefreshTokenService.Object,
+            mockStorageService.Object
         );
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         
@@ -104,6 +107,7 @@ public class CreateAccountTests {
         var mockRefreshTokenService = new Mock<IRefreshTokenService>();
         var mockPasswordService = new Mock<IPasswordService>();
         var mockUtilService = new Mock<IUtilService>();
+        var mockStorageService = new Mock<IStorageService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
         mockAccessTokenService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockRefreshTokenService.Setup(service => service.GenerateRandString()).Returns("RefreshToken");
@@ -116,7 +120,8 @@ public class CreateAccountTests {
             new UtilService(),
             new PasswordService(),
             mockAccessTokenService.Object,
-            mockRefreshTokenService.Object
+            mockRefreshTokenService.Object,
+            mockStorageService.Object
         );
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         
@@ -144,6 +149,7 @@ public class CreateAccountTests {
         var mockRefreshTokenService = new Mock<IRefreshTokenService>();
         var mockPasswordService = new Mock<IPasswordService>();
         var mockUtilService = new Mock<IUtilService>();
+        var mockStorageService = new Mock<IStorageService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
         mockAccessTokenService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockRefreshTokenService.Setup(service => service.GenerateRandString()).Returns("RefreshToken");
@@ -156,7 +162,8 @@ public class CreateAccountTests {
             new UtilService(),
             new PasswordService(),
             mockAccessTokenService.Object,
-            mockRefreshTokenService.Object
+            mockRefreshTokenService.Object,
+            mockStorageService.Object
         );
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         
@@ -182,6 +189,7 @@ public class CreateAccountTests {
         var mockRefreshTokenService = new Mock<IRefreshTokenService>();
         var mockPasswordService = new Mock<IPasswordService>();
         var mockUtilService = new Mock<IUtilService>();
+        var mockStorageService = new Mock<IStorageService>();
         mockUserRepo.Setup(repo => repo.GetByEmail(email)).Returns(Task.FromResult(CreateAccountMockData.EmptyUser())!);
         mockAccessTokenService.Setup(service => service.CreateToken(testId, email, "")).Returns(expectedJwt);
         mockRefreshTokenService.Setup(service => service.GenerateRandString()).Returns("RefreshToken");
@@ -194,7 +202,8 @@ public class CreateAccountTests {
             new UtilService(),
             new PasswordService(),
             mockAccessTokenService.Object,
-            mockRefreshTokenService.Object
+            mockRefreshTokenService.Object,
+            mockStorageService.Object
         );
         CreateAccountController createAccountController = new CreateAccountController(createAccountService);
         

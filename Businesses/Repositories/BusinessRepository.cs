@@ -26,7 +26,7 @@ public class BusinessRepository : IBusinessRepository {
             businessName: existingBusiness.BusinessName,
             businessDescription: existingBusiness.BusinessDescription,
             businessOwnerId: existingBusiness.OwnerId,
-            imageUrl: existingBusiness.ImageUrl
+            imageUrl: existingBusiness.ImageFilename
         );
         
         return businessDto;
@@ -70,7 +70,7 @@ public class BusinessRepository : IBusinessRepository {
             businessModel.BusinessName, 
             businessModel.OwnerId.ToString(),
             businessModel.BusinessDescription,
-            businessModel.ImageUrl
+            businessModel.ImageFilename
         );
         
         return createdBusiness;
