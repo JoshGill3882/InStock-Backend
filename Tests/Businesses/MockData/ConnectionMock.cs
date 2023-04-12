@@ -10,7 +10,7 @@ namespace instock_server_application.Tests.Businesses.MockData
         );
 
         public static ConnectionDto connectionDto2 = new ConnectionDto(
-            "MockShop2", 
+            "MockMarket", 
             "WeeoWooAuthToken223"
         );
         
