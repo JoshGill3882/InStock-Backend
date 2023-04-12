@@ -96,7 +96,7 @@ public class ItemService : IItemService {
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 string stock = item["Stock"].S ?? item["Stock"].N;
                 // Checks if imageUrl exists for the item and returns url, otherwise returns empty string
-                string imageUrl = item.ContainsKey("ImageUrl") ? _storageService.GetFilePresignedUrl("instock-photos", item["ImageUrl"].S).Message : "";
+                string imageUrl = item.ContainsKey("ImageUrl") ? _storageService.GetFilePresignedUrl("instock-item-images", item["ImageUrl"].S).Message : "";
 
                 items.Add(
                     new () {
@@ -143,7 +143,9 @@ public class ItemService : IItemService {
         S3ResponseDto storageResponse = new S3ResponseDto();
         
         if (newItemRequestDto.ImageFile != null) {
-            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newItemRequestDto.UserId, "instock-photos", newItemRequestDto.ImageFile));
+            storageResponse = await _storageService.UploadFileAsync(
+                new UploadFileRequestDto(newItemRequestDto.UserId, "instock-item-images", newItemRequestDto.ImageFile)
+            );
         }
 
         // Calling repo to create the business for the user

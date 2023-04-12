@@ -49,7 +49,9 @@ public class CreateAccountService : ICreateAccountService {
         S3ResponseDto storageResponse = new S3ResponseDto();
         
         if (newAccountDto.ImageFile != null) {
-            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newAccountDto.Email, "instock-photos", newAccountDto.ImageFile));
+            storageResponse = await _storageService.UploadFileAsync(
+                new UploadFileRequestDto(newAccountDto.Email, "instock-profile-pictures", newAccountDto.ImageFile)
+            );
         }
 
         UserDto newUser = new UserDto(
