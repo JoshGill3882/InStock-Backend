@@ -100,7 +100,7 @@ public class ItemController : ControllerBase {
             category = createdItemDto.Category,
             name = createdItemDto.Name,
             stock = createdItemDto.Stock,
-            imageUrl = createdItemDto.ImageUrl
+            imageFilename = createdItemDto.ImageFilename
         });
     }
     

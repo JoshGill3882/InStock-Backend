@@ -22,8 +22,8 @@ public class Item {
     [DynamoDBProperty("Name")]
     public string Name { get; set; }
     
-    [DynamoDBProperty("ImageUrl")]
-    public string? ImageUrl { get; set; }
+    [DynamoDBProperty("ImageFilename")]
+    public string? ImageFilename { get; set; }
 
     [DynamoDBProperty("Stock")]
     public String Stock {
@@ -58,13 +58,13 @@ public class Item {
     /// <param name="name"> Item's Name </param>
     /// <param name="stock">Item's Stock Level</param>
     /// <param name="imageUrl">Item's Image</param>
-    public Item(string sku, string businessId, string category, string name, int stock, string? imageUrl) {
+    public Item(string sku, string businessId, string category, string name, int stock, string? imageFilename) {
         SKU = sku;
         BusinessId = businessId;
         Category = category;
         Name = name;
         _stock = stock;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
     }
 
     public Item(string sku, string businessId) {

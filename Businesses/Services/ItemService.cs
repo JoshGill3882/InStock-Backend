@@ -96,7 +96,7 @@ public class ItemService : IItemService {
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 string stock = item["Stock"].S ?? item["Stock"].N;
                 // Checks if imageUrl exists for the item and returns url, otherwise returns empty string
-                string imageUrl = item.ContainsKey("ImageUrl") ? _storageService.GetFilePresignedUrl("instock-item-images", item["ImageUrl"].S).Message : "";
+                string imageUrl = item.ContainsKey("ImageFilename") ? _storageService.GetFilePresignedUrl("instock-item-images", item["ImageFilename"].S).Message : "";
 
                 items.Add(
                     new () {
@@ -257,7 +257,7 @@ public class ItemService : IItemService {
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
             stock: newStockLevel,
-            imageUrl: existingItemDto.ImageUrl
+            imageFilename: existingItemDto.ImageFilename
         );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
