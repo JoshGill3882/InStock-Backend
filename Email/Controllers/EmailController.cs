@@ -1,5 +1,5 @@
 ﻿using instock_server_application.Email.Controllers.Forms;
-using instock_server_application.Email.Dtos;
+using instock_server_application.Email.Objects;
 using instock_server_application.Email.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +16,7 @@ public class EmailController : ControllerBase {
  
     [HttpPost]
     public async Task<IActionResult> SendEmail([FromBody] SendEmailForm emailForm) {
-        EmailResponseDto response = _emailService.SendEmailAsync(
+        EmailResponseObject response = _emailService.SendEmailAsync(
             emailForm.Topic, 
             emailForm.Message
         );

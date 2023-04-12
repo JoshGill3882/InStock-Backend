@@ -1,5 +1,5 @@
 ﻿using System.Net.Mail;
-using instock_server_application.Email.Dtos;
+using instock_server_application.Email.Objects;
 using instock_server_application.Email.Services.Interfaces;
 
 namespace instock_server_application.Email.Services; 
@@ -11,8 +11,8 @@ public class EmailService : IEmailService {
         _smtpClient = smtpClient;
     }
 
-    public EmailResponseDto SendEmailAsync(string subject, string message) {
-        EmailResponseDto emailResponseDto = new EmailResponseDto();
+    public EmailResponseObject SendEmailAsync(string subject, string message) {
+        EmailResponseObject emailResponse = new EmailResponseObject();
         
         string email = "instockapplication@gmail.com";
 
@@ -26,14 +26,14 @@ public class EmailService : IEmailService {
                 )
             );
 
-            emailResponseDto.Message = "Your message has been sent! Thank you for contacting us.";
-            return emailResponseDto;
+            emailResponse.Message = "Your message has been sent! Thank you for contacting us.";
+            return emailResponse;
         }
         catch (SmtpException e) {
-            emailResponseDto.StatusCode = (int)e.StatusCode;
-            emailResponseDto.Message =
+            emailResponse.StatusCode = (int)e.StatusCode;
+            emailResponse.Message =
                 "Oops, something went wrong! We were not able to send your message. Please try again later";
-            return emailResponseDto;
+            return emailResponse;
         }
     }
 }
