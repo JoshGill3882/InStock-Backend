@@ -37,14 +37,15 @@ public class ConnectionsService : IConnectionsService {
         List<ConnectionDto> connectionsList = connections.Connections;
         
         ConnectionDto connectionDto = new ConnectionDto(
-            shopName: createConnectionRequestDto.ShopName,
-            authenticationToken: createConnectionRequestDto.AuthenticationToken
+            platformName: createConnectionRequestDto.PlatformName,
+            authenticationToken: createConnectionRequestDto.AuthenticationToken,
+            shopUsername: createConnectionRequestDto.ShopUsername
         );
         
         //Check for duplicates
         foreach (ConnectionDto existingConnection in connectionsList)
         {
-            if (existingConnection.ShopName == connectionDto.ShopName)
+            if (existingConnection.PlatformName == connectionDto.PlatformName)
             {
                 errorNotes.AddError("You are already connected to this shop.");
                 return new StoreConnectionDto(errorNotes);

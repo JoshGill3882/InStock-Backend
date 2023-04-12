@@ -63,10 +63,8 @@ public class ConnectionsController : ControllerBase {
         }
         
         //Service pinging for mock server for auth token
-        //
         ExternalShopAuthenticationTokenDto authenticationToken = await _connectionsService.ConnectToExternalShop(createConnectionForm);
-            // Handle the successful result, e.g., display the result or perform further actions
-        
+
         if (authenticationToken.ErrorNotification.HasErrors) {
             if (authenticationToken.ErrorNotification.Errors.ContainsKey("otherErrors")) {
                 if (authenticationToken.ErrorNotification.Errors["otherErrors"].Contains("Unauthorized")) {
@@ -77,11 +75,13 @@ public class ConnectionsController : ControllerBase {
         }
         
         CreateConnectionRequestDto createConnectionRequestDto = new CreateConnectionRequestDto(
-            currentUserId!, 
-            currentUserBusinessId!,
-             businessId,
-            createConnectionForm.PlatformNameConnectingTo,
-            authenticationToken.AuthenticationToken);
+            userId: currentUserId!, 
+            userBusinessId: currentUserBusinessId!,
+             businessId: businessId,
+            platformName: createConnectionForm.PlatformNameConnectingTo,
+            authenticationToken: authenticationToken.AuthenticationToken,
+            shopUsername: createConnectionForm.ShopUsername
+            );
         
         
         StoreConnectionDto allConnections = await _connectionsService.CreateConnections(createConnectionRequestDto);

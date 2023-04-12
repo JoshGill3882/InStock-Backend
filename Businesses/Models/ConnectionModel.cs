@@ -23,10 +23,10 @@ public class ConnectionModel {
         Connections = new List<ConnectionObject>();
     }
     
-    public void AddConnectionDetails(string shopName, string authenticationToken)
+    public void AddConnectionDetails(string shopName, string authenticationToken, string shopUsername)
     {
         Connections ??= new List<ConnectionObject>();
-        Connections.Add(new ConnectionObject(shopName, authenticationToken));
+        Connections.Add(new ConnectionObject(shopName, authenticationToken, shopUsername));
     }
 
     public override string ToString() {
@@ -39,7 +39,10 @@ public class ConnectionModel {
         // By default businesses have null connections
         if (Connections != null) {
             foreach (ConnectionObject connection in Connections) {
-                connectionDtos.Add(new ConnectionDto(connection.ShopName, connection.AuthenticationToken));
+                connectionDtos.Add(new ConnectionDto(
+                    platformName: connection.PlatformName, 
+                    authenticationToken: connection.AuthenticationToken, 
+                    shopUsername: connection.ShopUsername));
             }
         }
 
@@ -48,15 +51,17 @@ public class ConnectionModel {
 
     
     public class ConnectionObject {
-        public string ShopName { get; set; }
+        public string PlatformName { get; set; }
 
         public string AuthenticationToken { get; set; }
-        
+
+        public string ShopUsername { get; set; }
         public ConnectionObject() { }
 
-        public ConnectionObject(string shopName, string authenticationToken) {
-            this.ShopName = shopName;
+        public ConnectionObject(string platformName, string authenticationToken, string shopUsername) {
+            this.PlatformName = platformName;
             this.AuthenticationToken = authenticationToken;
+            this.ShopUsername = shopUsername; 
         }
         
     }

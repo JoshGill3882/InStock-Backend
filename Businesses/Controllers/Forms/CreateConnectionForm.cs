@@ -8,8 +8,8 @@ public class CreateConnectionForm {
     
     public string ShopUserPassword { get; set; }
 
-    public CreateConnectionForm(string platformName, string shopUsername, string shopUserPassword) {
-        PlatformNameConnectingTo = platformName;
+    public CreateConnectionForm(string platformNameConnectingTo, string shopUsername, string shopUserPassword) {
+        PlatformNameConnectingTo = platformNameConnectingTo;
         ShopUsername = shopUsername;
         ShopUserPassword = shopUserPassword;
     }

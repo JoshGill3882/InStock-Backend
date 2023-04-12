@@ -8,18 +8,20 @@ namespace instock_server_application.Businesses.Dtos
         public string UserBusinessId { get; }
 
         public string BusinessId { get; }
-        public string ShopName { get; }
+        public string PlatformName { get; }
         public string AuthenticationToken { get; }
+        
+        public string ShopUsername { get; }
 
-        public CreateConnectionRequestDto(string userId, string userBusinessId, string businessId, string shopName, string authenticationToken)
-        {
+        public CreateConnectionRequestDto(string userId, string userBusinessId, string businessId, string platformName, string authenticationToken, string shopUsername) {
             UserId = userId;
             UserBusinessId = userBusinessId;
             BusinessId = businessId;
-            ShopName = shopName;
+            PlatformName = platformName;
             AuthenticationToken = authenticationToken;
+            ShopUsername = shopUsername;
         }
-        
+
         public CreateConnectionRequestDto(ErrorNotification errorNotes) : base(errorNotes) {
         }
         

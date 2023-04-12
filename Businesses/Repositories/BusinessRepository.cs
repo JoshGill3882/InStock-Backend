@@ -111,7 +111,11 @@ public class BusinessRepository : IBusinessRepository {
         // for connections in storeConnectionDto.Connections
         // addConnectionDetails to existing connections  
         foreach(ConnectionDto connectionObject in storeConnectionDto.Connections){
-            existingConnections.AddConnectionDetails(connectionObject.ShopName, connectionObject.AuthenticationToken);
+            existingConnections.AddConnectionDetails(
+                shopName: connectionObject.PlatformName,
+                authenticationToken: connectionObject.AuthenticationToken,
+                shopUsername: connectionObject.ShopUsername
+                );
         }
         
 
