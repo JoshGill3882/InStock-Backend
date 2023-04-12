@@ -203,44 +203,54 @@ public class StatisticsService : IStatisticsService
                 {
                     int daysNoSales = DifferenceInDays(mostRecentSale, DateTime.Now);
                     timeNoSalesDict[daysNoSales] = statItemDto;
+                    if (saleDates.Count > 1)
+                    {
+                        saleDates.Add(DateTime.Now);
+                        int timeBetweenSales = AverageDaysBetweenSales(saleDates);
+                        string salesStockRatio = timeBetweenSales + ":" + itemStock;
+                        salesStockRatioDict[salesStockRatio] = statItemDto;
+                    }
                 }
                 itemSalesDict[itemSales] = statItemDto;  
                 categorySalesDict[category] = categorySales;
                 itemReturnsDict[itemReturns] = statItemDto;
-                // if business has multiple sales to compare dates with
-                if (saleDates.Count > 1)
-                {
-                    saleDates.Add(DateTime.Now);
-                    int timeBetweenSales = AverageDaysBetweenSales(saleDates);
-                    string salesStockRatio = timeBetweenSales + ":" + itemStock;
-                    salesStockRatioDict[salesStockRatio] = statItemDto;
-                }
-
             }
             
+            // sort category and sales ratio dictionaries to get best and worst performers
             var sortedCategoryDict = categorySalesDict.OrderByDescending(x => x.Value)
                 .ToDictionary(x => x.Key, x => x.Value);
-            
             var sortedRatioDict = new SortedDictionary<string, StatItemDto>(salesStockRatioDict, new SalesToStockRatioComparer());
             
-            Dictionary<int, StatItemDto> bestSellingItem = new Dictionary<int, StatItemDto>()
-                { { itemSalesDict.Last().Key, itemSalesDict.Last().Value } };
-            Dictionary<int, StatItemDto> worstSellingItem = new Dictionary<int, StatItemDto>()
-                { { itemSalesDict.First().Key, itemSalesDict.First().Value } };
-            Dictionary<int, string> bestSellingCategory = new Dictionary<int, string>()
-                { { sortedCategoryDict.First().Value, sortedCategoryDict.First().Key } };
-            Dictionary<int, string> worstSellingCategory = new Dictionary<int, string>()
-                { { sortedCategoryDict.Last().Value, sortedCategoryDict.Last().Key } };
-            Dictionary<int, StatItemDto> mostReturnedItem = new Dictionary<int, StatItemDto>()
-                { { itemReturnsDict.Last().Key, itemReturnsDict.Last().Value } };
-            Dictionary<string, StatItemDto> longestNoSales = new Dictionary<string, StatItemDto>()
-                { { timeNoSalesDict.Last().Key + " days", timeNoSalesDict.Last().Value } };
-            Dictionary<string, StatItemDto> itemToRestock = new Dictionary<string, StatItemDto>()
-                { { sortedRatioDict.Last().Key, sortedRatioDict.Last().Value } };
+            // Create suggestions if there is enough data to work with
+            Dictionary<int, StatItemDto> bestSellingItem = itemSalesDict.Last().Key > 0 
+                ? new Dictionary<int, StatItemDto> { { itemSalesDict.Last().Key, itemSalesDict.Last().Value } }
+                : new Dictionary<int, StatItemDto>();
 
-            return new StatsSuggestionsDto(bestSellingItem, worstSellingItem,
-                itemToRestock, longestNoSales, bestSellingCategory,
-                worstSellingCategory, mostReturnedItem);
+            Dictionary<int, StatItemDto> worstSellingItem = new Dictionary<int, StatItemDto> { { itemSalesDict.First().Key, 
+                itemSalesDict.First().Value } };
+
+            Dictionary<int, string> bestSellingCategory = sortedCategoryDict.Last().Value > 0
+                ? new Dictionary<int, string> { { sortedCategoryDict.First().Value, sortedCategoryDict.First().Key } }
+                : new Dictionary<int, string>();
+
+            Dictionary<int, string> worstSellingCategory = new Dictionary<int, string> { { sortedCategoryDict.Last().Value, 
+                sortedCategoryDict.Last().Key } };
+
+            Dictionary<int, StatItemDto> mostReturnedItem = itemReturnsDict.Last().Key > 0 
+                ? new Dictionary<int, StatItemDto> { { itemReturnsDict.Last().Key, itemReturnsDict.Last().Value } }
+                : new Dictionary<int, StatItemDto>();
+
+            Dictionary<string, StatItemDto> longestNoSales = timeNoSalesDict.Last().Key > 0 
+                ? new Dictionary<string, StatItemDto> { { $"{timeNoSalesDict.Last().Key} days", timeNoSalesDict.Last().Value } }
+                : new Dictionary<string, StatItemDto>();
+
+            Dictionary<string, StatItemDto> itemToRestock = sortedRatioDict.Count > 0 
+                ? new Dictionary<string, StatItemDto> { { sortedRatioDict.Last().Key, sortedRatioDict.Last().Value } }
+                : new Dictionary<string, StatItemDto>();
+
+            return new StatsSuggestionsDto(bestSellingItem, worstSellingItem, itemToRestock, longestNoSales, 
+                bestSellingCategory, worstSellingCategory, mostReturnedItem);
+
         }
 
         public int DifferenceInDays(DateTime date1, DateTime date2)
