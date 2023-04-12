@@ -1,8 +1,8 @@
 ﻿using instock_server_application.Security.Dtos;
 using instock_server_application.Security.Services.Interfaces;
-using instock_server_application.Shared.Dto;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories.Interfaces;
+using instock_server_application.Util.Dto;
 
 namespace instock_server_application.Security.Services; 
 
