@@ -51,7 +51,14 @@ public class StatisticsService : IStatisticsService
             }
 
             // Create list of item dtos to work with
-            foreach (Dictionary<string, AttributeValue> item in responseItems) {
+            foreach (Dictionary<string, AttributeValue> item in responseItems)
+            {
+                List<StatStockDto> statStockDtos = new();
+                if (item.ContainsKey("StockUpdates"))
+                {
+                    string jsonString = item["StockUpdates"].S;
+                    statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
+                }
                 string stock = item["Stock"].S ?? item["Stock"].N;
                 StatItemDto statItemDto = new StatItemDto(
                     item["SKU"].S,
@@ -59,14 +66,8 @@ public class StatisticsService : IStatisticsService
                     item["Category"].S,
                     item["Name"].S,
                     stock,
-                    null
+                    statStockDtos
                 );
-                if (item.ContainsKey("StockUpdates"))
-                {
-                    string jsonString = item["StockUpdates"].S;
-                    List<StatStockDto> statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
-                    statItemDto.StockUpdates = statStockDtos;
-                }
                 statItemDtos.Add(statItemDto);
             }
             
