@@ -23,8 +23,8 @@ public class ItemStockService : IItemStockService {
         if (newStockLevel > int.MaxValue) {
             errorNotes.AddError(errorKey, $"The stock level cannot be more than {int.MaxValue}.");
         }
-        if (newStockLevel < int.MinValue) {
-            errorNotes.AddError(errorKey, $"The stock level cannot be less than {int.MinValue}.");
+        if (newStockLevel < 0) {
+            errorNotes.AddError(errorKey, "The stock level cannot be less than 0.");
         }
     }    
     private void ValidateReasonForChange(ErrorNotification errorNotes, string reasonForChange) {
