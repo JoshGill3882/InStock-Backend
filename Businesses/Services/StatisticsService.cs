@@ -40,7 +40,7 @@ public class StatisticsService : IStatisticsService
                 {"Lost", 0},
             };
             
-            // Create default stats suggestions
+            // Create default stats suggestions 
             var error = new ErrorNotification();
             error.AddError("No Stats Suggestions");
             StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(error);
@@ -51,7 +51,7 @@ public class StatisticsService : IStatisticsService
                 return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth, statsSuggestionsDto);
             }
 
-            // Create list of item dtos
+            // Create list of item dtos to work with
             foreach (Dictionary<string, AttributeValue> item in responseItems) {
                 string stock = item["Stock"].S ?? item["Stock"].N;
                 StatItemDto statItemDto = new StatItemDto(
@@ -92,14 +92,27 @@ public class StatisticsService : IStatisticsService
             //     }
             // }
             
-            // calculate suggestions
+            // get suggestions
             statsSuggestionsDto = GetSuggestions(statItemDtos);
             
             // loop through StatItemDtos and calculate stats
             foreach (var statItemDto in statItemDtos)
             {
-                // get category
+                // get category and add blank category stats if not already added
                 string category = statItemDto.Category;
+                Dictionary<string, int> categoryDict = new Dictionary<string, int>() {
+                    {"Sale", 0},
+                    {"Order", 0},
+                    {"Return", 0},
+                    {"Giveaway", 0},
+                    {"Damaged", 0},
+                    {"Restocked", 0},
+                    {"Lost", 0},
+                };
+                if (!categoryStats.ContainsKey(category))
+                {
+                    categoryStats.Add(category, categoryDict);
+                }
                 // loop through each statStockDto
                 foreach (var statStockDto in statItemDto.StockUpdates?? Enumerable.Empty<StatStockDto>())
                 {
@@ -113,21 +126,8 @@ public class StatisticsService : IStatisticsService
                     // Update overallShopPerformance
                     overallShopPerformance.TryGetValue(reasonForChange, out int reasonAmount); // reasonAmount defaults to 0
                     overallShopPerformance[reasonForChange] = reasonAmount + amountChanged;
-
-                    // Update categoryStats
-                    if (!categoryStats.TryGetValue(category, out var categoryDict)) {
-                        categoryDict = new Dictionary<string, int>() {
-                            {"Sale", 0},
-                            {"Order", 0},
-                            {"Return", 0},
-                            {"Giveaway", 0},
-                            {"Damaged", 0},
-                            {"Restocked", 0},
-                            {"Lost", 0},
-                        };
-                        categoryStats.Add(category, categoryDict);
-                    }
-
+                    
+                    // Update category stats
                     categoryDict.TryGetValue(reasonForChange, out int categoryAmount);
                     categoryDict[reasonForChange] = categoryAmount + amountChanged;
                     
@@ -153,7 +153,6 @@ public class StatisticsService : IStatisticsService
             }
             return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth, statsSuggestionsDto);
         }
-
         // If the user doesn't have access, return "null"
         return null;
     }
@@ -250,7 +249,6 @@ public class StatisticsService : IStatisticsService
 
             return new StatsSuggestionsDto(bestSellingItem, worstSellingItem, itemToRestock, longestNoSales, 
                 bestSellingCategory, worstSellingCategory, mostReturnedItem);
-
         }
 
         public int DifferenceInDays(DateTime date1, DateTime date2)
