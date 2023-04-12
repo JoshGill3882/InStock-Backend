@@ -76,11 +76,11 @@ public class ConnectionsService : IConnectionsService {
             throw new NullReferenceException("The BusinessId cannot be null or empty.");
         }
         
-        ErrorNotification errorNotes = new ErrorNotification();
         
         // Check if the user is allowed to edit the business, return as no need to do anymore validation
         if (!getConnectionsRequestDto.UserBusinessId.Equals(getConnectionsRequestDto.BusinessId)) {
-            errorNotes.AddError(StoreConnectionDto.USER_UNAUTHORISED_ERROR);
+            ErrorNotification errorNotes = new ErrorNotification();
+            errorNotes.AddError("You are already connected to this shop");
             return new StoreConnectionDto(errorNotes);
         }
         

@@ -12,10 +12,11 @@ namespace instock_server_application.Businesses.Controllers;
 [Route("/businesses/{businessId}")]
 public class ConnectionsController : ControllerBase {
     
-    private readonly IBusinessRepository _businessRepository;
+    private readonly IConnectionsService _connectionsService;
+
         
-    public ConnectionsController(IBusinessRepository businessRepository) {
-        _businessRepository = businessRepository;
+    public ConnectionsController(IConnectionsService connectionsService) {
+        _connectionsService = connectionsService;
     }
     
     [HttpGet]
@@ -29,18 +30,23 @@ public class ConnectionsController : ControllerBase {
         if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
-        
-
-        ConnectionsService connectionService = new ConnectionsService(_businessRepository);
-
         GetConnectionsRequestDto getConnectionsRequestDto = new GetConnectionsRequestDto(
             userId : currentUserId!,
             userBusinessId: currentUserBusinessId!,
             businessId: businessId);
+
+
+        StoreConnectionDto allConnections = await _connectionsService.GetConnections(getConnectionsRequestDto);
+        if (allConnections.ErrorNotification.HasErrors) {
+            if (allConnections.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+                if (allConnections.ErrorNotification.Errors["otherErrors"].Contains("Unauthorized")) {
+                    return Unauthorized();
+                }
+            }
+            return new BadRequestObjectResult(allConnections.ErrorNotification);
+        }
         
 
-        var allConnections = await connectionService.GetConnections(getConnectionsRequestDto);
-      
         return Ok(allConnections);
     }
     
@@ -58,12 +64,7 @@ public class ConnectionsController : ControllerBase {
         
         //Service pinging for mock server for auth token
         //
-        ConnectionsService connectionService = new ConnectionsService(_businessRepository);
-
-
-        
-        
-           ExternalShopAuthenticationTokenDto authenticationToken = await connectionService.ConnectToExternalShop(createConnectionForm);
+        ExternalShopAuthenticationTokenDto authenticationToken = await _connectionsService.ConnectToExternalShop(createConnectionForm);
             // Handle the successful result, e.g., display the result or perform further actions
         
         if (authenticationToken.ErrorNotification.HasErrors) {
@@ -83,7 +84,7 @@ public class ConnectionsController : ControllerBase {
             authenticationToken.AuthenticationToken);
         
         
-        StoreConnectionDto allConnections = await connectionService.CreateConnections(createConnectionRequestDto);
+        StoreConnectionDto allConnections = await _connectionsService.CreateConnections(createConnectionRequestDto);
       
         if (allConnections.ErrorNotification.HasErrors) {
             if (allConnections.ErrorNotification.Errors.ContainsKey("otherErrors")) {
