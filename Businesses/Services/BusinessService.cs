@@ -38,9 +38,17 @@ public class BusinessService : IBusinessService {
             return new BusinessDto(errorNote);
         }
 
-        responseItems.ImageUrl = responseItems.ImageUrl != null ? _storageService.GetFilePresignedUrl("instock-business-logos", responseItems.ImageUrl).Message : "";
+        string imageUrl = responseItems.ImageUrl != null ? _storageService.GetFilePresignedUrl("instock-business-logos", responseItems.ImageUrl).Message : "";
 
-        return responseItems;
+        BusinessDto businessDto = new BusinessDto(
+            responseItems.BusinessId,
+            responseItems.BusinessName,
+            responseItems.BusinessOwnerId,
+            responseItems.BusinessDescription,
+            imageUrl
+        );
+
+        return businessDto;
     }
 
     private void ValidateBusinessName(ErrorNotification errorNotes, string businessName) {
