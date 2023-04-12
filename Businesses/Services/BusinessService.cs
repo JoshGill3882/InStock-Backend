@@ -38,7 +38,7 @@ public class BusinessService : IBusinessService {
             return new BusinessDto(errorNote);
         }
 
-        responseItems.ImageUrl = responseItems.ImageUrl != null ? _storageService.GetFilePresignedUrl("instock-photos", responseItems.ImageUrl).Message : "";
+        responseItems.ImageUrl = responseItems.ImageUrl != null ? _storageService.GetFilePresignedUrl("instock-business-logos", responseItems.ImageUrl).Message : "";
 
         return responseItems;
     }
@@ -92,7 +92,9 @@ public class BusinessService : IBusinessService {
         S3ResponseDto storageResponse = new S3ResponseDto();
         
         if (newBusinessRequest.ImageFile != null) {
-            storageResponse = await _storageService.UploadFileAsync(new UploadFileRequestDto(newBusinessRequest.UserId, "instock-photos", newBusinessRequest.ImageFile));
+            storageResponse = await _storageService.UploadFileAsync(
+                new UploadFileRequestDto(newBusinessRequest.UserId, "instock-business-logos", newBusinessRequest.ImageFile)
+            );
         }
         
         // Calling repo to create the business for the user
