@@ -1,7 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
-using instock_server_application.Businesses.Dtos;
-using instock_server_application.Shared.Dto;
+using instock_server_application.Util.Dto;
 
 namespace instock_server_application.Users.Models;
 
@@ -32,6 +30,8 @@ public class User {
     public string RefreshToken { get; set; }
     [DynamoDBProperty]
     public string RefreshTokenExpiry { get; set; }
+    [DynamoDBProperty("ImageUrl")]
+    public string? ImageUrl { get; set; }
 
     /// <summary>
     /// All Args Constructor
@@ -46,7 +46,7 @@ public class User {
     /// <param name="role"> User's Role </param>
     /// <param name="businessId"> User's Linked Business </param>
     /// <param name="refreshToken"> user's Refresh Token </param>
-    public User(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string businessId, string refreshToken, string refreshTokenExpiry) {
+    public User(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string businessId, string refreshToken, string refreshTokenExpiry, string? imageUrl) {
         UserId = userId;
         Email = email;
         AccountStatus = accountStatus;
@@ -58,6 +58,7 @@ public class User {
         BusinessId = businessId;
         RefreshToken = refreshToken;
         RefreshTokenExpiry = refreshTokenExpiry;
+        ImageUrl = imageUrl;
     }
 
     public User() { }
