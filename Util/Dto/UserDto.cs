@@ -14,9 +14,9 @@ public class UserDto {
     public string UserBusinessId { get; }
     public string RefreshToken { get; }
     public string RefreshTokenExpiry { get; }
-    public string? ImageUrl { get; }
+    public string? ImageFilename { get; }
 
-    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, string refreshToken, string refreshTokenExpiry, string? imageUrl) {
+    public UserDto(string userId, string email, string accountStatus, long creationDate, string firstName, string lastName, string password, string role, string userBusinessId, string refreshToken, string refreshTokenExpiry, string? imageFilename) {
         UserId = userId;
         Email = email;
         AccountStatus = accountStatus;
@@ -28,7 +28,7 @@ public class UserDto {
         UserBusinessId = userBusinessId;
         RefreshToken = refreshToken;
         RefreshTokenExpiry = refreshTokenExpiry;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
     }
     
     public UserDto(string userId, string userBusinessId) {
@@ -48,6 +48,6 @@ public class UserDto {
         UserBusinessId = user.BusinessId;
         RefreshToken = user.RefreshToken;
         RefreshTokenExpiry = user.RefreshTokenExpiry;
-        ImageUrl = user.ImageUrl;
+        ImageFilename = user.ImageFilename;
     }
 }

@@ -33,15 +33,15 @@ public class UserService : IUserService {
     public async Task<AccountDetailsDto> GetUser(string email) {
         User userDetails = await FindUserByEmail(email);
         
-        userDetails.ImageUrl = userDetails.ImageUrl != null 
-            ? _storageService.GetFilePresignedUrl("instock-profile-pictures", userDetails.ImageUrl).Message 
+        string imageUrl = userDetails.ImageFilename != null 
+            ? _storageService.GetFilePresignedUrl("instock-profile-pictures", userDetails.ImageFilename).Message 
             : "";
 
         AccountDetailsDto accountDetailsDto = new AccountDetailsDto(
             firstName: userDetails.FirstName,
             lastName: userDetails.LastName,
             email: userDetails.Email,
-            imageUrl: userDetails.ImageUrl
+            imageUrl: imageUrl
         );
         
         return accountDetailsDto;
