@@ -10,12 +10,11 @@ namespace instock_server_application.Businesses.Services;
 
 public class ItemStockService : IItemStockService {
     private readonly IItemRepo _itemRepo;
-    private readonly IBusinessRepository _businessRepository;
     private readonly INotificationService _notificationService;
 
-    public ItemStockService(IItemRepo itemRepo, IBusinessRepository businessRepository) {
+    public ItemStockService(IItemRepo itemRepo, INotificationService notificationService) {
         _itemRepo = itemRepo;
-        _businessRepository = businessRepository;
+        _notificationService = notificationService;
     }
 
     private void ValidateAmountChangeBy(ErrorNotification errorNotes, int changeAmountBy, ItemDto existingItem) {
