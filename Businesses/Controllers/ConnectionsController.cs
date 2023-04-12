@@ -80,7 +80,7 @@ public class ConnectionsController : ControllerBase {
             currentUserId!, 
             currentUserBusinessId!,
              businessId,
-            createConnectionForm.ShopNameConnectingTo,
+            createConnectionForm.PlatformNameConnectingTo,
             authenticationToken.AuthenticationToken);
         
         

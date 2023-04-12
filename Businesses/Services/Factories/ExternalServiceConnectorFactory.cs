@@ -9,7 +9,7 @@ public class ExternalServiceConnectorFactory {
     public ExternalShopAuthenticator CreateAuthenticator(
         CreateConnectionForm connectionRequestDetails)
     {
-        switch (connectionRequestDetails.ShopNameConnectingTo.ToLower())
+        switch (connectionRequestDetails.PlatformNameConnectingTo.ToLower())
         {
             case "mockshop":
                 return new MockShopAuthenticator(connectionRequestDetails.ShopUsername, connectionRequestDetails.ShopUserPassword);
@@ -17,7 +17,7 @@ public class ExternalServiceConnectorFactory {
                 return new MockMarketAuthenticator(connectionRequestDetails.ShopUsername,
                     connectionRequestDetails.ShopUserPassword);
             default:
-                throw new ArgumentException($"Shop '{connectionRequestDetails.ShopNameConnectingTo}' is not supported.");
+                throw new ArgumentException($"Shop '{connectionRequestDetails.PlatformNameConnectingTo}' is not supported.");
         }
     }
 }

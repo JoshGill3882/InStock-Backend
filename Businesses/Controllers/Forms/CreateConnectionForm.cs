@@ -2,14 +2,14 @@
 
 public class CreateConnectionForm {
     
-    public string ShopNameConnectingTo { get; set; }
+    public string PlatformNameConnectingTo { get; set; }
     
     public string ShopUsername { get; set; }
     
     public string ShopUserPassword { get; set; }
 
-    public CreateConnectionForm(string shopName, string shopUsername, string shopUserPassword) {
-        ShopNameConnectingTo = shopName;
+    public CreateConnectionForm(string platformName, string shopUsername, string shopUserPassword) {
+        PlatformNameConnectingTo = platformName;
         ShopUsername = shopUsername;
         ShopUserPassword = shopUserPassword;
     }
