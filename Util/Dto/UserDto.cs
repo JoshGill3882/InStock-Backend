@@ -48,5 +48,6 @@ public class UserDto {
         UserBusinessId = user.BusinessId;
         RefreshToken = user.RefreshToken;
         RefreshTokenExpiry = user.RefreshTokenExpiry;
+        ImageUrl = user.ImageUrl;
     }
 }

@@ -75,5 +75,6 @@ public class User {
         BusinessId = userDto.UserBusinessId;
         RefreshToken = userDto.RefreshToken;
         RefreshTokenExpiry = userDto.RefreshTokenExpiry;
+        ImageUrl = userDto.ImageUrl;
     }
 }

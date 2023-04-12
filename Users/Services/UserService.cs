@@ -1,4 +1,6 @@
-﻿using instock_server_application.Users.Models;
+﻿using instock_server_application.AwsS3.Services.Interfaces;
+using instock_server_application.Users.Dtos;
+using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services.Interfaces;
 
@@ -6,9 +8,11 @@ namespace instock_server_application.Users.Services;
 
 public class UserService : IUserService {
     private readonly IUserRepo _userRepo;
-    
-    public UserService(IUserRepo userRepo) {
+    private readonly IStorageService _storageService;
+
+    public UserService(IUserRepo userRepo, IStorageService storageService) {
         _userRepo = userRepo;
+        _storageService = storageService;
     }
     
     /// <summary>
@@ -24,5 +28,22 @@ public class UserService : IUserService {
             return null;
         }
         return userDetails;
+    }
+    
+    public async Task<AccountDetailsDto> GetUser(string email) {
+        User userDetails = await FindUserByEmail(email);
+        
+        userDetails.ImageUrl = userDetails.ImageUrl != null 
+            ? _storageService.GetFilePresignedUrl("instock-profile-pictures", userDetails.ImageUrl).Message 
+            : "";
+
+        AccountDetailsDto accountDetailsDto = new AccountDetailsDto(
+            firstName: userDetails.FirstName,
+            lastName: userDetails.LastName,
+            email: userDetails.Email,
+            imageUrl: userDetails.ImageUrl
+        );
+        
+        return accountDetailsDto;
     }
 }

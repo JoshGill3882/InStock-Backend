@@ -26,14 +26,7 @@ public class UserController : ControllerBase {
             return Unauthorized();
         }
         
-        User user = _userService.FindUserByEmail(email).Result;
-
-        AccountDetailsDto accountDetailsDto = new AccountDetailsDto(
-            firstName: user.FirstName,
-            lastName: user.LastName,
-            email: user.Email,
-            imageUrl: user.ImageUrl
-        );
+        AccountDetailsDto accountDetailsDto = _userService.GetUser(email).Result;
 
         return Ok(accountDetailsDto);
     }
