@@ -1,6 +1,4 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using instock_server_application.Users.Models;
+﻿using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services.Interfaces;
 
@@ -19,7 +17,6 @@ public class UserService : IUserService {
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
     public async Task<User?> FindUserByEmail(string email) {
-        // TODO - Change this to use an instance of UserRepo
         User? userDetails = _userRepo.GetByEmail(email).Result;
 
         // If there was no email found using the Repo method then there is no user using that email
