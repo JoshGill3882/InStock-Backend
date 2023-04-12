@@ -63,9 +63,10 @@ public class ItemRepo : IItemRepo{
                     StatStockDto statStockDto = new StatStockDto(stockObject.AmountChanged, stockObject.ReasonForChange,
                         stockObject.DateTimeAdded.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"));
                     listOfStatStockDtos.Add(statStockDto);
-                }    
+                }
             }
 
+            // Move this within the above if statement
             listOfStatItemDto.Add(
                 new StatItemDto(
                     sku: itemModel.SKU,

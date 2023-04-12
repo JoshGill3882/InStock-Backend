@@ -50,48 +50,6 @@ public class StatisticsService : IStatisticsService
                 // Return an empty stats object
                 return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth, statsSuggestionsDto);
             }
-
-            // Create list of item dtos to work with
-            // foreach (ItemDto item in responseItems)
-            // {
-            //     List<StatStockDto> statStockDtos = new();
-            //     if (item.ContainsKey("StockUpdates"))
-            //     {
-            //         string jsonString = item["StockUpdates"].S;
-            //         statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
-            //     }
-            //     string stock = item["Stock"].S ?? item["Stock"].N;
-            //     StatItemDto statItemDto = new StatItemDto(
-            //         item["SKU"].S,
-            //         item["BusinessId"].S,
-            //         item["Category"].S,
-            //         item["Name"].S,
-            //         stock,
-            //         statStockDtos
-            //     );
-            //     statItemDtos.Add(statItemDto);
-            // }
-            
-            // Create list of stat item dtos only if stock updates have been made
-            // use this version if we only want stats on items with at least one stock change
-            
-            // foreach (Dictionary<string, AttributeValue> item in responseItems) {
-            //     if (item.ContainsKey("StockUpdates"))
-            //     {
-            //         string jsonString = item["StockUpdates"].S;
-            //         List<StatStockDto> statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
-            //         string stock = item["Stock"].S ?? item["Stock"].N;
-            //         StatItemDto statItemDto = new StatItemDto(
-            //             item["SKU"].S,
-            //             item["BusinessId"].S,
-            //             item["Category"].S,
-            //             item["Name"].S,
-            //             stock,
-            //             statStockDtos
-            //         );
-            //         statItemDtos.Add(statItemDto);
-            //     }
-            // }
             
             // get suggestions
             statsSuggestionsDto = GetSuggestions(statItemDtos);
