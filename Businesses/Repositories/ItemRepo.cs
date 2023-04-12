@@ -35,7 +35,9 @@ public class ItemRepo : IItemRepo{
                     businessId: itemModel.BusinessId,
                     category: itemModel.Category,
                     name: itemModel.Name,
-                    stock: itemModel.GetStock()));
+                    totalStock: itemModel.GetTotalStock(),
+                    totalOrders: itemModel.GetTotalOrders(),
+                    availableStock: itemModel.GetTotalStock() - itemModel.GetTotalOrders()));
         }
         
         return listOfItemDto;
@@ -50,7 +52,7 @@ public class ItemRepo : IItemRepo{
         
         // Save the new item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
+            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.TotalStock, itemToSaveDto.TotalOrders);
         await _context.SaveAsync(itemModel);
 
         ItemDto createdItemDto = new ItemDto(
@@ -58,7 +60,9 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.GetStock());
+            itemModel.GetTotalStock(),
+            itemModel.GetTotalOrders(),
+             itemModel.GetTotalStock() - itemModel.GetTotalOrders());
         
         return createdItemDto;
     }
@@ -128,7 +132,7 @@ public class ItemRepo : IItemRepo{
         
         // Save the new updated item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.Stock);
+            itemToSaveDto.SKU, itemToSaveDto.BusinessId, itemToSaveDto.Category, itemToSaveDto.Name, itemToSaveDto.TotalStock, itemToSaveDto.TotalOrders);
         await _context.SaveAsync(itemModel);
         
         // Return the updated Items details
@@ -137,7 +141,9 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.GetStock());
+            itemModel.GetTotalStock(),
+            itemModel.GetTotalOrders(),
+            itemModel.GetTotalStock()-itemModel.GetTotalOrders());
         
         return updatedItemDto;
     }
@@ -186,7 +192,7 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock());
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetTotalStock(), item.GetTotalOrders(), item.GetTotalStock() - item.GetTotalOrders());
         return itemDto;
     }
     

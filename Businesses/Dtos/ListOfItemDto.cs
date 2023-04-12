@@ -25,7 +25,8 @@ public class ListOfItemDto : DataTransferObjectSuperType {
                     { "BusinessId", item.BusinessId },
                     { "Category", item.Category },
                     { "Name", item.Name },
-                    { "Stock", item.Stock.ToString() }
+                    { "Stock", item.Stock.ToString() },
+                    { "TotalStock", item.TotalStock.ToString() }
                 });
         }
 

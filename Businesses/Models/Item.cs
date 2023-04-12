@@ -7,10 +7,10 @@ namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Items")]
 public class Item {
-    public static readonly string TableName = "Items";
-
     // The value for the items stock, this is so we get more control over the value
-    private int _stock;
+    private int _totalStock;
+    private int _totalOrders;
+
     
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
@@ -27,27 +27,39 @@ public class Item {
     public string Name { get; set; }
 
     [DynamoDBProperty("Stock")]
-    public String Stock {
-        get => _stock.ToString();
+    public String TotalStock {
+        get => _totalStock.ToString();
         set {
             if (value.Length > int.MaxValue.ToString().Length) {
-                if (value.Contains('-')) {
-                    _stock = int.MinValue;
-                }
-                else {
-                    _stock = int.MaxValue;
-                }
+                _totalStock = value.Contains('-') ? int.MinValue : int.MaxValue;
             } else if ( long.Parse(value) >= int.MaxValue) {
-                _stock = int.MaxValue;
+                _totalStock = int.MaxValue;
             } else if (long.Parse(value) <= int.MinValue) {
-                _stock = int.MinValue;
+                _totalStock = int.MinValue;
             }
             else {
-                _stock = int.Parse(value);
+                _totalStock = int.Parse(value);
             }
         }
     }
 
+    [DynamoDBProperty("TotalOrders")]
+    public String TotalOrders {
+        get => _totalOrders.ToString();
+        set {
+            if (value.Length > int.MaxValue.ToString().Length) {
+                _totalOrders = value.Contains('-') ? int.MinValue : int.MaxValue;
+            } else if ( long.Parse(value) >= int.MaxValue) {
+                _totalOrders = int.MaxValue;
+            } else if (long.Parse(value) <= int.MinValue) {
+                _totalOrders = int.MinValue;
+            }
+            else {
+                _totalOrders = int.Parse(value);
+            }
+        }
+    }
+    
     public Item() {}
 
     /// <summary>
@@ -57,13 +69,14 @@ public class Item {
     /// <param name="businessId"> Item's Business Id </param>
     /// <param name="category"> Item's Category </param>
     /// <param name="name"> Item's Name </param>
-    /// <param name="stock">Item's Stock Level</param>
-    public Item(string sku, string businessId, string category, string name, int stock) {
+    /// <param name="totalStock">Item's Stock Level</param>
+    public Item(string sku, string businessId, string category, string name, int totalStock, int totalOrders) {
         SKU = sku;
         BusinessId = businessId;
         Category = category;
         Name = name;
-        _stock = stock;
+        _totalStock = totalStock;
+        _totalOrders = totalStock;
     }
 
     public Item(string sku, string businessId) {
@@ -71,8 +84,12 @@ public class Item {
         BusinessId = businessId;
     }
 
-    public int GetStock() {
-        return _stock;
+    public int GetTotalStock() {
+        return _totalStock;
+    }
+    
+    public int GetTotalOrders() {
+        return _totalOrders;
     }
     
     // Scan conditions used in scans for this model

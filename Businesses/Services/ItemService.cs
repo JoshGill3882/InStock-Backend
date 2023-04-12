@@ -113,7 +113,7 @@ public class ItemService : IItemService {
         // Calling repo to create the business for the user
         StoreItemDto itemToSaveDto =
             new StoreItemDto(newItemRequestDto.SKU, newItemRequestDto.BusinessId, newItemRequestDto.Category, 
-                newItemRequestDto.Name, newItemRequestDto.Stock);
+                newItemRequestDto.Name, newItemRequestDto.Stock, 0);
         
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 
@@ -205,7 +205,8 @@ public class ItemService : IItemService {
             businessId: existingItemDto.BusinessId, 
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
-            stock: newStockLevel);
+            totalStock: newStockLevel,
+            totalOrders: existingItemDto.TotalOrders);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

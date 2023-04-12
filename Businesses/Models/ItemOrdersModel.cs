@@ -6,6 +6,9 @@ namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Items")]
 public class ItemOrdersModel {
+    
+    private int _totalOrders;
+
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
     public string SKU { get; set; }
@@ -13,7 +16,24 @@ public class ItemOrdersModel {
     [DynamoDBRangeKey]
     [DynamoDBProperty("BusinessId")]
     public string BusinessId { get; set; }
-
+    
+    [DynamoDBProperty("TotalOrders")]
+    public String TotalOrders {
+        get => _totalOrders.ToString();
+        set {
+            if (value.Length > int.MaxValue.ToString().Length) {
+                _totalOrders = value.Contains('-') ? int.MinValue : int.MaxValue;
+            } else if ( long.Parse(value) >= int.MaxValue) {
+                _totalOrders = int.MaxValue;
+            } else if (long.Parse(value) <= int.MinValue) {
+                _totalOrders = int.MinValue;
+            }
+            else {
+                _totalOrders = int.Parse(value);
+            }
+        }
+    }
+    
     [DynamoDBProperty(typeof(ItemOrderObjectConverter))]
     public List<ItemOrderObject> ItemOrders { get; set; }
 
@@ -21,15 +41,21 @@ public class ItemOrdersModel {
     public ItemOrdersModel() {
     }
 
-    public ItemOrdersModel(string sku, string businessId) {
+    public ItemOrdersModel(string sku, string businessId, int totalOrders) {
         SKU = sku;
         BusinessId = businessId;
-        ItemOrders = new List<ItemOrderObject>() ;
+        _totalOrders = totalOrders;
+        ItemOrders = new List<ItemOrderObject>();
+    }
+        
+    public int GetTotalOrders() {
+        return _totalOrders;
     }
 
     public void AddItemOrderDetails(int amountOrdered, DateTime dateTimeAdded) {
         ItemOrders ??= new List<ItemOrderObject>();
         ItemOrders.Add(new ItemOrderObject(amountOrdered, dateTimeAdded));
+        _totalOrders += amountOrdered;
     }
     
     public class ItemOrderObject {

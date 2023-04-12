@@ -102,7 +102,8 @@ public class ItemStockService : IItemStockService {
             businessId: existingItemDto.BusinessId, 
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
-            stock: newStockLevel);
+            totalStock: newStockLevel,
+            totalOrders: existingItemDto.TotalOrders);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         
