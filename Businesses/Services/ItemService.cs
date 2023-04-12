@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
+using FirebaseAdmin.Messaging;
 using instock_server_application.AwsS3.Dtos;
 using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Dtos;
@@ -15,11 +16,13 @@ public class ItemService : IItemService {
     private readonly IItemRepo _itemRepo;
     private readonly IUtilService _utilService;
     private readonly IStorageService _storageService;
+    private readonly INotificationService _notificationService;
 
-    public ItemService(IItemRepo itemRepo, IUtilService utilService, IStorageService storageService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService, IStorageService storageService, INotificationService notificationService) {
         _itemRepo = itemRepo;
         _utilService = utilService;
         _storageService = storageService;
+        _notificationService = notificationService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -265,6 +268,41 @@ public class ItemService : IItemService {
         );
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
+        
+        switch (newStockLevel) {
+            case 5:
+                _notificationService.SendNotification(
+                    new Notification() {
+                        Title = "Low Stock",
+                        Body = "You are low on stock on: " + updatedItemDto.Name
+                    },
+                    new Dictionary<string, string> {
+                        { "SKU", updatedItemDto.SKU },
+                        { "BusinessId", updatedItemDto.BusinessId },
+                        { "Category", updatedItemDto.Category },
+                        { "Name", updatedItemDto.Name },
+                        { "Stock", updatedItemDto.Stock.ToString() }
+                    },
+                    createStockUpdateRequestDto.BusinessId
+                );
+                break;
+            case 0:
+                _notificationService.SendNotification(
+                    new Notification() {
+                        Title = "Out of Stock",
+                        Body = "You are out of stock on: " + updatedItemDto.Name
+                    },
+                    new Dictionary<string, string> {
+                        { "SKU", updatedItemDto.SKU },
+                        { "BusinessId", updatedItemDto.BusinessId },
+                        { "Category", updatedItemDto.Category },
+                        { "Name", updatedItemDto.Name },
+                        { "Stock", updatedItemDto.Stock.ToString() }
+                    },
+                    createStockUpdateRequestDto.BusinessId
+                );
+                break;
+        }
         
         // Returning results
         // Return newly created stock update

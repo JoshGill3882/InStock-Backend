@@ -9,6 +9,7 @@ using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Util.Dto;
 using instock_server_application.Util.Services;
+using instock_server_application.Util.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -171,7 +172,8 @@ public class ItemControllerTest {
         }));
         var utilService = new UtilService();
         var mockStorageRepo = new Mock<IStorageService>();
-        var itemService = new ItemService(mockItemRepo.Object, utilService, mockStorageRepo.Object);
+        var mockNotificationService = new Mock<INotificationService>();
+        var itemService = new ItemService(mockItemRepo.Object, utilService, mockStorageRepo.Object, mockNotificationService.Object);
         var itemController = new ItemController(itemService) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
@@ -195,7 +197,8 @@ public class ItemControllerTest {
         var mockItemRepo = new Mock<IItemRepo>();
         var mockStorageRepo = new Mock<IStorageService>();
         var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new("BusinessId", "TestBusinessId") }));
-        var itemService = new ItemService(mockItemRepo.Object, new UtilService(), mockStorageRepo.Object);
+        var mockNotificationService = new Mock<INotificationService>();
+        var itemService = new ItemService(mockItemRepo.Object, new UtilService(), mockStorageRepo.Object, mockNotificationService.Object);
         var itemController = new ItemController(itemService) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
