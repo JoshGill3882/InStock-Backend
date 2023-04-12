@@ -16,14 +16,13 @@ public class UserController : ControllerBase {
     
     [HttpGet]
     [Route("/users/{email}")]
-    public async Task<IActionResult> GetBusiness([FromRoute] string email) {
+    public async Task<IActionResult> GetUser([FromRoute] string email) {
         
-        // Get our current UserId and BusinessId to validate and pass to the business service
+        // Get our current UserId to validate and pass to the user service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
-        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
         
         // Check there are no issues with the userId
-        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+        if (string.IsNullOrEmpty(currentUserId)) {
             return Unauthorized();
         }
         
