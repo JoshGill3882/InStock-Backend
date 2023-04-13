@@ -77,12 +77,10 @@ using var s3Client = new AmazonS3Client(
 builder.Services.AddSingleton<IAmazonS3>(s3Client);
 
 // Firebase setup
-builder.Services.AddSingleton(
-    FirebaseApp.Create(
-        new AppOptions() { 
-            Credential = GoogleCredential.FromFile(builder.Configuration["FIREBASE_SECRET_KEY"]) 
-        }
-    )
+FirebaseApp.Create(
+    new AppOptions() {
+        Credential = GoogleCredential.FromFile(builder.Configuration["FIREBASE_SECRET_KEY"])
+    }
 );
 
 // Security Services and Repositories
