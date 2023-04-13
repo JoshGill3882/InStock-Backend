@@ -95,7 +95,7 @@ public class ItemService : IItemService {
             errorNotes.AddError(ListOfItemDto.ERROR_UNAUTHORISED);
             return new ListOfItemDto(errorNotes);
         }
-
+        
         List<ItemDto> responseItems = await _itemRepo.GetAllItems(businessId);
         
         return new ListOfItemDto(responseItems);

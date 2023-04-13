@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
@@ -11,9 +12,11 @@ namespace instock_server_application.Businesses.Controllers;
 [Route("/businesses/{businessId}")]
 public class ItemController : ControllerBase {
     private readonly IItemService _itemService;
+    private readonly IStorageService _storageService;
     
-    public ItemController(IItemService itemService) {
+    public ItemController(IItemService itemService, IStorageService storageService) {
         _itemService = itemService;
+        _storageService = storageService;
     }
 
     /// <summary>
@@ -49,7 +52,22 @@ public class ItemController : ControllerBase {
             return NotFound();
         }
         
-        return Ok(listOfItemDto.ToDictionaryForHttpResponse());
+        // Manually building the response object so we can keep deprecated fields in
+        List<Dictionary<string, object>> returnListOfItems = new List<Dictionary<string, object>>();
+        foreach (ItemDto item in listOfItemDto.ListOfItems) {
+            returnListOfItems.Add(
+                new Dictionary<string, object>(){
+                    { nameof(ItemDto.SKU), item.SKU },
+                    { nameof(ItemDto.BusinessId), item.BusinessId },
+                    { nameof(ItemDto.Category), item.Category },
+                    { nameof(ItemDto.Name), item.Name },
+                    { "Stock", item.Stock.ToString() },
+                    { nameof(ItemDto.TotalStock), item.TotalStock.ToString() },
+                    { nameof(ItemDto.TotalOrders), item.TotalOrders.ToString() },
+                    { "ImageUrl", item.ImageFilename != null ? _storageService.GetFilePresignedUrl("instock-item-images", item.ImageFilename ?? "").Message : "" },
+                });
+        }
+        return Ok(returnListOfItems);
     }
 
     /// <summary>

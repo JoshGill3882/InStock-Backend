@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FluentAssertions;
+using instock_server_application.AwsS3.Dtos;
 using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Controllers;
 using instock_server_application.Businesses.Controllers.forms;
@@ -34,8 +35,10 @@ public class ItemControllerTest {
         
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(expected)!);
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, mockIStorageService.Object);
         controller.ControllerContext = new ControllerContext() {
              HttpContext = new DefaultHttpContext() { User = mockUser }
          };
@@ -66,8 +69,10 @@ public class ItemControllerTest {
                 }, "mockUserAuth"));
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), incorrectBusinessId)).Returns(Task.FromResult(expected)!);
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, mockIStorageService.Object);
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };
@@ -97,8 +102,10 @@ public class ItemControllerTest {
         var mockItemService = new Mock<IItemService>();
         ListOfItemDto mockReturn = new ListOfItemDto(new List<ItemDto>());
         mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(mockReturn));
-
-        var controller = new ItemController(mockItemService.Object);
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
+        
+        var controller = new ItemController(mockItemService.Object, mockIStorageService.Object);
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };
@@ -146,8 +153,10 @@ public class ItemControllerTest {
         
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.CreateItem(It.IsAny<CreateItemRequestDto>())).Returns(Task.FromResult(expected)!);
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, mockIStorageService.Object);
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };
@@ -176,7 +185,10 @@ public class ItemControllerTest {
         var utilService = new UtilService();
         var mockStorageRepo = new Mock<IStorageService>();
         var itemService = new ItemService(mockItemRepo.Object, utilService, mockStorageRepo.Object);
-        var itemController = new ItemController(itemService) {
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
+        
+        var itemController = new ItemController(itemService, mockIStorageService.Object) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
             }
@@ -200,7 +212,10 @@ public class ItemControllerTest {
         var mockStorageRepo = new Mock<IStorageService>();
         var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new("BusinessId", "TestBusinessId") }));
         var itemService = new ItemService(mockItemRepo.Object, new UtilService(), mockStorageRepo.Object);
-        var itemController = new ItemController(itemService) {
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
+
+        var itemController = new ItemController(itemService, mockIStorageService.Object) {
             ControllerContext = new ControllerContext {
                 HttpContext = new DefaultHttpContext { User = mockClaimsPrincipal }
             }
@@ -230,8 +245,10 @@ public class ItemControllerTest {
         
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetCategories(It.IsAny<ValidateBusinessIdDto>())).Returns(Task.FromResult(expected)!);
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, mockIStorageService.Object);
         controller.ControllerContext = new ControllerContext() {
              HttpContext = new DefaultHttpContext() { User = mockUser }
          };
@@ -262,8 +279,10 @@ public class ItemControllerTest {
                 }, "mockUserAuth"));
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetCategories(It.IsAny<ValidateBusinessIdDto>())).Returns(Task.FromResult(expected)!);
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
         
-        var controller = new ItemController(mockItemService.Object);
+        var controller = new ItemController(mockItemService.Object, mockIStorageService.Object);
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };
@@ -292,8 +311,10 @@ public class ItemControllerTest {
         
         var mockItemService = new Mock<IItemService>();
         mockItemService.Setup(service => service.GetCategories(It.IsAny<ValidateBusinessIdDto>())).Returns(Task.FromResult(ItemsList())!);
-    
-        var controller = new ItemController(mockItemService.Object);
+        var mockIStorageService = new Mock<IStorageService>();
+        mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
+        
+        var controller = new ItemController(mockItemService.Object, mockIStorageService.Object);
         controller.ControllerContext = new ControllerContext() {
             HttpContext = new DefaultHttpContext() { User = mockUser }
         };

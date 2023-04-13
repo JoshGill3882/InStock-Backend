@@ -21,12 +21,14 @@ public class ListOfItemDto : DataTransferObjectSuperType {
         foreach (ItemDto item in ListOfItems) {
             listOfItems.Add(
                 new Dictionary<string, object>(){
-                    { "SKU", item.SKU },
-                    { "BusinessId", item.BusinessId },
-                    { "Category", item.Category },
-                    { "Name", item.Name },
+                    { nameof(ItemDto.SKU), item.SKU },
+                    { nameof(ItemDto.BusinessId), item.BusinessId },
+                    { nameof(ItemDto.Category), item.Category },
+                    { nameof(ItemDto.Name), item.Name },
                     { "Stock", item.Stock.ToString() },
-                    { "TotalStock", item.TotalStock.ToString() }
+                    { nameof(ItemDto.TotalStock), item.TotalStock.ToString() },
+                    { nameof(ItemDto.TotalOrders), item.TotalOrders.ToString() },
+                    { nameof(ItemDto.ImageFilename), item.ImageFilename ?? "" },
                 });
         }
 
