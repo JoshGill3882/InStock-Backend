@@ -2,9 +2,9 @@
 
 public class ExternalShopLoginDto {
     
-    public string ShopUsername { get; set; }
+    public string ShopUsername { get; }
     
-    public string ShopUserPassword { get; set; }
+    public string ShopUserPassword { get; }
 
     public ExternalShopLoginDto(string shopUsername, string shopUserPassword) {
         ShopUsername = shopUsername;
