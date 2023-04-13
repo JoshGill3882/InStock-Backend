@@ -15,11 +15,12 @@ public class ItemOrderService : IItemOrderService {
     private void ValidateAmountChangeBy(ErrorNotification errorNotes, int amountOrdered, ItemDto existingItem) {
         const string errorKey = "amountOrdered";
 
-        if (amountOrdered <= 0) {
-            errorNotes.AddError(errorKey, "The amount ordered must be larger than 0.");
+        if (existingItem.TotalOrders + amountOrdered < 0) {
+            errorNotes.AddError(errorKey, "You can not have negative orders.");
         }
 
-        long newStockLevel = (long) existingItem.TotalOrders + (long) amountOrdered; 
+        long newStockLevel = (long) existingItem.TotalOrders - (long) amountOrdered;
+
         if (newStockLevel > int.MaxValue) {
             errorNotes.AddError(errorKey, $"The stock level cannot be more than {int.MaxValue}.");
         }
