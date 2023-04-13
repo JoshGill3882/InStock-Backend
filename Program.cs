@@ -89,6 +89,7 @@ var firebaseParams = $@"{{
     ""auth_provider_x509_cert_url"": ""{builder.Configuration["FIREBASE_SECRET_KEY:auth_provider_x509_cert_url"]}"",
     ""client_x509_cert_url"": ""{builder.Configuration["FIREBASE_SECRET_KEY:client_x509_cert_url"]}"",
 }}";
+
 FirebaseApp.Create(
     new AppOptions() {
         Credential = GoogleCredential.FromJson(firebaseParams)
