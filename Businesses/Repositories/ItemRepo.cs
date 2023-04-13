@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
@@ -28,8 +27,6 @@ public class ItemRepo : IItemRepo{
         List<ItemDto> listOfItemDto = new List<ItemDto>();
         
         foreach (Item itemModel in listOfItemModel) {
-            var availableStock = itemModel.GetTotalStock() - itemModel.GetTotalOrders();
-
             listOfItemDto.Add(
                 new ItemDto(
                     sku: itemModel.SKU,
