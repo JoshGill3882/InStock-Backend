@@ -103,6 +103,8 @@ builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IItemStockService, ItemStockService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
+
 
 // Util Services & Repositories
 builder.Services.AddScoped<IUtilService, UtilService>();
