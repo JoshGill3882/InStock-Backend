@@ -1,3 +1,4 @@
+using System.Security;
 using System.Security.Claims;
 using FluentAssertions;
 using instock_server_application.AwsS3.Dtos;
@@ -8,6 +9,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Shared.Dto;
 using instock_server_application.Util.Dto;
 using instock_server_application.Util.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -31,10 +33,13 @@ public class ItemControllerTest {
                     new Claim("Id", userId),
                     new Claim("BusinessId", businessId)
                 }, "mockUserAuth"));
-        ListOfItemDto expected = new ListOfItemDto(new List<ItemDto>());
+        
+        ListOfItemDto itemServiceResponse = new ListOfItemDto(new List<ItemDto>() {
+            new ItemDto("sku", "business_id", "category", "name", 10, 5, 5, "")
+        });
         
         var mockItemService = new Mock<IItemService>();
-        mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(expected)!);
+        mockItemService.Setup(service => service.GetItems(It.IsAny<UserDto>(), businessId)).Returns(Task.FromResult(itemServiceResponse)!);
         var mockIStorageService = new Mock<IStorageService>();
         mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
         
@@ -51,7 +56,21 @@ public class ItemControllerTest {
         var okResult = result as OkObjectResult;
         
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().Be(expected);
+
+        var expected = new List<Dictionary<string, object>> {
+            new() {
+                { "SKU", "sku" },
+                { "BusinessId", "business_id" },
+                { "Category", "category" },
+                { "Name", "name" },
+                { "Stock", 10 },
+                { "TotalStock", 10 },
+                { "TotalOrders", 5 },
+                { "AvailableStock", 5 },
+                { "ImageUrl", "" }
+            }
+        };
+        Assert.Equal(expected.ToString(), okResult.Value.ToString());
     }
     
     [Fact]
