@@ -64,6 +64,7 @@ public class ItemController : ControllerBase {
                     { "Stock", item.Stock.ToString() },
                     { nameof(ItemDto.TotalStock), item.TotalStock.ToString() },
                     { nameof(ItemDto.TotalOrders), item.TotalOrders.ToString() },
+                    { nameof(ItemDto.AvailableStock), item.AvailableStock.ToString() ?? "" },
                     { "ImageUrl", item.ImageFilename != null ? _storageService.GetFilePresignedUrl("instock-item-images", item.ImageFilename ?? "").Message : "" },
                 });
         }

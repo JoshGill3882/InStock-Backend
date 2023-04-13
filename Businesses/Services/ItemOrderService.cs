@@ -15,13 +15,17 @@ public class ItemOrderService : IItemOrderService {
     private void ValidateAmountChangeBy(ErrorNotification errorNotes, int amountOrdered, ItemDto existingItem) {
         const string errorKey = "amountOrdered";
 
-        // long newStockLevel = (long) changeAmountBy + (long) existingItem.Stock;
-        // if (newStockLevel > int.MaxValue) {
-        //     errorNotes.AddError(errorKey, $"The stock level cannot be more than {int.MaxValue}.");
-        // }
-        // if (newStockLevel < int.MinValue) {
-        //     errorNotes.AddError(errorKey, $"The stock level cannot be less than {int.MinValue}.");
-        // }
+        if (amountOrdered <= 0) {
+            errorNotes.AddError(errorKey, "The amount ordered must be larger than 0.");
+        }
+
+        long newStockLevel = (long) existingItem.TotalOrders + (long) amountOrdered; 
+        if (newStockLevel > int.MaxValue) {
+            errorNotes.AddError(errorKey, $"The stock level cannot be more than {int.MaxValue}.");
+        }
+        if (newStockLevel < int.MinValue) {
+            errorNotes.AddError(errorKey, $"The stock level cannot be less than {int.MinValue}.");
+        }
     }
 
     public async Task<ItemOrderDto> CreateItemOrder(CreateItemOrderRequestDto itemOrderRequestDto) {
@@ -55,7 +59,7 @@ public class ItemOrderService : IItemOrderService {
             return new ItemOrderDto(errorNotes);
         }
         
-        // Validate the amount we're updating
+        // Validate the amount ordered
         ValidateAmountChangeBy(errorNotes, itemOrderRequestDto.AmountOrdered, existingItemDto);
 
         // If we have had any errors then return them
@@ -73,17 +77,17 @@ public class ItemOrderService : IItemOrderService {
         
         ItemOrderDto itemOrderDtoSaved = await _itemRepo.SaveItemOrder(storeItemOrderDto);
 
-        // Update the Item's details with new stock level after the order
-        int newStockLevel = existingItemDto.Stock - itemOrderDtoSaved.AmountOrdered;
+        // Update the Item's details with new Total Orders level after the order
+        int newTotalOrders = existingItemDto.TotalOrders + itemOrderDtoSaved.AmountOrdered;
 
         StoreItemDto updatedItemDto = new StoreItemDto(
             sku: existingItemDto.SKU,
             businessId: existingItemDto.BusinessId,
             category: existingItemDto.Category,
             name: existingItemDto.Name,
-            totalStock: newStockLevel,
-            totalOrders: existingItemDto.TotalOrders,
-            imageUrl: existingItemDto.ImageUrl);
+            totalStock: existingItemDto.TotalStock,
+            totalOrders: newTotalOrders,
+            imageFilename: existingItemDto.ImageFilename);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

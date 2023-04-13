@@ -28,6 +28,8 @@ public class ItemRepo : IItemRepo{
         List<ItemDto> listOfItemDto = new List<ItemDto>();
         
         foreach (Item itemModel in listOfItemModel) {
+            var availableStock = itemModel.GetTotalStock() - itemModel.GetTotalOrders();
+
             listOfItemDto.Add(
                 new ItemDto(
                     sku: itemModel.SKU,
@@ -178,26 +180,26 @@ public class ItemRepo : IItemRepo{
         
         // Save the new updated item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, 
-            itemToSaveDto.BusinessId,
-            itemToSaveDto.Category,
-            itemToSaveDto.Name,
-            itemToSaveDto.TotalStock, 
-            itemToSaveDto.TotalOrders,
-            itemToSaveDto.ImageFilename
+            sku: itemToSaveDto.SKU, 
+            businessId: itemToSaveDto.BusinessId,
+            category: itemToSaveDto.Category,
+            name: itemToSaveDto.Name,
+            totalStock: itemToSaveDto.TotalStock, 
+            totalOrders: itemToSaveDto.TotalOrders,
+            imageFilename: itemToSaveDto.ImageFilename
         );
         await _context.SaveAsync(itemModel);
         
         // Return the updated Items details
         ItemDto updatedItemDto = new ItemDto(
-            itemModel.SKU, 
-            itemModel.BusinessId, 
-            itemModel.Category,
-            itemModel.Name,
-            itemModel.GetTotalStock(),
-            itemModel.GetTotalOrders(),
-            itemModel.GetTotalStock()-itemModel.GetTotalOrders(),
-            itemModel.ImageFilename
+            sku: itemModel.SKU, 
+            businessId: itemModel.BusinessId, 
+            category: itemModel.Category,
+            name: itemModel.Name,
+            totalStock: itemModel.GetTotalStock(),
+            totalOrders: itemModel.GetTotalOrders(),
+            availableStock: itemModel.GetTotalStock()-itemModel.GetTotalOrders(),
+            imageFilename: itemModel.ImageFilename
         );
         
         return updatedItemDto;

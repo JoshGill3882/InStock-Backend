@@ -78,7 +78,7 @@ public class Item {
         Category = category;
         Name = name;
         _totalStock = totalStock;
-        _totalOrders = totalStock;
+        _totalOrders = totalOrders;
         ImageFilename = imageFilename;
     }
 
