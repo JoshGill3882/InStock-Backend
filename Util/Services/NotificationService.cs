@@ -14,14 +14,9 @@ public class NotificationService : INotificationService {
     }
 
     public void StockNotificationChecker(StoreItemDto itemDto) {
-        switch (itemDto.Stock) {
-            case 5:
-                SendNotification(CreateNotification("Low on Stock", itemDto), itemDto.BusinessId);
-                break;
-            case 0:
-                SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
-                break;
-        }
+        if (itemDto.Stock <= 5 && itemDto.Stock > 0)
+            SendNotification(CreateNotification("Low on Stock", itemDto), itemDto.BusinessId);
+        else if (itemDto.Stock == 0) SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
     }
 
     private void SendNotification(NotificationPatternDto notification, string businessId) {

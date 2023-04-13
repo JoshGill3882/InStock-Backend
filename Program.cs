@@ -77,9 +77,21 @@ using var s3Client = new AmazonS3Client(
 builder.Services.AddSingleton<IAmazonS3>(s3Client);
 
 // Firebase setup
+var firebaseParams = $@"{{
+    ""type"": ""{builder.Configuration["FIREBASE_SECRET_KEY:type"]}"",
+    ""project_id"": ""{builder.Configuration["FIREBASE_SECRET_KEY:project_id"]}"",
+    ""private_key_id"": ""{builder.Configuration["FIREBASE_SECRET_KEY:private_key_id"]}"",
+    ""private_key"": ""{builder.Configuration["FIREBASE_SECRET_KEY:private_key"]}"",
+    ""client_email"": ""{builder.Configuration["FIREBASE_SECRET_KEY:client_email"]}"",
+    ""client_id"": ""{builder.Configuration["FIREBASE_SECRET_KEY:client_id"]}"",
+    ""auth_uri"": ""{builder.Configuration["FIREBASE_SECRET_KEY:auth_uri"]}"",
+    ""token_uri"": ""{builder.Configuration["FIREBASE_SECRET_KEY:token_uri"]}"",
+    ""auth_provider_x509_cert_url"": ""{builder.Configuration["FIREBASE_SECRET_KEY:auth_provider_x509_cert_url"]}"",
+    ""client_x509_cert_url"": ""{builder.Configuration["FIREBASE_SECRET_KEY:client_x509_cert_url"]}"",
+}}";
 FirebaseApp.Create(
     new AppOptions() {
-        Credential = GoogleCredential.FromFile(builder.Configuration["FIREBASE_SECRET_KEY"])
+        Credential = GoogleCredential.FromJson(firebaseParams)
     }
 );
 
