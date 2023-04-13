@@ -87,4 +87,64 @@ public class BusinessRepository : IBusinessRepository {
 
         return !string.IsNullOrEmpty(existingUser.BusinessId);
     }
+    
+    public async Task<StoreConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto) {
+        // Validating details
+        if (string.IsNullOrEmpty(storeConnectionDto.BusinessId)) {
+            throw new NullReferenceException("The connection business ID cannot be null.");
+        }
+        
+        // Getting the existing connections
+
+        
+        
+        ConnectionModel connection = new ConnectionModel(
+        storeConnectionDto.BusinessId
+            ); 
+        
+
+        ConnectionModel existingConnections =
+        await _context.LoadAsync<ConnectionModel>(connection.BusinessId);
+
+        // Adding to the existing connections
+        
+        // for connections in storeConnectionDto.Connections
+        // addConnectionDetails to existing connections  
+        foreach(ConnectionDto connectionObject in storeConnectionDto.Connections){
+            existingConnections.AddConnectionDetails(
+                shopName: connectionObject.PlatformName,
+                authenticationToken: connectionObject.AuthenticationToken,
+                shopUsername: connectionObject.ShopUsername
+                );
+        }
+        
+
+        // Saving all of the updates
+        await _context.SaveAsync(existingConnections);
+
+        
+        
+        // Return existing connections as store dto
+        StoreConnectionDto allConnections = existingConnections.ToStoreConnectionDto();
+        
+
+        // Returning the new object that was saved
+        return allConnections;
+    }
+    
+    public async Task<StoreConnectionDto> GetConnections(string businessId)
+    {
+        // Validating details
+        if (string.IsNullOrEmpty(businessId)) 
+        {
+            throw new NullReferenceException("The business ID cannot be null.");
+        }
+    
+        // Getting the existing connections
+        ConnectionModel connection = new ConnectionModel(businessId);
+        ConnectionModel existingConnections = await _context.LoadAsync<ConnectionModel>(connection.BusinessId);
+        StoreConnectionDto allConnections = existingConnections.ToStoreConnectionDto();
+        // Returning the DTOs
+        return allConnections;
+    }
 }
