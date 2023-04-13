@@ -5,4 +5,5 @@ namespace instock_server_application.AwsS3.Repositories.Interfaces;
 
 public interface IStorageRepository {
     public Task<S3ResponseDto> UploadFileAsync(S3Model s3Model);
+    public S3ResponseDto GetFilePresignedUrl(string bucketName, string fileName);
 }

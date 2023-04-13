@@ -11,12 +11,12 @@ public class ItemDto : DataTransferObjectSuperType {
     public int TotalStock { get; }
     public int? AvailableStock { get; }
     public int TotalOrders { get; }
-    public string? ImageUrl { get; } 
+    public string? ImageFilename { get; } 
     
     public ItemDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
 
-    public ItemDto(string sku, string businessId, string category, string name, int totalStock, int totalOrders, int availableStock, string? imageUrl)
+    public ItemDto(string sku, string businessId, string category, string name, int totalStock, int totalOrders, int availableStock, string? imageFilename)
     {
         SKU = sku;
         BusinessId = businessId;
@@ -26,6 +26,6 @@ public class ItemDto : DataTransferObjectSuperType {
         TotalStock = totalStock;
         TotalOrders = totalOrders;
         AvailableStock = availableStock;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
     }
 }

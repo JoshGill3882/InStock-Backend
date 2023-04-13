@@ -15,7 +15,8 @@ public static class UserMock {
             "StandardUser",
             "2a36f726-b3a2-11ed-afa1-0242ac120002",
             "",
-            ""
+            "",
+            "https://image.png"
         );
     }
 }

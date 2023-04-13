@@ -93,15 +93,15 @@ public class ItemStockService : IItemStockService {
 
         // Update the Item's details with new stock level after the update
         int newStockLevel = existingItemDto.Stock + stockUpdateDtoSaved.ChangeStockAmountBy;
-        
+
         StoreItemDto updatedItemDto = new StoreItemDto(
-            sku: existingItemDto.SKU, 
-            businessId: existingItemDto.BusinessId, 
+            sku: existingItemDto.SKU,
+            businessId: existingItemDto.BusinessId,
             category: existingItemDto.Category,
-            name: existingItemDto.Name, 
+            name: existingItemDto.Name,
             totalStock: newStockLevel,
             totalOrders: existingItemDto.TotalOrders,
-            imageUrl: existingItemDto.ImageUrl);
+            imageFilename: existingItemDto.ImageFilename);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

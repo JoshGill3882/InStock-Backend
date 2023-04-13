@@ -8,15 +8,15 @@ public class StoreItemDto
     public string Name { get; }
     public int TotalStock { get; }
     public int TotalOrders  { get; }
-    public string? ImageUrl { get; }
+    public string? ImageFilename { get; }
 
-    public StoreItemDto(string sku, string businessId, string category, string name, int totalStock, int totalOrders, string? imageUrl) {
+    public StoreItemDto(string sku, string businessId, string category, string name, int totalStock, int totalOrders, string? imageFilename) {
         SKU = sku;
         BusinessId = businessId;
         Category = category;
         Name = name;
         TotalStock = totalStock;
         TotalOrders = totalOrders;
-        ImageUrl = imageUrl;
+        ImageFilename = imageFilename;
     }
 }

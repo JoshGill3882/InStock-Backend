@@ -37,7 +37,7 @@ public class ItemRepo : IItemRepo{
                     totalStock: itemModel.GetTotalStock(),
                     totalOrders: itemModel.GetTotalOrders(),
                     availableStock: itemModel.GetTotalStock() - itemModel.GetTotalOrders(),
-                    imageUrl: itemModel.ImageUrl));
+                    imageFilename: itemModel.ImageFilename));
         }
         
         return listOfItemDto;
@@ -95,7 +95,7 @@ public class ItemRepo : IItemRepo{
             itemToSaveDto.Name,
             itemToSaveDto.TotalStock,
             itemToSaveDto.TotalOrders,
-            itemToSaveDto.ImageUrl
+            itemToSaveDto.ImageFilename
         );
         await _context.SaveAsync(itemModel);
 
@@ -107,7 +107,7 @@ public class ItemRepo : IItemRepo{
             itemModel.GetTotalStock(),
             itemModel.GetTotalOrders(),
             itemModel.GetTotalStock() - itemModel.GetTotalOrders(),
-            itemModel.ImageUrl
+            itemModel.ImageFilename
         );
         
         return createdItemDto;
@@ -184,7 +184,7 @@ public class ItemRepo : IItemRepo{
             itemToSaveDto.Name,
             itemToSaveDto.TotalStock, 
             itemToSaveDto.TotalOrders,
-            itemToSaveDto.ImageUrl
+            itemToSaveDto.ImageFilename
         );
         await _context.SaveAsync(itemModel);
         
@@ -197,7 +197,8 @@ public class ItemRepo : IItemRepo{
             itemModel.GetTotalStock(),
             itemModel.GetTotalOrders(),
             itemModel.GetTotalStock()-itemModel.GetTotalOrders(),
-            itemModel.ImageUrl);
+            itemModel.ImageFilename
+        );
         
         return updatedItemDto;
     }
@@ -246,7 +247,7 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetTotalStock(), item.GetTotalOrders(), item.GetTotalStock() - item.GetTotalOrders(), item.ImageUrl);
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetTotalStock(), item.GetTotalOrders(), item.GetTotalStock() - item.GetTotalOrders(), item.ImageFilename);
         return itemDto;
     }
     

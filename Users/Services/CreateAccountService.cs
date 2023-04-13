@@ -1,10 +1,13 @@
 ﻿using System.Text.RegularExpressions;
+using instock_server_application.AwsS3.Dtos;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Security.Services.Interfaces;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Users.Dtos;
 using instock_server_application.Users.Models;
 using instock_server_application.Users.Repositories.Interfaces;
 using instock_server_application.Users.Services.Interfaces;
+using instock_server_application.Util.Dto;
 using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Users.Services; 
@@ -15,13 +18,15 @@ public class CreateAccountService : ICreateAccountService {
     private readonly IPasswordService _passwordService;
     private readonly IAccessTokenService _accessTokenService;
     private readonly IRefreshTokenService _refreshTokenService;
+    private readonly IStorageService _storageService;
 
-    public CreateAccountService(IUserRepo userRepo, IUtilService utilService, IPasswordService passwordService, IAccessTokenService accessTokenService, IRefreshTokenService refreshTokenService) {
+    public CreateAccountService(IUserRepo userRepo, IUtilService utilService, IPasswordService passwordService, IAccessTokenService accessTokenService, IRefreshTokenService refreshTokenService, IStorageService storageService) {
         _userRepo = userRepo;
         _utilService = utilService;
         _passwordService = passwordService;
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
+        _storageService = storageService;
     }
 
     /// <summary>
@@ -30,12 +35,24 @@ public class CreateAccountService : ICreateAccountService {
     /// <param name="newAccountDto"> Passed in values from the controller </param>
     /// <returns> JWT or error message </returns>
     public async Task<string> CreateAccount(NewAccountDto newAccountDto) {
+        ErrorNotification errorNotes = new ErrorNotification();
         // Validations
         if (!ValidateFirstName(newAccountDto.FirstName)) { return "First Name not valid"; }
         if (!ValidateLastName(newAccountDto.LastName)) { return "Last Name not valid"; }
         if (!ValidateEmail(newAccountDto.Email)) { return "Email not valid"; }
         if (!ValidatePassword(newAccountDto.Password)) { return "Password not valid"; }
-        if (DuplicateAccount(newAccountDto.Email)) { return "Duplicate account"; }
+        if (DuplicateAccount(newAccountDto.Email)) { return "This account already exists"; }
+        if (newAccountDto.ImageFile != null) {
+            _utilService.ValidateImageFileContentType(errorNotes, newAccountDto.ImageFile);
+        }
+        
+        S3ResponseDto storageResponse = new S3ResponseDto();
+        
+        if (newAccountDto.ImageFile != null) {
+            storageResponse = await _storageService.UploadFileAsync(
+                new UploadFileRequestDto(newAccountDto.Email, "instock-profile-pictures", newAccountDto.ImageFile)
+            );
+        }
 
         UserDto newUser = new UserDto(
             _utilService.GenerateUUID(),
@@ -48,7 +65,8 @@ public class CreateAccountService : ICreateAccountService {
             "Standard User",
             "",
             _refreshTokenService.GenerateRandString(),
-            _refreshTokenService.GenerateExpiry()
+            _refreshTokenService.GenerateExpiry(),
+            storageResponse.Message
         );
         
         _userRepo.Save(newUser);

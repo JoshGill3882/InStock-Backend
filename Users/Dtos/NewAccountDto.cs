@@ -5,11 +5,13 @@ public class NewAccountDto {
     public string LastName { get; }
     public string Email { get; }
     public string Password { get; }
+    public IFormFile? ImageFile { get; }
 
-    public NewAccountDto(string firstName, string lastName, string email, string password) {
+    public NewAccountDto(string firstName, string lastName, string email, string password, IFormFile? imageFile) {
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         Password = password;
+        ImageFile = imageFile;
     }
 }
