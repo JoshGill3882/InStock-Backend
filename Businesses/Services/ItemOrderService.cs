@@ -2,14 +2,17 @@
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
+using instock_server_application.Util.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class ItemOrderService : IItemOrderService {
     private readonly IItemRepo _itemRepo;
+    private readonly INotificationService _notificationService;
 
-    public ItemOrderService(IItemRepo itemRepo) {
+    public ItemOrderService(IItemRepo itemRepo, INotificationService notificationService) {
         _itemRepo = itemRepo;
+        _notificationService = notificationService;
     }
 
     private void ValidateAmountChangeBy(ErrorNotification errorNotes, int amountOrdered, ItemDto existingItem) {
@@ -91,6 +94,8 @@ public class ItemOrderService : IItemOrderService {
             imageFilename: existingItemDto.ImageFilename);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
+        
+        _notificationService.StockNotificationChecker(updatedItemDto);
         
         // Returning results
         // Return newly created Item Update

@@ -20,9 +20,10 @@ public class NotificationService : INotificationService {
     }
 
     public void StockNotificationChecker(StoreItemDto itemDto) {
-        if (itemDto.TotalStock <= 5 && itemDto.TotalStock > 0)
+        int availableStock = itemDto.TotalStock - itemDto.TotalOrders;
+        if (availableStock <= 5 && availableStock > 0)
             SendNotification(CreateNotification("Low on Stock", itemDto), itemDto.BusinessId);
-        else if (itemDto.TotalStock == 0) SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
+        else if (availableStock == 0) SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
     }
 
     private void SendNotification(NotificationPatternDto notification, string businessId) {
