@@ -22,7 +22,6 @@ public class LoginController : ControllerBase {
     [Route("/login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] Login login) {
-        Console.WriteLine(login);
         var res = await _loginService.Login(login.Email, login.Password, login.DeviceToken);
         if (res == null) {
             return NotFound("Invalid Credentials");

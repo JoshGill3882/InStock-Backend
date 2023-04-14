@@ -13,12 +13,12 @@ public class BusinessDto : DataTransferObjectSuperType {
     public BusinessDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
 
-    public BusinessDto(string businessId, string businessName, string businessOwnerId, string businessDescription, string? imageUrl, List<string> deviceKeys) {
+    public BusinessDto(string businessId, string businessName, string businessOwnerId, string businessDescription, string? imageUrl, List<string>? deviceKeys) {
         BusinessId = businessId;
         BusinessName = businessName;
         BusinessOwnerId = businessOwnerId;
         BusinessDescription = businessDescription;
         ImageUrl = imageUrl;
-        DeviceKeys = deviceKeys;
+        DeviceKeys = deviceKeys ?? new List<string>();
     }
 }

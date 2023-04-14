@@ -35,9 +35,9 @@ public class LoginService : ILoginService {
             string accessToken = _accessTokenService.CreateToken(userDetails.UserId, userDetails.Email, userDetails.BusinessId);
 
             BusinessDto businessDto = _businessRepository.GetBusiness(new ValidateBusinessIdDto(userDetails.UserId, userDetails.BusinessId)).Result!;
-            if (businessDto.DeviceKeys != null && !businessDto.DeviceKeys.Contains(deviceToken)) {
+            if (!businessDto.DeviceKeys.Contains(deviceToken)) {
                 businessDto.DeviceKeys.Add(deviceToken);
-                _businessRepository.UpdateBusinessDeviceTokens(new BusinessDeviceKeysUpdateModel(userDetails.BusinessId, businessDto.DeviceKeys));
+                await _businessRepository.UpdateBusinessDeviceTokens(new BusinessDeviceKeysUpdateModel(userDetails.BusinessId, businessDto.DeviceKeys));
             }
             
             return accessToken;
