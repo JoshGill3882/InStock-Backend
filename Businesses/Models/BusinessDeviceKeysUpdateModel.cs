@@ -2,6 +2,7 @@
 
 namespace instock_server_application.Businesses.Models; 
 
+[DynamoDBTable("Businesses")]
 public class BusinessDeviceKeysUpdateModel {
     [DynamoDBHashKey]
     [DynamoDBProperty("BusinessId")]
@@ -13,5 +14,8 @@ public class BusinessDeviceKeysUpdateModel {
     public BusinessDeviceKeysUpdateModel(string businessId, List<string> deviceKeys) {
         BusinessId = businessId;
         DeviceKeys = deviceKeys;
+    }
+
+    public BusinessDeviceKeysUpdateModel() {
     }
 }
