@@ -13,10 +13,13 @@ public class NotificationService : INotificationService {
         _businessRepository = businessRepository;
     }
 
+    public NotificationService() {
+    }
+
     public void StockNotificationChecker(StoreItemDto itemDto) {
-        if (itemDto.Stock <= 5 && itemDto.Stock > 0)
+        if (itemDto.TotalStock <= 5 && itemDto.TotalStock > 0)
             SendNotification(CreateNotification("Low on Stock", itemDto), itemDto.BusinessId);
-        else if (itemDto.Stock == 0) SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
+        else if (itemDto.TotalStock == 0) SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
     }
 
     private void SendNotification(NotificationPatternDto notification, string businessId) {
@@ -44,7 +47,7 @@ public class NotificationService : INotificationService {
                 { "BusinessId", itemDto.BusinessId },
                 { "Category", itemDto.Category },
                 { "Name", itemDto.Name },
-                { "Stock", itemDto.Stock.ToString() }
+                { "Stock", itemDto.TotalStock.ToString() }
             }
         );
     }

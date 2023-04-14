@@ -1,6 +1,5 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
@@ -15,17 +14,69 @@ public class ItemRepo : IItemRepo{
         _client = client;
         _context = context;
     }
-    public async Task<List<Dictionary<string, AttributeValue>>> GetAllItems(string businessId) {
-        var request = new QueryRequest {
-            TableName = Item.TableName,
-            IndexName = "BusinessId",
-            KeyConditionExpression = "BusinessId = :Id",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Id", new AttributeValue(businessId)}
+    
+    public async Task<List<ItemDto>> GetAllItems(string businessId) {
+        
+        // Get List of items
+        List<Item> listOfItemModel = await _context.ScanAsync<Item>(
+            new [] {
+                Item.ByBusinessId(businessId)
+            }).GetRemainingAsync();
+
+        // Convert list of items
+        List<ItemDto> listOfItemDto = new List<ItemDto>();
+        
+        foreach (Item itemModel in listOfItemModel) {
+            listOfItemDto.Add(
+                new ItemDto(
+                    sku: itemModel.SKU,
+                    businessId: itemModel.BusinessId,
+                    category: itemModel.Category,
+                    name: itemModel.Name,
+                    totalStock: itemModel.GetTotalStock(),
+                    totalOrders: itemModel.GetTotalOrders(),
+                    availableStock: itemModel.GetTotalStock() - itemModel.GetTotalOrders(),
+                    imageFilename: itemModel.ImageFilename));
+        }
+        
+        return listOfItemDto;
+    }    
+    
+    public async Task<List<StatItemDto>> GetAllItemsStatsDetails(string businessId) {
+        
+        // Get List of items
+        List<ItemStatsDetailsModel> listOfItemModel = await _context.ScanAsync<ItemStatsDetailsModel>(
+            new [] {
+                ItemStatsDetailsModel.ByBusinessId(businessId)
+            }).GetRemainingAsync();
+
+        // Convert list of items
+        List<StatItemDto> listOfStatItemDto = new List<StatItemDto>();
+        
+        foreach (ItemStatsDetailsModel itemModel in listOfItemModel) {
+
+            List<StatStockDto> listOfStatStockDtos = new List<StatStockDto>();
+            
+            if (itemModel.StockUpdates != null) {
+                foreach (ItemStockUpdateModel.StockUpdateObject stockObject in itemModel.StockUpdates) {
+                    StatStockDto statStockDto = new StatStockDto(stockObject.AmountChanged, stockObject.ReasonForChange,
+                        stockObject.DateTimeAdded.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"));
+                    listOfStatStockDtos.Add(statStockDto);
+                }
             }
-        };
-        var response = await _client.QueryAsync(request);
-        return response.Items;
+
+            // Move this within the above if statement
+            listOfStatItemDto.Add(
+                new StatItemDto(
+                    sku: itemModel.SKU,
+                    businessId: itemModel.BusinessId,
+                    category: itemModel.Category,
+                    name: itemModel.Name,
+                    stock: itemModel.TotalStock,
+                    stockUpdates: listOfStatStockDtos));
+        }
+        
+        return listOfStatItemDto;
     }
 
     public async Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto) {
@@ -41,7 +92,8 @@ public class ItemRepo : IItemRepo{
             itemToSaveDto.BusinessId, 
             itemToSaveDto.Category,
             itemToSaveDto.Name,
-            itemToSaveDto.Stock,
+            itemToSaveDto.TotalStock,
+            itemToSaveDto.TotalOrders,
             itemToSaveDto.ImageFilename
         );
         await _context.SaveAsync(itemModel);
@@ -51,63 +103,31 @@ public class ItemRepo : IItemRepo{
             itemModel.BusinessId, 
             itemModel.Category,
             itemModel.Name,
-            itemModel.GetStock(),
+            itemModel.GetTotalStock(),
+            itemModel.GetTotalOrders(),
+            itemModel.GetTotalStock() - itemModel.GetTotalOrders(),
             itemModel.ImageFilename
         );
         
         return createdItemDto;
     }
     
-    public async Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto)
-    {
-        var duplicateName = false;
-        var request = new ScanRequest
-        {
-            TableName = Item.TableName,
-            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
-                {":Id", new AttributeValue(createItemRequestDto.BusinessId)},
-                {":name", new AttributeValue(createItemRequestDto.Name)}
-            },
-            // "Name" is protected in DynamoDB so Expression Attribute Name is required
-            ExpressionAttributeNames = new Dictionary<string,string> {
-                {"#n", "Name"},
-            },
-
-            FilterExpression = "BusinessId = :Id and #n = :name",
-        };
+    public async Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto) {
+        var response = await _context.ScanAsync<Item>(
+            new[] {
+                Item.ByBusinessName(createItemRequestDto.Name)
+            }).GetRemainingAsync();
         
-        var response = await _client.ScanAsync(request);
-        if (response.Items.Count > 0)
-        {
-            duplicateName = true;
-        }
-        return duplicateName;
+        return response.Count > 0;
     }
     
-    public async Task<bool> IsSKUInUse(string SKU, string businessId)
-    {
-
-        var duplicateSKU = false;
-        
-        var request = new ScanRequest
-        {
-            TableName = Item.TableName,
-            ExpressionAttributeValues = new Dictionary<string,AttributeValue> {
-                {":Id", new AttributeValue(businessId)},
-                {":SKU", new AttributeValue(SKU)}
-            },
-
-            FilterExpression = "BusinessId = :Id and SKU = :SKU",
-        };
-        
-        var response = await _client.ScanAsync(request);
-        if (response.Items.Count > 0)
-        {
-            duplicateSKU = true;
-        }
-
-        return duplicateSKU;
-
+    public async Task<bool> IsSkuInUse(string sku) {
+        var response = await _context.ScanAsync<Item>(
+            new[] {
+                Item.ByBusinessSku(sku)
+            }).GetRemainingAsync();
+    
+        return response.Count > 0;
     }
 
     public void Delete(DeleteItemDto deleteItemDto) {
@@ -115,27 +135,20 @@ public class ItemRepo : IItemRepo{
         _context.DeleteAsync(item);
     }
     
-    public async Task<List<Dictionary<string, AttributeValue>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto) {
-        var request = new ScanRequest
-        {
-            TableName = Item.TableName,
-            ProjectionExpression = "Category",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":Id", new AttributeValue(validateBusinessIdDto.BusinessId)}
-            },
-            FilterExpression = "BusinessId = :Id",
-        };
-    
-        var response = await _client.ScanAsync(request);
-    
+    public async Task<List<Dictionary<string, string>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto) {
+        
+        List<Item> listOfItemModel = await _context.ScanAsync<Item>(
+            new [] {
+                Item.ByBusinessId(validateBusinessIdDto.BusinessId)
+            }).GetRemainingAsync();
+
         var categories = new HashSet<string>();
-        var categoryList = new List<Dictionary<string, AttributeValue>>();
-        foreach (var item in response.Items) {
-            var categoryValue = item["Category"];
-            var category = categoryValue.S;
+        var categoryList = new List<Dictionary<string, string>>();
+        foreach (var item in listOfItemModel) {
+            var category = item.Category;
             if (categories.Add(category)) {
-                categoryList.Add(new Dictionary<string, AttributeValue> {
-                    {"Category", categoryValue}
+                categoryList.Add(new Dictionary<string, string> {
+                    {"Category", category}
                 });
             }
         }
@@ -164,23 +177,26 @@ public class ItemRepo : IItemRepo{
         
         // Save the new updated item
         Item itemModel = new Item(
-            itemToSaveDto.SKU, 
-            itemToSaveDto.BusinessId,
-            itemToSaveDto.Category,
-            itemToSaveDto.Name,
-            itemToSaveDto.Stock,
-            itemToSaveDto.ImageFilename
+            sku: itemToSaveDto.SKU, 
+            businessId: itemToSaveDto.BusinessId,
+            category: itemToSaveDto.Category,
+            name: itemToSaveDto.Name,
+            totalStock: itemToSaveDto.TotalStock, 
+            totalOrders: itemToSaveDto.TotalOrders,
+            imageFilename: itemToSaveDto.ImageFilename
         );
         await _context.SaveAsync(itemModel);
         
         // Return the updated Items details
         ItemDto updatedItemDto = new ItemDto(
-            itemModel.SKU, 
-            itemModel.BusinessId, 
-            itemModel.Category,
-            itemModel.Name,
-            itemModel.GetStock(),
-            itemModel.ImageFilename
+            sku: itemModel.SKU, 
+            businessId: itemModel.BusinessId, 
+            category: itemModel.Category,
+            name: itemModel.Name,
+            totalStock: itemModel.GetTotalStock(),
+            totalOrders: itemModel.GetTotalOrders(),
+            availableStock: itemModel.GetTotalStock()-itemModel.GetTotalOrders(),
+            imageFilename: itemModel.ImageFilename
         );
         
         return updatedItemDto;
@@ -230,7 +246,33 @@ public class ItemRepo : IItemRepo{
         }
         
         // Returning the item details from the database
-        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetStock(), item.ImageFilename);
+        ItemDto itemDto = new ItemDto(item.SKU, item.BusinessId, item.Category, item.Name, item.GetTotalStock(), item.GetTotalOrders(), item.GetTotalStock() - item.GetTotalOrders(), item.ImageFilename);
         return itemDto;
+    }
+    
+    public async Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto) {
+        // Validating details
+        if (string.IsNullOrEmpty(storeItemOrderDto.BusinessId)) {
+            throw new NullReferenceException("The stock update business ID cannot be null.");
+        }
+        if (string.IsNullOrEmpty(storeItemOrderDto.ItemSku)) {
+            throw new NullReferenceException("The stock update item ID cannot be null.");
+        }
+
+        // Getting the existing items stock updates
+        ItemOrdersModel existingItemOrders =
+            await _context.LoadAsync<ItemOrdersModel>(storeItemOrderDto.ItemSku, storeItemOrderDto.BusinessId);
+
+        // Adding to the existing stock updates
+        existingItemOrders.AddItemOrderDetails(storeItemOrderDto.AmountOrdered, storeItemOrderDto.DateTimeAdded);
+
+        // Saving all of the updates
+        await _context.SaveAsync(existingItemOrders);
+
+        // Returning the new object that was saved
+        ItemOrderDto itemOrderDto =
+            new ItemOrderDto(storeItemOrderDto.AmountOrdered, storeItemOrderDto.DateTimeAdded);
+        
+        return itemOrderDto;
     }
 }

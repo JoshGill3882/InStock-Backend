@@ -12,4 +12,6 @@ public class DataTransferObjectSuperType {
     public DataTransferObjectSuperType(ErrorNotification errorNotes) {
         ErrorNotification = errorNotes;
     }
+    
+    
 }

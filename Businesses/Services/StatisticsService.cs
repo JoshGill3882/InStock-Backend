@@ -23,8 +23,9 @@ public class StatisticsService : IStatisticsService
     
     public async Task<AllStatsDto?> GetStats(UserDto userDto, string businessId) {
         if (_accessTokenService.CheckBusiness(userDto.UserBusinessId, businessId)) {
-            List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
-            List<StatItemDto> statItemDtos = new();
+            
+            List<StatItemDto> statItemDtos = await _itemRepo.GetAllItemsStatsDetails(businessId);
+            
             Dictionary<string, Dictionary<string, int>> categoryStats = new Dictionary<string, Dictionary<string, int>>();
             Dictionary<int, Dictionary<string, int>> salesByMonth = new Dictionary<int, Dictionary<string, int>>();
             Dictionary<int, Dictionary<string, int>> deductionsByMonth = new Dictionary<int, Dictionary<string, int>>();
@@ -46,52 +47,10 @@ public class StatisticsService : IStatisticsService
             StatsSuggestionsDto statsSuggestionsDto = new StatsSuggestionsDto(error);
 
             // User has access, but incorrect businessID or no items found
-            if (responseItems.Count == 0) {
+            if (statItemDtos.Count == 0) {
                 // Return an empty stats object
                 return new AllStatsDto(overallShopPerformance, categoryStats, salesByMonth, deductionsByMonth, statsSuggestionsDto);
             }
-
-            // Create list of item dtos to work with
-            foreach (Dictionary<string, AttributeValue> item in responseItems)
-            {
-                List<StatStockDto> statStockDtos = new();
-                if (item.ContainsKey("StockUpdates"))
-                {
-                    string jsonString = item["StockUpdates"].S;
-                    statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
-                }
-                string stock = item["Stock"].S ?? item["Stock"].N;
-                StatItemDto statItemDto = new StatItemDto(
-                    item["SKU"].S,
-                    item["BusinessId"].S,
-                    item["Category"].S,
-                    item["Name"].S,
-                    stock,
-                    statStockDtos
-                );
-                statItemDtos.Add(statItemDto);
-            }
-            
-            // Create list of stat item dtos only if stock updates have been made
-            // use this version if we only want stats on items with at least one stock change
-            
-            // foreach (Dictionary<string, AttributeValue> item in responseItems) {
-            //     if (item.ContainsKey("StockUpdates"))
-            //     {
-            //         string jsonString = item["StockUpdates"].S;
-            //         List<StatStockDto> statStockDtos = JsonConvert.DeserializeObject<List<StatStockDto>>(jsonString);
-            //         string stock = item["Stock"].S ?? item["Stock"].N;
-            //         StatItemDto statItemDto = new StatItemDto(
-            //             item["SKU"].S,
-            //             item["BusinessId"].S,
-            //             item["Category"].S,
-            //             item["Name"].S,
-            //             stock,
-            //             statStockDtos
-            //         );
-            //         statItemDtos.Add(statItemDto);
-            //     }
-            // }
             
             // get suggestions
             statsSuggestionsDto = GetSuggestions(statItemDtos);

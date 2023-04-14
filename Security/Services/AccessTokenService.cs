@@ -8,14 +8,14 @@ using instock_server_application.Users.Repositories.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace instock_server_application.Security.Services; 
+namespace instock_server_application.Security.Services;
 
 public class AccessTokenService : IAccessTokenService {
     private readonly string _jwtIssuer;
     private readonly string _jwtAudience;
     private readonly SymmetricSecurityKey _jwtKey;
     private readonly IUserRepo _userRepo;
-    
+
     public AccessTokenService(IOptions<JwtKey> jwtConfig, IUserRepo userRepo) {
         _jwtAudience = jwtConfig.Value.Audience;
         _jwtIssuer = jwtConfig.Value.Issuer;

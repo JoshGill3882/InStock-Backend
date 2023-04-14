@@ -4,11 +4,9 @@ using Amazon.DynamoDBv2.DocumentModel;
 namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Items")]
-public class Item {
+public class ItemStatsDetailsModel {
     // The value for the items stock, this is so we get more control over the value
     private int _totalStock;
-    private int _totalOrders;
-
     
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
@@ -24,9 +22,6 @@ public class Item {
     [DynamoDBProperty("Name")]
     public string Name { get; set; }
     
-    [DynamoDBProperty("ImageFilename")]
-    public string? ImageFilename { get; set; }
-
     [DynamoDBProperty("Stock")]
     public String TotalStock {
         get => _totalStock.ToString();
@@ -43,25 +38,13 @@ public class Item {
             }
         }
     }
-
-    [DynamoDBProperty("TotalOrders")]
-    public String TotalOrders {
-        get => _totalOrders.ToString();
-        set {
-            if (value.Length > int.MaxValue.ToString().Length) {
-                _totalOrders = value.Contains('-') ? int.MinValue : int.MaxValue;
-            } else if ( long.Parse(value) >= int.MaxValue) {
-                _totalOrders = int.MaxValue;
-            } else if (long.Parse(value) <= int.MinValue) {
-                _totalOrders = int.MinValue;
-            }
-            else {
-                _totalOrders = int.Parse(value);
-            }
-        }
-    }
     
-    public Item() {}
+    [DynamoDBProperty(typeof(ItemStockUpdateModel.StockUpdateObjectConverter))]
+    public List<ItemStockUpdateModel.StockUpdateObject>? StockUpdates { get; set; }
+    
+    
+    public ItemStatsDetailsModel() {
+    }
 
     /// <summary>
     /// All Args Constructor
@@ -70,39 +53,23 @@ public class Item {
     /// <param name="businessId"> Item's Business Id </param>
     /// <param name="category"> Item's Category </param>
     /// <param name="name"> Item's Name </param>
-    /// <param name="stock">Item's Stock Level</param>
-    /// <param name="imageUrl">Item's Image</param>
-    public Item(string sku, string businessId, string category, string name, int totalStock, int totalOrders, string? imageFilename) {
+    /// <param name="totalStock">Item's Stock Level</param>
+    /// <param name="stockUpdates">Item's list of updates to stock</param>
+    public ItemStatsDetailsModel(string sku, string businessId, string category, string name, int totalStock, List<ItemStockUpdateModel.StockUpdateObject> stockUpdates) {
         SKU = sku;
         BusinessId = businessId;
         Category = category;
         Name = name;
         _totalStock = totalStock;
-        _totalOrders = totalOrders;
-        ImageFilename = imageFilename;
-    }
-
-    public Item(string sku, string businessId) {
-        SKU = sku;
-        BusinessId = businessId;
+        StockUpdates = stockUpdates;
     }
 
     public int GetTotalStock() {
         return _totalStock;
     }
-    
-    public int GetTotalOrders() {
-        return _totalOrders;
-    }
-    
+
     // Scan conditions used in scans for this model
     public static ScanCondition ByBusinessId(string businessId) {
         return new ScanCondition(nameof(BusinessId), ScanOperator.Equal, businessId);
-    }
-    public static ScanCondition ByBusinessName(string businessName) {
-        return new ScanCondition(nameof(Name), ScanOperator.Equal, businessName);
-    }
-    public static ScanCondition ByBusinessSku(string businessSku) {
-        return new ScanCondition(nameof(SKU), ScanOperator.Equal, businessSku);
     }
 }

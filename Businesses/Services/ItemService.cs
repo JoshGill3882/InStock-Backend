@@ -4,6 +4,7 @@ using FirebaseAdmin.Messaging;
 using instock_server_application.AwsS3.Dtos;
 using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Dtos;
+using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Shared.Dto;
@@ -45,6 +46,7 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "The item name is invalid.");
         }
     }
+    
     private void ValidateItemCategory(ErrorNotification errorNotes, string itemCategory) {
         // Item Name Variables
         const string errorKey = "itemCategory";
@@ -63,6 +65,7 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "The item category is invalid.");
         }
     }
+    
     private async Task ValidateDuplicateName(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto){
         const string errorKey = "duplicateItemName";
         var isDuplicate = await _itemRepo.IsNameInUse(newItemRequestDto);
@@ -71,55 +74,34 @@ public class ItemService : IItemService {
             errorNotes.AddError(errorKey, "You already have an item with that name");
         }
     }
+
     private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
         const string errorKey = "duplicateSKU";
-        var isDuplicate = await _itemRepo.IsSKUInUse(newItemRequestDto.SKU, newItemRequestDto.BusinessId);
+        var isDuplicate = await _itemRepo.IsSkuInUse(newItemRequestDto.SKU);
         if (isDuplicate)
         {
             errorNotes.AddError(errorKey, "You already have an item with that SKU");
         }
     }
+    
     private void ValidateItemStock(ErrorNotification errorNotes, int stockValue) {
         if (stockValue == 0) {
             errorNotes.AddError("stockIsZero");
         }
     }
 
-    public async Task<List<Dictionary<string, string>>?> GetItems(UserDto userDto, string businessId) {
+    public async Task<ListOfItemDto> GetItems(UserDto userDto, string businessId) {
         
-        if (_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
-            List<Dictionary<string, AttributeValue>> responseItems = _itemRepo.GetAllItems(businessId).Result;
-            List<Dictionary<string, string>> items = new();
-
-            // User has access, but incorrect businessID or no items found
-            if (responseItems.Count == 0) {
-                // Return an empty list
-                return items;
-            }
-
-            foreach (Dictionary<string, AttributeValue> item in responseItems) {
-                string stock = item["Stock"].S ?? item["Stock"].N;
-                // Checks if imageUrl exists for the item and returns url, otherwise returns empty string
-                string imageUrl = item.ContainsKey("ImageFilename") ? _storageService.GetFilePresignedUrl("instock-item-images", item["ImageFilename"].S).Message : "";
-
-                items.Add(
-                    new () {
-                        {"SKU", item["SKU"].S},
-                        {"BusinessId", item["BusinessId"].S},
-                        {"Category", item["Category"].S},
-                        {"Name", item["Name"].S},
-                        {"Stock", stock},
-                        {"ImageUrl", imageUrl}
-                    }
-                );
-            }
-
-            return items;
+        if (!_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
+            ErrorNotification errorNotes = new ErrorNotification();
+            errorNotes.AddError(ListOfItemDto.ERROR_UNAUTHORISED);
+            return new ListOfItemDto(errorNotes);
         }
-
-        // If the user doesn't have access, return "null"
-        return null;
+        
+        List<ItemDto> responseItems = await _itemRepo.GetAllItems(businessId);
+        
+        return new ListOfItemDto(responseItems);
     }
     
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
@@ -137,6 +119,7 @@ public class ItemService : IItemService {
         await ValidateDuplicateName(errorNotes, newItemRequestDto);
         await ValidateDuplicateSKU(errorNotes, newItemRequestDto);
         ValidateItemStock(errorNotes, newItemRequestDto.Stock);
+        
         if (newItemRequestDto.ImageFile != null) {
             _utilService.ValidateImageFileContentType(errorNotes, newItemRequestDto.ImageFile);
         }
@@ -161,9 +144,10 @@ public class ItemService : IItemService {
             newItemRequestDto.Category,
             newItemRequestDto.Name, 
             newItemRequestDto.Stock,
+            0,
             storageResponse.Message
         );
-        
+
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
 
         return createdItem;
@@ -185,22 +169,14 @@ public class ItemService : IItemService {
     public async Task<List<Dictionary<string, string>>?> GetCategories(ValidateBusinessIdDto validateBusinessIdDto) {
 
         if (_utilService.CheckUserBusinessId(validateBusinessIdDto.UserBusinessId, validateBusinessIdDto.BusinessId)) {
-            List<Dictionary<string, AttributeValue>> responseCategories = _itemRepo.GetAllCategories(validateBusinessIdDto).Result;
-            List<Dictionary<string, string>> categories = new();
+            List<Dictionary<string, string>> categories = _itemRepo.GetAllCategories(validateBusinessIdDto).Result;
 
             // User has access, but incorrect businessID or no items found
-            if (responseCategories.Count == 0) {
+            if (categories.Count == 0) {
                 // Return an empty list
                 return categories;
             }
-
-            foreach (Dictionary<string, AttributeValue> category in responseCategories) {
-                categories.Add(
-                    new() {
-                        { "Category", category["Category"].S }
-                    }
-                );
-            }
+            
             return categories;
         }
         
@@ -263,9 +239,9 @@ public class ItemService : IItemService {
             businessId: existingItemDto.BusinessId, 
             category: existingItemDto.Category,
             name: existingItemDto.Name, 
-            stock: newStockLevel,
-            imageFilename: existingItemDto.ImageFilename
-        );
+            totalStock: newStockLevel,
+            totalOrders: existingItemDto.TotalOrders,
+            imageFilename: existingItemDto.ImageFilename);
         
         await _itemRepo.SaveExistingItem(updatedItemDto);
         

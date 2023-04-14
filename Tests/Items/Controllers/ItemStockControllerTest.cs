@@ -32,7 +32,7 @@ public class ItemStockControllerTest {
                     new Claim("BusinessId", userBusinessId)
                 }, "mockUserAuth"));
         
-        var existingItem = new ItemDto(requestItemSku, userBusinessId, "category", "name", 50, "https://image.png");
+        var existingItem = new ItemDto(requestItemSku, userBusinessId, "category", "name", 50, 0, 0, "https://image.png");
         var storedItemStockUpdate = new StockUpdateDto(int.Parse(changeStockAmountBy), reasonForChange, DateTime.Today);
 
         var mockItemRepo = new Mock<IItemRepo>();
