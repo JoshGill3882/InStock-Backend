@@ -38,7 +38,7 @@ public class BusinessController : ControllerBase {
             currentUserId, 
             newBusinessForm.BusinessDescription,
             newBusinessForm.ImageFile,
-            new List<string>() {newBusinessForm.DeviceKey}
+            newBusinessForm.DeviceKey != null ? new List<string>() {newBusinessForm.DeviceKey} : new List<string>()
         );
 
         // Attempting to create new business, it returns success of failure
