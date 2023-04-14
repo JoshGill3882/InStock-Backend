@@ -203,7 +203,8 @@ public class ItemControllerTest {
         }));
         var utilService = new UtilService();
         var mockStorageRepo = new Mock<IStorageService>();
-        var itemService = new ItemService(mockItemRepo.Object, utilService, mockStorageRepo.Object);
+        var mockNotifService = new Mock<NotificationService>();
+        var itemService = new ItemService(mockItemRepo.Object, utilService, mockStorageRepo.Object, mockNotifService.Object);
         var mockIStorageService = new Mock<IStorageService>();
         mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
         
@@ -230,7 +231,8 @@ public class ItemControllerTest {
         var mockItemRepo = new Mock<IItemRepo>();
         var mockStorageRepo = new Mock<IStorageService>();
         var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new("BusinessId", "TestBusinessId") }));
-        var itemService = new ItemService(mockItemRepo.Object, new UtilService(), mockStorageRepo.Object);
+        var mockNotifService = new Mock<NotificationService>();
+        var itemService = new ItemService(mockItemRepo.Object, new UtilService(), mockStorageRepo.Object, mockNotifService.Object);
         var mockIStorageService = new Mock<IStorageService>();
         mockIStorageService.Setup(service => service.GetFilePresignedUrl(It.IsAny<string>(),It.IsAny<string>())).Returns(new S3ResponseDto());
 
