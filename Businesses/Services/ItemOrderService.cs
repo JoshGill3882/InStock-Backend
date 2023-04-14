@@ -16,7 +16,7 @@ public class ItemOrderService : IItemOrderService {
         const string errorKey = "amountOrdered";
 
         if (existingItem.TotalOrders + amountOrdered < 0) {
-            errorNotes.AddError(errorKey, "You can not have negative orders.");
+            errorNotes.AddError(errorKey, "You can not have negative total orders.");
         }
 
         long newStockLevel = (long) existingItem.TotalOrders - (long) amountOrdered;
