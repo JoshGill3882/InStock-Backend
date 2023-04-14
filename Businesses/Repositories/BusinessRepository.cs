@@ -91,8 +91,8 @@ public class BusinessRepository : IBusinessRepository {
         return !string.IsNullOrEmpty(existingUser.BusinessId);
     }
 
-    public void UpdateBusinessDeviceTokens(BusinessDeviceKeysUpdateModel businessDeviceKeysUpdateModel) {
-        _context.SaveAsync(businessDeviceKeysUpdateModel);
+    public async Task UpdateBusinessDeviceTokens(BusinessDeviceKeysUpdateModel businessDeviceKeysUpdateModel) {
+        await _context.SaveAsync(businessDeviceKeysUpdateModel);
     }
     
     public async Task<StoreConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto) {
