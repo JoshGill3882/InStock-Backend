@@ -11,9 +11,9 @@ public class ExternalServiceConnectorFactory {
     {
         switch (connectionRequestDetails.PlatformNameConnectingTo.ToLower())
         {
-            case "mockshop":
+            case "mock etsy":
                 return new MockShopAuthenticator(connectionRequestDetails.ShopUsername, connectionRequestDetails.ShopUserPassword);
-            case "mockmarket":
+            case "mock shopify":
                 return new MockMarketAuthenticator(connectionRequestDetails.ShopUsername,
                     connectionRequestDetails.ShopUserPassword);
             default:
