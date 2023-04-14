@@ -5,6 +5,8 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.S3;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using instock_server_application.AwsS3.Repositories;
 using instock_server_application.AwsS3.Repositories.Interfaces;
 using instock_server_application.AwsS3.Services;
@@ -74,6 +76,26 @@ using var s3Client = new AmazonS3Client(
 );
 builder.Services.AddSingleton<IAmazonS3>(s3Client);
 
+// Firebase setup
+var firebaseParams = $@"{{
+    ""type"": ""{builder.Configuration["FIREBASE_SECRET_KEY:type"]}"",
+    ""project_id"": ""{builder.Configuration["FIREBASE_SECRET_KEY:project_id"]}"",
+    ""private_key_id"": ""{builder.Configuration["FIREBASE_SECRET_KEY:private_key_id"]}"",
+    ""private_key"": ""{builder.Configuration["FIREBASE_SECRET_KEY:private_key"]}"",
+    ""client_email"": ""{builder.Configuration["FIREBASE_SECRET_KEY:client_email"]}"",
+    ""client_id"": ""{builder.Configuration["FIREBASE_SECRET_KEY:client_id"]}"",
+    ""auth_uri"": ""{builder.Configuration["FIREBASE_SECRET_KEY:auth_uri"]}"",
+    ""token_uri"": ""{builder.Configuration["FIREBASE_SECRET_KEY:token_uri"]}"",
+    ""auth_provider_x509_cert_url"": ""{builder.Configuration["FIREBASE_SECRET_KEY:auth_provider_x509_cert_url"]}"",
+    ""client_x509_cert_url"": ""{builder.Configuration["FIREBASE_SECRET_KEY:client_x509_cert_url"]}"",
+}}";
+
+FirebaseApp.Create(
+    new AppOptions() {
+        Credential = GoogleCredential.FromJson(firebaseParams)
+    }
+);
+
 // Security Services and Repositories
 builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -98,6 +120,7 @@ builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
 
 // Util Services & Repositories
 builder.Services.AddScoped<IUtilService, UtilService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // AwsS3 Services & Repositories
 builder.Services.AddScoped<IStorageService, StorageService>();
