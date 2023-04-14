@@ -5,11 +5,13 @@ public class StoreBusinessDto {
     public string BusinessDescription { get; }
     public string UserId { get; }
     public string? ImageUrl { get; }
+    public List<string> DeviceKeys { get; }
 
-    public StoreBusinessDto(string businessName, string userId, string businessDescription, string? imageUrl) {
+    public StoreBusinessDto(string businessName, string userId, string businessDescription, string? imageUrl, List<string> deviceKeys) {
         BusinessName = businessName;
         UserId = userId;
         BusinessDescription = businessDescription;
         ImageUrl = imageUrl;
+        DeviceKeys = deviceKeys;
     }
 }

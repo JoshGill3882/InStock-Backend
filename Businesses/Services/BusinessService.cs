@@ -45,7 +45,8 @@ public class BusinessService : IBusinessService {
             responseItems.BusinessName,
             responseItems.BusinessOwnerId,
             responseItems.BusinessDescription,
-            imageUrl
+            imageUrl,
+            responseItems.DeviceKeys
         );
 
         return businessDto;
@@ -110,7 +111,8 @@ public class BusinessService : IBusinessService {
             newBusinessRequest.BusinessName,
             newBusinessRequest.UserId,
             newBusinessRequest.BusinessDescription,
-            storageResponse.Message
+            storageResponse.Message,
+            newBusinessRequest.DeviceKeys
         );
         
         BusinessDto createdBusiness = await _businessRepository.SaveNewBusiness(businessToSave);
