@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services; 
 
-public class MockShopAuthenticator : ExternalShopAuthenticator {
+public class MockShopConnectorService : ExternalShopConnectorService {
     public override string? AuthorisationToken { get; protected internal set; }
 
     public override async Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails) {

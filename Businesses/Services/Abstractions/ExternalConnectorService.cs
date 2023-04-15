@@ -2,13 +2,13 @@
 
 namespace instock_server_application.Businesses.Services.Interfaces; 
 
-public abstract class ExternalShopAuthenticator {
+public abstract class ExternalShopConnectorService {
     
     public abstract string? AuthorisationToken { get; protected internal set; }
 
-    public ExternalShopAuthenticator() {}
+    public ExternalShopConnectorService() {}
 
-    public ExternalShopAuthenticator(string? authorisationToken) {
+    public ExternalShopConnectorService(string? authorisationToken) {
         AuthorisationToken = authorisationToken;
     }
 

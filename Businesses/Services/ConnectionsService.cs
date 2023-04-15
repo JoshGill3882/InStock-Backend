@@ -92,16 +92,14 @@ public class ConnectionsService : IConnectionsService {
 
         //Create a class for calling with an interface
         try { 
-        ExternalServiceConnectorFactory externalServiceConnectorFactory = new ExternalServiceConnectorFactory();
-        ExternalShopAuthenticator authenticator =
-            externalServiceConnectorFactory.CreateAuthenticator(connectionRequestDetails);
+            ExternalShopConnectorService connectorService =
+            ExternalServiceConnectorFactory.CreateConnector(connectionRequestDetails);
 
-        
             ExternalShopLoginDto loginDetails = new ExternalShopLoginDto(
                 shopUsername: connectionRequestDetails.ShopUsername,
                 shopUserPassword: connectionRequestDetails.ShopUserPassword
             );
-            ExternalShopAuthenticationTokenDto authenticationToken = await authenticator.LoginToShop(loginDetails);
+            ExternalShopAuthenticationTokenDto authenticationToken = await connectorService.LoginToShop(loginDetails);
             return authenticationToken;
         }
         catch (Exception e) {

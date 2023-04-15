@@ -4,26 +4,24 @@ using instock_server_application.Businesses.Services.Interfaces;
 
 namespace instock_server_application.Businesses.Services.Abstractions; 
 
-public class ExternalServiceConnectorFactory {
+public static class ExternalServiceConnectorFactory {
     
     public const string PLATFORM_MOCK_ETSY = "mock etsy"; 
     public const string PLATFORM_MOCK_SHOPIFY = "mock shopify"; 
 
-    public ExternalServiceConnectorFactory() { }
-    
     public static bool ValidatePlatformName(string platformName) {
         return platformName.ToLower() == PLATFORM_MOCK_ETSY || platformName.ToLower() == PLATFORM_MOCK_SHOPIFY;
     }
     
-    public ExternalShopAuthenticator CreateAuthenticator(
+    public static ExternalShopConnectorService CreateConnector(
         CreateConnectionForm connectionRequestDetails)
     {
         switch (connectionRequestDetails.PlatformNameConnectingTo.ToLower())
         {
             case PLATFORM_MOCK_ETSY:
-                return new MockShopAuthenticator();
+                return new MockShopConnectorService();
             case PLATFORM_MOCK_SHOPIFY:
-                return new MockMarketAuthenticator();
+                return new MockMarketConnectorService();
             default:
                 throw new ArgumentException($"Shop '{connectionRequestDetails.PlatformNameConnectingTo}' is not supported.");
         }
