@@ -17,4 +17,5 @@ public interface IItemRepo {
     Task<List<Dictionary<string, string>>> GetAllCategories(ValidateBusinessIdDto validateBusinessIdDto);
     Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto);
 
+    Task<ItemConnectionsDto>? GetItemConnections(string businessId, string itemSku);
 }

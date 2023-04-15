@@ -124,7 +124,7 @@ public class ItemRepo : IItemRepo{
     public async Task<bool> IsSkuInUse(string sku) {
         var response = await _context.ScanAsync<Item>(
             new[] {
-                Item.ByBusinessSku(sku)
+                Item.ByItemSku(sku)
             }).GetRemainingAsync();
     
         return response.Count > 0;
@@ -274,5 +274,15 @@ public class ItemRepo : IItemRepo{
             new ItemOrderDto(storeItemOrderDto.AmountOrdered, storeItemOrderDto.DateTimeAdded);
         
         return itemOrderDto;
+    }
+
+    public async Task<ItemConnectionsDto>? GetItemConnections(string businessId, string itemSku) {
+        ItemConnections? existingItem = await _context.LoadAsync<ItemConnections>(itemSku, businessId);
+
+        if (existingItem == null) {
+            return null!;
+        }
+        
+        return new ItemConnectionsDto(existingItem.Sku, existingItem.BusinessId, existingItem.Connections);
     }
 }

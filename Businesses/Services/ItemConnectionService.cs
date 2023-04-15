@@ -1,4 +1,6 @@
 ﻿using instock_server_application.Businesses.Dtos;
+using instock_server_application.Businesses.Models;
+using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Security.Services;
 using instock_server_application.Shared.Dto;
@@ -7,9 +9,11 @@ namespace instock_server_application.Businesses.Services;
 
 public class ItemConnectionService : IItemConnectionService {
     private readonly IConnectionsService _connections;
+    private readonly IItemRepo _itemRepo;
 
-    public ItemConnectionService(IConnectionsService connections) {
+    public ItemConnectionService(IConnectionsService connections, IItemRepo itemRepo) {
         _connections = connections;
+        _itemRepo = itemRepo;
     }
 
     public async Task ConnectItem(UserAuthorisationDto userAuthorisationDto, ItemConnectionRequestDto itemConnectionRequestDto) {
@@ -30,10 +34,20 @@ public class ItemConnectionService : IItemConnectionService {
             return;
         }
 
+        ItemConnectionsDto? existingItemConnections =
+            await _itemRepo.GetItemConnections(itemConnectionRequestDto.BusinessId, itemConnectionRequestDto.ItemSku)!;
+        
         // TODO Validates Business contains Item SKU
-
+        if (existingItemConnections == null) {
+            errorNotes.AddError($"The item {itemConnectionRequestDto.ItemSku} does not exist.");
+            // TODO Return the error
+            return;
+        }
+        
         // TODO Validated Business Item doesn't already contain this connection 
-
+        if (existingItemConnections.Connections.ContainsKey(itemConnectionRequestDto.PlatformName)) {
+            errorNotes.AddError($"The item {itemConnectionRequestDto.ItemSku} is already connected to {itemConnectionRequestDto.PlatformName}.");
+        }
 
         // TODO Validates Shop Connection contains Item SKU
 
