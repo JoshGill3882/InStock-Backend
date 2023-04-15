@@ -1,4 +1,4 @@
-using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 
 namespace instock_server_application.Businesses.Models;
@@ -102,7 +102,7 @@ public class Item {
     public static ScanCondition ByBusinessName(string businessName) {
         return new ScanCondition(nameof(Name), ScanOperator.Equal, businessName);
     }
-    public static ScanCondition ByBusinessSku(string businessSku) {
+    public static ScanCondition ByItemSku(string businessSku) {
         return new ScanCondition(nameof(SKU), ScanOperator.Equal, businessSku);
     }
 }
