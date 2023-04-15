@@ -7,17 +7,8 @@ using Newtonsoft.Json;
 namespace instock_server_application.Businesses.Services; 
 
 public class MockShopAuthenticator : ExternalShopAuthenticator {
-    
-    private String Username;
+    public override string? AuthorisationToken { get; protected internal set; }
 
-    private String Password;
-
-    public MockShopAuthenticator(string username, string password) : base(username, password) {
-        Username = username;
-        Password = password;
-    }
-    
-    
     public override async Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails) {
         HttpClient httpClient = new HttpClient(); 
         
@@ -25,8 +16,8 @@ public class MockShopAuthenticator : ExternalShopAuthenticator {
         
         var loginData = new Dictionary<string, string>
         {
-            { "shopName", Username },
-            { "password", Password }
+            { "shopName", loginDetails.ShopUsername },
+            { "password", loginDetails.ShopUserPassword }
         };
 
         var json = JsonConvert.SerializeObject(loginData);
@@ -45,6 +36,8 @@ public class MockShopAuthenticator : ExternalShopAuthenticator {
             
             string authToken = jsonDict["authToken"];
             ExternalShopAuthenticationTokenDto authenticationToken = new ExternalShopAuthenticationTokenDto(authToken);
+
+            AuthorisationToken = authToken;
             
             return authenticationToken;
         }

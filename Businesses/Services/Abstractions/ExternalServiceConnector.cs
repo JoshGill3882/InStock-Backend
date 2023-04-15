@@ -4,16 +4,19 @@ namespace instock_server_application.Businesses.Services.Interfaces;
 
 public abstract class ExternalShopAuthenticator {
     
-    public String Username;
+    public abstract string? AuthorisationToken { get; protected internal set; }
 
-    public String Password;
-    
-    public ExternalShopAuthenticator(string username, string password) {
-        Username = username;
-        Password = password;
+    public ExternalShopAuthenticator() {}
+
+    public ExternalShopAuthenticator(string? authorisationToken) {
+        AuthorisationToken = authorisationToken;
+    }
+
+    public bool IsAuthenticated() {
+        return AuthorisationToken != null;
     }
     
-    public abstract  Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails);
+    public abstract Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails);
     
     //contains case statements 
 }

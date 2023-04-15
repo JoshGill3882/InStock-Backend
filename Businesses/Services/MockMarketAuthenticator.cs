@@ -7,17 +7,8 @@ using Newtonsoft.Json;
 namespace instock_server_application.Businesses.Services; 
 
 public class MockMarketAuthenticator : ExternalShopAuthenticator {
-    
-    private String Username;
+    public override string? AuthorisationToken { get; protected internal set; }
 
-    private String Password;
-
-    public MockMarketAuthenticator(string username, string password) : base(username, password) {
-        Username = username;
-        Password = password;
-    }
-    
-    
     public override async Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails) {
         HttpClient httpClient = new HttpClient(); 
         
@@ -25,8 +16,8 @@ public class MockMarketAuthenticator : ExternalShopAuthenticator {
         
         var loginData = new Dictionary<string, string>
         {
-            { "username", Username },
-            { "password", Password }
+            { "username", loginDetails.ShopUsername },
+            { "password", loginDetails.ShopUserPassword }
         };
 
         var json = JsonConvert.SerializeObject(loginData);

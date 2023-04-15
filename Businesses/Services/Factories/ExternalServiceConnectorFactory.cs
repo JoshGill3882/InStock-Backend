@@ -21,10 +21,9 @@ public class ExternalServiceConnectorFactory {
         switch (connectionRequestDetails.PlatformNameConnectingTo.ToLower())
         {
             case PLATFORM_MOCK_ETSY:
-                return new MockShopAuthenticator(connectionRequestDetails.ShopUsername, connectionRequestDetails.ShopUserPassword);
+                return new MockShopAuthenticator();
             case PLATFORM_MOCK_SHOPIFY:
-                return new MockMarketAuthenticator(connectionRequestDetails.ShopUsername,
-                    connectionRequestDetails.ShopUserPassword);
+                return new MockMarketAuthenticator();
             default:
                 throw new ArgumentException($"Shop '{connectionRequestDetails.PlatformNameConnectingTo}' is not supported.");
         }
