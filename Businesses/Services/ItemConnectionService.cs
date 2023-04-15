@@ -1,6 +1,7 @@
 ﻿using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Businesses.Services.Abstractions;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Security.Services;
 using instock_server_application.Shared.Dto;
@@ -26,7 +27,14 @@ public class ItemConnectionService : IItemConnectionService {
             return;
         }
         
-        // TODO Validates business is connected to this shop
+        // Validate that we support the connection
+        if (ExternalServiceConnectorFactory.ValidatePlatformName(itemConnectionRequestDto.PlatformName)) {
+            errorNotes.AddError("We do not support integration with this platform.");
+            // TODO Return the error
+            return;
+        }
+        
+        // Validates business is connected to this shop
         if (!await _connections.ValidateBusinessConnectedToPlatform(userAuthorisationDto, itemConnectionRequestDto.BusinessId,
                 itemConnectionRequestDto.PlatformName)) {
             errorNotes.AddError("You are not connected to this platform.");
@@ -37,20 +45,20 @@ public class ItemConnectionService : IItemConnectionService {
         ItemConnectionsDto? existingItemConnections =
             await _itemRepo.GetItemConnections(itemConnectionRequestDto.BusinessId, itemConnectionRequestDto.ItemSku)!;
         
-        // TODO Validates Business contains Item SKU
-        if (existingItemConnections == null) {
+        // Validates Business contains Item SKU
+        if (existingItemConnections == null!) {
             errorNotes.AddError($"The item {itemConnectionRequestDto.ItemSku} does not exist.");
             // TODO Return the error
             return;
         }
         
-        // TODO Validated Business Item doesn't already contain this connection 
+        // Validated Business Item doesn't already contain this connection 
         if (existingItemConnections.Connections.ContainsKey(itemConnectionRequestDto.PlatformName)) {
             errorNotes.AddError($"The item {itemConnectionRequestDto.ItemSku} is already connected to {itemConnectionRequestDto.PlatformName}.");
         }
 
-        // TODO Validates Shop Connection contains Item SKU
-
+        // Validates Shop Connection contains Item SKU
+        
 
         // TODO Stores Item's new connected item
         // TODO returns new connection
