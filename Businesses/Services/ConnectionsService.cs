@@ -110,6 +110,19 @@ public class ConnectionsService : IConnectionsService {
             return new ExternalShopAuthenticationTokenDto(errorNote);
         }
     }
+
+    public async Task<bool> ValidateBusinessConnectedToPlatform(UserAuthorisationDto userAuthorisationDto, string businessId, string platformName) {
+        StoreConnectionDto currentConnections = await GetConnections(new GetConnectionsRequestDto(
+            userAuthorisationDto.UserId, userAuthorisationDto.UserBusinessId, businessId));
+        
+        foreach (ConnectionDto connection in currentConnections.Connections) {
+            if (connection.PlatformName.ToLower().Equals(platformName.ToLower())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     
     private void ValidateConnectionRequest(CreateConnectionRequestDto createConnectionRequestDto)
     {
