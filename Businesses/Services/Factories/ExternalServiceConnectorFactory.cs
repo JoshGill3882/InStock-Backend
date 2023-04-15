@@ -14,16 +14,16 @@ public static class ExternalServiceConnectorFactory {
     }
     
     public static ExternalShopConnectorService CreateConnector(
-        CreateConnectionForm connectionRequestDetails)
+        string platformName)
     {
-        switch (connectionRequestDetails.PlatformNameConnectingTo.ToLower())
+        switch (platformName.ToLower())
         {
             case PLATFORM_MOCK_ETSY:
                 return new MockShopConnectorService();
             case PLATFORM_MOCK_SHOPIFY:
                 return new MockMarketConnectorService();
             default:
-                throw new ArgumentException($"Shop '{connectionRequestDetails.PlatformNameConnectingTo}' is not supported.");
+                throw new ArgumentException($"Shop '{platformName.ToLower()}' is not supported.");
         }
     }
 }

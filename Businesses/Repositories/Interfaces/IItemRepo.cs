@@ -18,4 +18,5 @@ public interface IItemRepo {
     Task<ItemOrderDto> SaveItemOrder(StoreItemOrderDto storeItemOrderDto);
 
     Task<ItemConnectionsDto>? GetItemConnections(string businessId, string itemSku);
+    Task<ItemConnectionsDto> SaveItemConnections(ItemConnectionsDto itemConnectionsDto);
 }

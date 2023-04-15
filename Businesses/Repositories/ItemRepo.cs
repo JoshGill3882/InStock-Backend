@@ -285,4 +285,14 @@ public class ItemRepo : IItemRepo{
         
         return new ItemConnectionsDto(existingItem.Sku, existingItem.BusinessId, existingItem.Connections);
     }
+    
+    public async Task<ItemConnectionsDto> SaveItemConnections(ItemConnectionsDto itemConnectionsDto) {
+
+        ItemConnections itemConnections = new ItemConnections(itemConnectionsDto.Sku,
+            itemConnectionsDto.BusinessId, itemConnectionsDto.Connections);
+        
+        await _context.SaveAsync(itemConnections);
+        
+        return itemConnectionsDto;
+    }
 }

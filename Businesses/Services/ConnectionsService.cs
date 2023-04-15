@@ -93,7 +93,7 @@ public class ConnectionsService : IConnectionsService {
         //Create a class for calling with an interface
         try { 
             ExternalShopConnectorService connectorService =
-            ExternalServiceConnectorFactory.CreateConnector(connectionRequestDetails);
+            ExternalServiceConnectorFactory.CreateConnector(connectionRequestDetails.PlatformNameConnectingTo);
 
             ExternalShopLoginDto loginDetails = new ExternalShopLoginDto(
                 shopUsername: connectionRequestDetails.ShopUsername,
