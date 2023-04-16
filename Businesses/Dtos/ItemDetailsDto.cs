@@ -3,26 +3,33 @@ using instock_server_application.Shared.Dto;
 namespace instock_server_application.Businesses.Dtos;
 
 public class ItemDetailsDto : DataTransferObjectSuperType {
-    public string SKU { get; }
-    public string BusinessId { get; }
-    public string Category { get; }
+    public string Sku { get; }
     public string Name { get; }
     public int TotalStock { get; }
     public int? AvailableStock { get; }
     public int TotalOrders { get; }
-    public string? ImageFilename { get; } 
-    
-    public ItemDetailsDto(ErrorNotification errorNotes) : base(errorNotes) {
-    }
+    public string? ImageFilename { get; }
+    public List<ConnectedItemDetailsDto> ConnectedItems { get; }
 
-    public ItemDetailsDto(string sku, string businessId, string category, string name, int totalStock, int totalOrders, int availableStock, string? imageFilename) {
-        SKU = sku;
-        BusinessId = businessId;
-        Category = category;
+    public ItemDetailsDto(ErrorNotification errorNotes) : base(errorNotes) {}
+    
+    public ItemDetailsDto(string sku, string name, int totalStock, int? availableStock, int totalOrders, string? imageFilename, List<ConnectedItemDetailsDto> connectedItems) {
+        Sku = sku;
         Name = name;
         TotalStock = totalStock;
-        TotalOrders = totalOrders;
         AvailableStock = availableStock;
+        TotalOrders = totalOrders;
         ImageFilename = imageFilename;
+        ConnectedItems = connectedItems;
+    }
+
+    public ItemDetailsDto(ItemDto itemDto, List<ConnectedItemDetailsDto> connectedItemDetailsDtos) {
+        Sku = itemDto.SKU;
+        Name = itemDto.Name;
+        TotalStock = itemDto.TotalStock;
+        AvailableStock = itemDto.AvailableStock;
+        TotalOrders = itemDto.TotalOrders;
+        ImageFilename = itemDto.ImageFilename;
+        ConnectedItems = connectedItemDetailsDtos;
     }
 }

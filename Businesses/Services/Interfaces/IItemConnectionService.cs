@@ -10,4 +10,6 @@ public interface IItemConnectionService {
     public Task<ItemConnectionsDto> ConnectItem(UserAuthorisationDto userAuthorisationDto,
         ItemConnectionRequestDto itemConnectionRequestDto);
 
+    public Task<ListOfConnectedItemDetailsDto> GetItemConnectionsDetails(UserAuthorisationDto userAuthorisationDto, ItemRequestDto itemRequestDto);
+
 }

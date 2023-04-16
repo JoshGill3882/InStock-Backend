@@ -130,8 +130,24 @@ public class ItemService : IItemService {
         }
 
         ItemDto? itemDto = await _itemRepo.GetItem(itemRequestDto.BusinessId, itemRequestDto.Sku);
+
+        if (itemDto == null) {
+            errorNotes.AddError("That item does not exist");
+        }
+
+        if (errorNotes.HasErrors) {
+            return new ItemDetailsDto(errorNotes);
+        }
         
+        ListOfConnectedItemDetailsDto listOfConnectedItemDetailsDto = await _itemConnectionService.GetItemConnectionsDetails(userAuthorisationDto, itemRequestDto);
+
+        if (listOfConnectedItemDetailsDto.ErrorNotification.HasErrors) {
+            return new ItemDetailsDto(listOfConnectedItemDetailsDto.ErrorNotification);
+        }
         
+        ItemDetailsDto itemDetailsDto = new ItemDetailsDto(itemDto!, listOfConnectedItemDetailsDto.ListOfConnectedItemDetails);
+
+        return itemDetailsDto;
     }
 
     // TODO This method is not properly authenticating that the user can edit the business Items
