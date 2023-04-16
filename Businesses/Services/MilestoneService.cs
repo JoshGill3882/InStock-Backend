@@ -23,17 +23,17 @@ public class MilestoneService : IMilestoneService {
     private async Task<int> GetTotalSales(StoreItemDto itemDto) {
         int totalSales = itemDto.TotalOrders;
 
-        List<StatItemDto> statItemDtos = await _itemRepo.GetAllItemsStatsDetails(itemDto.BusinessId);
+        List<StatItemDto> statItemDtos = await _itemRepo.GetItemStatsDetails(itemDto.SKU);
 
         foreach (var statItemDto in statItemDtos) {
             foreach (var statStockDto in statItemDto.StockUpdates ?? Enumerable.Empty<StatStockDto>()) {
                 if (statStockDto.ReasonForChange == "Sale") {
-                    totalSales += -statStockDto.AmountChanged;
+                    int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    totalSales += amountChanged;
                 }
             }
         }
 
-        Console.Write($"{itemDto.Name} has {totalSales} sales\n");
         return totalSales;
     }
 

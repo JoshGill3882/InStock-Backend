@@ -78,6 +78,43 @@ public class ItemRepo : IItemRepo{
         
         return listOfStatItemDto;
     }
+    
+    public async Task<List<StatItemDto>> GetItemStatsDetails(string sku) {
+        
+        // Get List of items
+        List<ItemStatsDetailsModel> listOfItemModel = await _context.ScanAsync<ItemStatsDetailsModel>(
+            new [] {
+                ItemStatsDetailsModel.BySKU(sku)
+            }).GetRemainingAsync();
+
+        // Convert list of items
+        List<StatItemDto> listOfStatItemDto = new List<StatItemDto>();
+        
+        foreach (ItemStatsDetailsModel itemModel in listOfItemModel) {
+
+            List<StatStockDto> listOfStatStockDtos = new List<StatStockDto>();
+            
+            if (itemModel.StockUpdates != null) {
+                foreach (ItemStockUpdateModel.StockUpdateObject stockObject in itemModel.StockUpdates) {
+                    StatStockDto statStockDto = new StatStockDto(stockObject.AmountChanged, stockObject.ReasonForChange,
+                        stockObject.DateTimeAdded.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff"));
+                    listOfStatStockDtos.Add(statStockDto);
+                }
+            }
+
+            // Move this within the above if statement
+            listOfStatItemDto.Add(
+                new StatItemDto(
+                    sku: itemModel.SKU,
+                    businessId: itemModel.BusinessId,
+                    category: itemModel.Category,
+                    name: itemModel.Name,
+                    stock: itemModel.TotalStock,
+                    stockUpdates: listOfStatStockDtos));
+        }
+        
+        return listOfStatItemDto;
+    }
 
     public async Task<ItemDto> SaveNewItem(StoreItemDto itemToSaveDto) {
         
