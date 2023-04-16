@@ -92,16 +92,14 @@ public class ConnectionsService : IConnectionsService {
 
         //Create a class for calling with an interface
         try { 
-        ExternalServiceConnectorFactory externalServiceConnectorFactory = new ExternalServiceConnectorFactory();
-        ExternalShopAuthenticator authenticator =
-            externalServiceConnectorFactory.CreateAuthenticator(connectionRequestDetails);
+            ExternalShopConnectorService connectorService =
+            ExternalServiceConnectorFactory.CreateConnector(connectionRequestDetails.PlatformNameConnectingTo);
 
-        
             ExternalShopLoginDto loginDetails = new ExternalShopLoginDto(
                 shopUsername: connectionRequestDetails.ShopUsername,
                 shopUserPassword: connectionRequestDetails.ShopUserPassword
             );
-            ExternalShopAuthenticationTokenDto authenticationToken = await authenticator.LoginToShop(loginDetails);
+            ExternalShopAuthenticationTokenDto authenticationToken = await connectorService.LoginToShop(loginDetails);
             return authenticationToken;
         }
         catch (Exception e) {
@@ -109,6 +107,19 @@ public class ConnectionsService : IConnectionsService {
             errorNote.AddError(e.Message);
             return new ExternalShopAuthenticationTokenDto(errorNote);
         }
+    }
+
+    public async Task<bool> ValidateBusinessConnectedToPlatform(UserAuthorisationDto userAuthorisationDto, string businessId, string platformName) {
+        StoreConnectionDto currentConnections = await GetConnections(new GetConnectionsRequestDto(
+            userAuthorisationDto.UserId, userAuthorisationDto.UserBusinessId, businessId));
+        
+        foreach (ConnectionDto connection in currentConnections.Connections) {
+            if (connection.PlatformName.ToLower().Equals(platformName.ToLower())) {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     private void ValidateConnectionRequest(CreateConnectionRequestDto createConnectionRequestDto)
