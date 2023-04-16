@@ -11,10 +11,12 @@ namespace instock_server_application.Businesses.Services;
 public class ItemStockService : IItemStockService {
     private readonly IItemRepo _itemRepo;
     private readonly INotificationService _notificationService;
+    private readonly IMilestoneService _milestoneService;
 
-    public ItemStockService(IItemRepo itemRepo, INotificationService notificationService) {
+    public ItemStockService(IItemRepo itemRepo, INotificationService notificationService, IMilestoneService milestoneService) {
         _itemRepo = itemRepo;
         _notificationService = notificationService;
+        _milestoneService = milestoneService;
     }
 
     private void ValidateAmountChangeBy(ErrorNotification errorNotes, int changeAmountBy, ItemDto existingItem) {
@@ -110,6 +112,7 @@ public class ItemStockService : IItemStockService {
         await _itemRepo.SaveExistingItem(updatedItemDto);
         
         _notificationService.StockNotificationChecker(updatedItemDto);
+        await _milestoneService.CheckMilestones(updatedItemDto);
 
         // Returning results
         // Return newly created stock update
