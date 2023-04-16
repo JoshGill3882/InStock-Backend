@@ -5,6 +5,7 @@ using instock_server_application.Businesses.Controllers.forms;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
+using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Util.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -39,8 +40,9 @@ public class ItemStockControllerTest {
         mockItemRepo.Setup(s => s.GetItem(userBusinessId, requestItemSku)).Returns(Task.FromResult(existingItem)!);
         mockItemRepo.Setup(s => s.SaveStockUpdate(It.IsAny<StoreStockUpdateDto>())).Returns(Task.FromResult(storedItemStockUpdate)!);
         var mockNotificationService = new Mock<INotificationService>();
+        var mockMilestoneService = new Mock<IMilestoneService>();
         
-        var itemStockService = new ItemStockService(mockItemRepo.Object, mockNotificationService.Object);
+        var itemStockService = new ItemStockService(mockItemRepo.Object, mockNotificationService.Object, mockMilestoneService.Object);
         
         var controller = new ItemStockController(itemStockService) {
             ControllerContext = new ControllerContext() {

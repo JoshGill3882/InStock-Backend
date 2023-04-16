@@ -26,6 +26,10 @@ public class NotificationService : INotificationService {
         else if (availableStock == 0) SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
     }
 
+    public void TriggerMilestoneNotification(StoreItemDto itemDto, int totalSales) {
+        SendNotification(CreateMilestoneNotification(totalSales, itemDto), itemDto.BusinessId);
+    }
+
     private void SendNotification(NotificationPatternDto notification, string businessId) {
         var message = new MulticastMessage() {
             Notification = notification.Notification,
@@ -45,6 +49,23 @@ public class NotificationService : INotificationService {
             new Notification {
                 Title = title,
                 Body = $"You are {title.ToLower()} on {itemDto.Name}"
+            },
+            new Dictionary<string, string> {
+                { "SKU", itemDto.SKU },
+                { "BusinessId", itemDto.BusinessId },
+                { "Category", itemDto.Category },
+                { "Name", itemDto.Name },
+                { "Stock", itemDto.TotalStock.ToString() },
+                { "ImageUrl", itemDto.ImageFilename != null ? _storageService.GetFilePresignedUrl("instock-item-images", itemDto.ImageFilename ?? "").Message : "" }
+            }
+        );
+    }
+    
+    private NotificationPatternDto CreateMilestoneNotification(int totalSales, StoreItemDto itemDto) {
+        return new NotificationPatternDto(
+            new Notification {
+                Title = "Congrats! You achieved a milestone 🎉",
+                Body = $"You have hit {totalSales} sales on {itemDto.Name} 🥳"
             },
             new Dictionary<string, string> {
                 { "SKU", itemDto.SKU },
