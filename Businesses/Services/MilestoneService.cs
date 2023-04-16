@@ -94,6 +94,15 @@ public class MilestoneService : IMilestoneService {
             return new MilestoneDto(errorNotes);
         }
 
-        return await _milestoneRepository.HideMilestone(hideMilestoneDto);
+        MilestoneDto milestoneDto = await _milestoneRepository.HideMilestone(hideMilestoneDto); 
+        
+        // Check that the milestone exists
+        if (milestoneDto == null) {
+            ErrorNotification errorNotes = new ErrorNotification();
+            errorNotes.AddError("This milestone does not exist");
+            return new MilestoneDto(errorNotes);
+        }
+
+        return milestoneDto;
     }
 }

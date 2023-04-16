@@ -60,7 +60,14 @@ public class MilestoneRepository : IMilestoneRepository {
             throw new NullReferenceException("The Business Id cannot be null or empty.");
         }
         
+        // Getting the existing milestone
         MilestoneModel milestone = await _context.LoadAsync<MilestoneModel>(hideMilestoneDto.MilestoneId, hideMilestoneDto.BusinessId);
+
+        // If the milestone wasn't in the database then return null
+        if (milestone == null) {
+            return null;
+        }
+        
         milestone.DisplayMilestone = false;
         await _context.SaveAsync(milestone);
 
