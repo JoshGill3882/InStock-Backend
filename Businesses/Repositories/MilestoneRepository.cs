@@ -34,7 +34,29 @@ public class MilestoneRepository : IMilestoneRepository {
     // deactivate milestone method
     
     // get current milestones
-    // public async Task<List<StoreMilestoneDto>> GetMilestones(string businessId) {
-    //     
-    // }
+    public async Task<List<StoreMilestoneDto>> GetAllMilestones(string businessId) {
+        List<MilestoneModel> listOfMilestoneModels = await _context.ScanAsync<MilestoneModel>(
+            new [] {
+                MilestoneModel.ByBusinessId(businessId)
+            }).GetRemainingAsync();
+        
+        // Convert list of items
+        List<StoreMilestoneDto> listOfMilestoneDto = new List<StoreMilestoneDto>();
+        
+        foreach (MilestoneModel milestoneModel in listOfMilestoneModels) {
+            listOfMilestoneDto.Add(
+                new StoreMilestoneDto(
+                    milestoneModel.MilestoneId,
+                    milestoneModel.BusinessId,
+                    milestoneModel.ItemSku,
+                    milestoneModel.ItemName,
+                    milestoneModel.TotalSales,
+                    milestoneModel.DateTime,
+                    milestoneModel.DisplayMilestone
+                )
+            );
+        }
+        
+        return listOfMilestoneDto;
+    }
 }

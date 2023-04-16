@@ -71,8 +71,10 @@ public class MilestoneService : IMilestoneService {
         await _milestoneRepository.SaveNewMilestone(milestoneDto);
     }
 
-    private void GetAllMilestones() {
-        // throw NotImplementedException;
+    public async Task<ListOfMilestonesDto> GetAllMilestones(string businessId) {
+        List<StoreMilestoneDto> responseItems = await _milestoneRepository.GetAllMilestones(businessId);
+        
+        return new ListOfMilestonesDto(responseItems);
     }
 
 

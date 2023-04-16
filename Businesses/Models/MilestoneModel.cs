@@ -40,4 +40,8 @@ public class MilestoneModel {
         DateTime = dateTime;
         DisplayMilestone = displayMilestone;
     }
+    
+    public static ScanCondition ByBusinessId(string businessId) {
+        return new ScanCondition(nameof(BusinessId), ScanOperator.Equal, businessId);
+    }
 }
