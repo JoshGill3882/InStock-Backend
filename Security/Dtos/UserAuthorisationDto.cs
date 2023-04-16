@@ -1,4 +1,5 @@
 ﻿using instock_server_application.Shared.Dto;
+using instock_server_application.Users.Models;
 
 namespace instock_server_application.Businesses.Dtos
 {
@@ -13,5 +14,10 @@ namespace instock_server_application.Businesses.Dtos
             UserId = userId;
             UserBusinessId = userBusinessId;
         }
+
+        public bool IsValid() {
+            return !string.IsNullOrEmpty(UserId) && !string.IsNullOrEmpty(UserBusinessId);
+        }
+        
     }
 }

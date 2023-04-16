@@ -19,6 +19,13 @@ public class ItemController : ControllerBase {
         _storageService = storageService;
     }
 
+    private UserAuthorisationDto GetUserAuthorisationDto() {
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+
+        return new UserAuthorisationDto(currentUserId ?? "", currentUserBusinessId ?? "");
+    }
+    
     /// <summary>
     /// Function for getting all the items for a specific business, providing the currently logged in user has access
     /// </summary>
@@ -129,8 +136,26 @@ public class ItemController : ControllerBase {
     
     [HttpGet]
     [Route("items/{itemId}")]
-    public async Task<IActionResult> GetItem([FromRoute] string itemId, string businessId) {
-        throw new NotImplementedException();
+    public async Task<IActionResult> GetItem(string businessId, [FromRoute] string itemId) {
+        UserAuthorisationDto userAuthorisationDto = GetUserAuthorisationDto();
+        
+        // Check there are no issues with the requesting user
+        if (!userAuthorisationDto.IsValid()) {
+            return Unauthorized();
+        }
+
+        ItemRequestDto itemRequestDto = new ItemRequestDto(itemId, businessId);
+
+        ItemDetailsDto itemDetailsDto = await _itemService.GetItem(userAuthorisationDto, itemRequestDto);
+        
+        if (itemDetailsDto.ErrorNotification.HasErrors) {
+            if (itemDetailsDto.ErrorNotification.Errors["otherErrors"].Contains(UserAuthorisationDto.USER_UNAUTHORISED_ERROR)) {
+                return Unauthorized();
+            }
+            return new BadRequestObjectResult(itemDetailsDto);
+        }
+
+        return Ok(itemDetailsDto);
     }
 
     [HttpDelete]
