@@ -10,12 +10,10 @@ namespace instock_server_application.Util.Services;
 public class NotificationService : INotificationService {
     private readonly IBusinessRepository _businessRepository;
     private readonly IStorageService _storageService;
-    private readonly IItemRepo _itemRepo;
 
-    public NotificationService(IBusinessRepository businessRepository, IStorageService storageService, IItemRepo itemRepo) {
+    public NotificationService(IBusinessRepository businessRepository, IStorageService storageService) {
         _businessRepository = businessRepository;
         _storageService = storageService;
-        _itemRepo = itemRepo;
     }
 
     public NotificationService() {

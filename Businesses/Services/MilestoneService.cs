@@ -59,8 +59,6 @@ public class MilestoneService : IMilestoneService {
     }
 
     private async Task CreateMilestone(StoreItemDto itemDto, int totalSales) {
-        Console.Write($"You have hit {totalSales} sales on {itemDto.Name}\n");
-        
         MilestoneDto milestoneDto = new MilestoneDto(
             Guid.NewGuid().ToString(),
             itemDto.BusinessId,
