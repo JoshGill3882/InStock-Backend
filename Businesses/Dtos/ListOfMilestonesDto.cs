@@ -25,6 +25,7 @@ public class ListOfMilestonesDto : DataTransferObjectSuperType {
                     { nameof(StoreMilestoneDto.BusinessId), milestone.BusinessId },
                     { nameof(StoreMilestoneDto.ItemSku), milestone.ItemSku },
                     { nameof(StoreMilestoneDto.ItemName), milestone.ItemName },
+                    { nameof(StoreMilestoneDto.ImageFilename), milestone.ImageFilename },
                     { nameof(StoreMilestoneDto.TotalSales), milestone.TotalSales },
                     { nameof(StoreMilestoneDto.DateTime), milestone.DateTime },
                     { nameof(StoreMilestoneDto.DisplayMilestone), milestone.DisplayMilestone },

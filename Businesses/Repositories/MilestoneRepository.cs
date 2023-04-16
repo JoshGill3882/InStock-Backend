@@ -19,6 +19,7 @@ public class MilestoneRepository : IMilestoneRepository {
             milestoneDto.BusinessId,
             milestoneDto.ItemSku,
             milestoneDto.ItemName,
+            milestoneDto.ImageFilename,
             milestoneDto.TotalSales,
             milestoneDto.DateTime,
             milestoneDto.DisplayMilestone
@@ -50,6 +51,7 @@ public class MilestoneRepository : IMilestoneRepository {
                     milestoneModel.BusinessId,
                     milestoneModel.ItemSku,
                     milestoneModel.ItemName,
+                    milestoneModel.ImageFilename,
                     milestoneModel.TotalSales,
                     milestoneModel.DateTime,
                     milestoneModel.DisplayMilestone

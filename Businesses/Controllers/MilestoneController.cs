@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using instock_server_application.AwsS3.Services.Interfaces;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Util.Dto;
@@ -10,9 +11,11 @@ namespace instock_server_application.Businesses.Controllers;
 [Route("/milestones")]
 public class MilestoneController : ControllerBase {
     private readonly IMilestoneService _milestoneService;
+    private readonly IStorageService _storageService;
 
-    public MilestoneController(IMilestoneService milestoneService) {
+    public MilestoneController(IMilestoneService milestoneService, IStorageService storageService) {
         _milestoneService = milestoneService;
+        _storageService = storageService;
     }
     
     [HttpGet]
@@ -43,6 +46,21 @@ public class MilestoneController : ControllerBase {
             return NotFound();
         }
         
-        return Ok(listOfMilestonesDto.ListOfMilestones);
+        List<Dictionary<string, object>> returnListOfMilestones = new List<Dictionary<string, object>>();
+        foreach (StoreMilestoneDto milestone in listOfMilestonesDto.ListOfMilestones) {
+            returnListOfMilestones.Add(
+                new Dictionary<string, object>(){
+                    { nameof(StoreMilestoneDto.MilestoneId), milestone.MilestoneId },
+                    { nameof(StoreMilestoneDto.BusinessId), milestone.BusinessId },
+                    { nameof(StoreMilestoneDto.ItemSku), milestone.ItemSku },
+                    { nameof(StoreMilestoneDto.ItemName), milestone.ItemName },
+                    { "ImageUrl", milestone.ImageFilename != null ? _storageService.GetFilePresignedUrl("instock-item-images", milestone.ImageFilename ?? "").Message : "" },
+                    { nameof(StoreMilestoneDto.TotalSales), milestone.TotalSales },
+                    { nameof(StoreMilestoneDto.DateTime), milestone.DateTime },
+                    { nameof(StoreMilestoneDto.DisplayMilestone), milestone.DisplayMilestone },
+                });
+        }
+        
+        return Ok(returnListOfMilestones);
     }
 }

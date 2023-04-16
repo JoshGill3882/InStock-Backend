@@ -66,6 +66,7 @@ public class MilestoneService : IMilestoneService {
             itemDto.BusinessId,
             itemDto.SKU,
             itemDto.Name,
+            itemDto.ImageFilename,
             totalSales,
             DateTimeOffset.UtcNow.ToUnixTimeSeconds(), 
             true
