@@ -34,4 +34,6 @@ public abstract class ExternalShopConnectorService {
     public abstract Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails);
 
     public abstract Task<bool> HasItemSku(string platformUsername, string platformItemSku);
+
+    public abstract Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string platformUsername, string itemSku);
 }

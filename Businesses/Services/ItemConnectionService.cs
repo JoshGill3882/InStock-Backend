@@ -81,5 +81,43 @@ public class ItemConnectionService : IItemConnectionService {
 
         return storedConnections;
     }
+
+    public async Task<ListOfConnectedItemDetailsDto> GetItemConnectionsDetails(UserAuthorisationDto userAuthorisationDto, ItemRequestDto itemRequestDto) {
+        ErrorNotification errorNotes = new ErrorNotification();
+        
+        // Validate the user can edit the business
+        if (!UserAuthorisationService.UserCanEditBusiness(userAuthorisationDto, itemRequestDto.BusinessId)) {
+            errorNotes.AddError(UserAuthorisationDto.USER_UNAUTHORISED_ERROR);
+            return new ListOfConnectedItemDetailsDto(errorNotes);
+        }
+        
+        ItemConnectionsDto? existingItemConnections =
+            await _itemRepo.GetItemConnections(itemRequestDto.BusinessId, itemRequestDto.Sku)!;
+
+        if (existingItemConnections.Connections.Count == 0) {
+            return new ListOfConnectedItemDetailsDto(new List<ConnectedItemDetailsDto>());
+        }
+
+        // Getting all the business connections for their usernames
+        StoreConnectionDto businessConnections = await _connections.GetConnections(
+            new GetConnectionsRequestDto(userAuthorisationDto.UserId, userAuthorisationDto.UserBusinessId,
+                itemRequestDto.BusinessId));
+        
+        // Adding all the connections to a lookup table so that we can grab them when looping the item's connections
+        Dictionary<string, string> platformUsernameLookup = new Dictionary<string, string>();
+        foreach (ConnectionDto connection in businessConnections.Connections) {
+            platformUsernameLookup.Add(connection.PlatformName, connection.ShopUsername);
+        }
+
+        List<ConnectedItemDetailsDto> connectedItemDetailsDtos = new List<ConnectedItemDetailsDto>();
+
+        foreach (string connection in existingItemConnections.Connections.Keys) {
+            ExternalShopConnectorService externalConnection = ExternalServiceConnectorFactory.CreateConnector(connection);
+            connectedItemDetailsDtos.Add(await externalConnection.GetConnectedItemDetails(platformUsernameLookup[connection],
+                existingItemConnections.Connections[connection]));
+        }
+
+        return new ListOfConnectedItemDetailsDto(connectedItemDetailsDtos);
+    }
     
 }

@@ -70,4 +70,34 @@ public class MockMarketConnectorService : ExternalShopConnectorService {
         return false;
 
     }
+    
+    public override async Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string platformUsername, string itemSku) {
+        string uri = UriAddress + "listings/"+itemSku;
+
+        HttpResponseMessage response = await GetRequest(uri);
+        
+        if (!response.IsSuccessStatusCode) throw new ExternalConnectionFailedException("Null value returned from shop");
+
+        string resultJson = await response.Content.ReadAsStringAsync();
+        Dictionary<string, string>? dictContent =
+            JsonConvert.DeserializeObject<Dictionary<string, String>>(resultJson);
+
+        if (dictContent == null) {
+            throw new ExternalConnectionFailedException("Null value returned from shop");
+        }
+
+        int totalStock = Int32.Parse(dictContent["stock"]);
+        int totalOrders = Int32.Parse(dictContent["liveOrders"]);
+        int availableStock = totalStock - totalOrders; 
+
+        ConnectedItemDetailsDto connectedItemDetailsDto = new ConnectedItemDetailsDto(
+            dictContent["shopName"],
+            totalStock.ToString(),
+            availableStock.ToString(),
+            totalOrders.ToString(),
+            DateTime.Now
+        );
+
+        return connectedItemDetailsDto;
+    }
 }
