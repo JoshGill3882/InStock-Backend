@@ -8,12 +8,14 @@ public class ItemDetailsDto : DataTransferObjectSuperType {
     public int TotalStock { get; }
     public int? AvailableStock { get; }
     public int TotalOrders { get; }
+    
+    public int TotalSales { get; }
     public string? ImageFilename { get; }
     public List<ConnectedItemDetailsDto> ConnectedItems { get; }
 
     public ItemDetailsDto(ErrorNotification errorNotes) : base(errorNotes) {}
     
-    public ItemDetailsDto(string sku, string name, int totalStock, int? availableStock, int totalOrders, string? imageFilename, List<ConnectedItemDetailsDto> connectedItems) {
+    public ItemDetailsDto(string sku, string name, int totalStock, int? availableStock, int totalOrders, string? imageFilename, List<ConnectedItemDetailsDto> connectedItems, int totalSales) {
         Sku = sku;
         Name = name;
         TotalStock = totalStock;
@@ -21,9 +23,10 @@ public class ItemDetailsDto : DataTransferObjectSuperType {
         TotalOrders = totalOrders;
         ImageFilename = imageFilename;
         ConnectedItems = connectedItems;
+        TotalSales = totalSales;
     }
 
-    public ItemDetailsDto(ItemDto itemDto, List<ConnectedItemDetailsDto> connectedItemDetailsDtos) {
+    public ItemDetailsDto(ItemDto itemDto, List<ConnectedItemDetailsDto> connectedItemDetailsDtos, int totalSales) {
         Sku = itemDto.SKU;
         Name = itemDto.Name;
         TotalStock = itemDto.TotalStock;
@@ -31,5 +34,6 @@ public class ItemDetailsDto : DataTransferObjectSuperType {
         TotalOrders = itemDto.TotalOrders;
         ImageFilename = itemDto.ImageFilename;
         ConnectedItems = connectedItemDetailsDtos;
+        TotalSales = totalSales;
     }
 }

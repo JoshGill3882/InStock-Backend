@@ -129,6 +129,7 @@ public class ItemService : IItemService {
             return new ItemDetailsDto(errorNotes);
         }
 
+        // Getting our item details
         ItemDto? itemDto = await _itemRepo.GetItem(itemRequestDto.BusinessId, itemRequestDto.Sku);
 
         if (itemDto == null) {
@@ -139,13 +140,30 @@ public class ItemService : IItemService {
             return new ItemDetailsDto(errorNotes);
         }
         
+        // Getting external platform item details
         ListOfConnectedItemDetailsDto listOfConnectedItemDetailsDto = await _itemConnectionService.GetItemConnectionsDetails(userAuthorisationDto, itemRequestDto);
 
         if (listOfConnectedItemDetailsDto.ErrorNotification.HasErrors) {
             return new ItemDetailsDto(listOfConnectedItemDetailsDto.ErrorNotification);
         }
         
-        ItemDetailsDto itemDetailsDto = new ItemDetailsDto(itemDto!, listOfConnectedItemDetailsDto.ListOfConnectedItemDetails);
+        // Calculating Total Sales shamelessly taken from Abdul's Milestones <3
+        int totalSales = itemDto.TotalOrders;
+
+        List<StatItemDto> statItemDtos = await _itemRepo.GetItemStatsDetails(itemDto.SKU);
+
+        foreach (var statItemDto in statItemDtos) {
+            foreach (var statStockDto in statItemDto.StockUpdates ?? Enumerable.Empty<StatStockDto>()) {
+                if (statStockDto.ReasonForChange == "Sale") {
+                    int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    totalSales += amountChanged;
+                }
+            }
+        }
+        
+        // Returning the data
+        ItemDetailsDto itemDetailsDto = new ItemDetailsDto(itemDto!,
+            listOfConnectedItemDetailsDto.ListOfConnectedItemDetails, totalSales);
 
         return itemDetailsDto;
     }
