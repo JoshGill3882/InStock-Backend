@@ -106,7 +106,9 @@ public class ItemConnectionService : IItemConnectionService {
         // Adding all the connections to a lookup table so that we can grab them when looping the item's connections
         Dictionary<string, string> platformUsernameLookup = new Dictionary<string, string>();
         foreach (ConnectionDto connection in businessConnections.Connections) {
-            platformUsernameLookup.Add(connection.PlatformName, connection.ShopUsername);
+            if (!platformUsernameLookup.ContainsKey(connection.PlatformName)) {
+                platformUsernameLookup.Add(connection.PlatformName, connection.ShopUsername);
+            }
         }
 
         List<ConnectedItemDetailsDto> connectedItemDetailsDtos = new List<ConnectedItemDetailsDto>();
