@@ -49,6 +49,17 @@ public class MilestoneRepository : IMilestoneRepository {
     }
 
     public async Task<MilestoneDto> HideMilestone(HideMilestoneDto hideMilestoneDto) {
+        
+        // Checking the Milestone Id is valid
+        if (string.IsNullOrEmpty(hideMilestoneDto.MilestoneId)) {
+            throw new NullReferenceException("The Milestone ID cannot be null or empty.");
+        } 
+        
+        // Checking the Business Id is valid
+        if (string.IsNullOrEmpty(hideMilestoneDto.BusinessId)) {
+            throw new NullReferenceException("The Business Id cannot be null or empty.");
+        }
+        
         MilestoneModel milestone = await _context.LoadAsync<MilestoneModel>(hideMilestoneDto.MilestoneId, hideMilestoneDto.BusinessId);
         milestone.DisplayMilestone = false;
         await _context.SaveAsync(milestone);
