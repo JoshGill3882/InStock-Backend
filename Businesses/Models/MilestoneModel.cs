@@ -20,7 +20,7 @@ public class MilestoneModel {
     public string ItemName { get; set; }
     
     [DynamoDBProperty("ImageFilename")]
-    public string ImageFilename { get; set; }
+    public string? ImageFilename { get; set; }
     
     [DynamoDBProperty("TotalSales")]
     public int TotalSales { get; set; }
@@ -34,7 +34,7 @@ public class MilestoneModel {
     public MilestoneModel() {
     }
 
-    public MilestoneModel(string milestoneId, string businessId, string itemSku, string itemName, string imageFilename, int totalSales, long dateTime, bool displayMilestone) {
+    public MilestoneModel(string milestoneId, string businessId, string itemSku, string itemName, string? imageFilename, int totalSales, long dateTime, bool displayMilestone) {
         MilestoneId = milestoneId;
         BusinessId = businessId;
         ItemSku = itemSku;
