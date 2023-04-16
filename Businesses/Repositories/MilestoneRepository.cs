@@ -23,7 +23,8 @@ public class MilestoneRepository : IMilestoneRepository {
     public async Task<List<MilestoneDto>> GetAllMilestones(string businessId) {
         List<MilestoneModel> listOfMilestoneModels = await _context.ScanAsync<MilestoneModel>(
             new [] {
-                MilestoneModel.ByBusinessId(businessId)
+                MilestoneModel.ByBusinessId(businessId),
+                MilestoneModel.WhereDisplayMilestoneTrue()
             }).GetRemainingAsync();
         
         // Convert list of items

@@ -60,4 +60,8 @@ public class MilestoneModel {
     public static ScanCondition ByBusinessId(string businessId) {
         return new ScanCondition(nameof(BusinessId), ScanOperator.Equal, businessId);
     }
+    
+    public static ScanCondition WhereDisplayMilestoneTrue() {
+        return new ScanCondition(nameof(DisplayMilestone), ScanOperator.Equal, true);
+    }
 }
