@@ -112,8 +112,7 @@ public class ItemStockService : IItemStockService {
         await _itemRepo.SaveExistingItem(updatedItemDto);
         
         _notificationService.StockNotificationChecker(updatedItemDto);
-        _milestoneService.CheckMilestones(updatedItemDto);
-        // _notificationService.MilestoneNotificationChecker(updatedItemDto);
+        await _milestoneService.CheckMilestones(updatedItemDto);
 
         // Returning results
         // Return newly created stock update

@@ -42,19 +42,19 @@ public class MilestoneService : IMilestoneService {
         
         if (totalSales == 10) {
             await CreateMilestone(itemDto, totalSales);
-            // _notificationService.MilestoneNotificationChecker(itemDto);
+            _notificationService.TriggerMilestoneNotification(itemDto, totalSales);
         }
         if (totalSales == 50) {
             await CreateMilestone(itemDto, totalSales);
-            // _notificationService.MilestoneNotificationChecker(itemDto);
+            _notificationService.TriggerMilestoneNotification(itemDto, totalSales);
         }
         if (totalSales == 100) {
             await CreateMilestone(itemDto, totalSales);
-            // _notificationService.MilestoneNotificationChecker(itemDto);
+            _notificationService.TriggerMilestoneNotification(itemDto, totalSales);
         }
         if (totalSales == 200) {
             await CreateMilestone(itemDto, totalSales);
-            // _notificationService.MilestoneNotificationChecker(itemDto);
+            _notificationService.TriggerMilestoneNotification(itemDto, totalSales);
         }
     }
 
@@ -98,12 +98,4 @@ public class MilestoneService : IMilestoneService {
 
         return await _milestoneRepository.HideMilestone(hideMilestoneDto);
     }
-
-
-    // function that gets all sales 🎉
-    // function is run on every order and stock update if reason is 'sale' 🎉
-    // triggers add milestone to db when milestone is met 🎉
-        // db stores SKU, Item name, milestone number, timestamp achieved, active (bool)
-        // send notification when add milestone is triggered
-    // function to deactivate milestone 🎉
 }

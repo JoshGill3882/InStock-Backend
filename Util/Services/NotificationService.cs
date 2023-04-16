@@ -28,32 +28,8 @@ public class NotificationService : INotificationService {
         else if (availableStock == 0) SendNotification(CreateNotification("Out of Stock", itemDto), itemDto.BusinessId);
     }
 
-    public async void MilestoneNotificationChecker(StoreItemDto itemDto) {
-        List<StatItemDto> statItemDtos = await _itemRepo.GetAllItemsStatsDetails(itemDto.BusinessId);
-        int totalSales = itemDto.TotalOrders;
-        foreach (var statItemDto in statItemDtos) {
-            foreach (var statStockDto in statItemDto.StockUpdates ?? Enumerable.Empty<StatStockDto>()) {
-                if (statStockDto.ReasonForChange == "Sale") {
-                    totalSales += -statStockDto.AmountChanged;
-                }
-            }
-        }
-        Console.Write($"{itemDto.Name} has {totalSales} sales\n");
-
-        switch (totalSales) {
-            case 10:
-                SendNotification(CreateMilestoneNotification(10, itemDto), itemDto.BusinessId);
-                break;
-            case 50:
-                SendNotification(CreateMilestoneNotification(50, itemDto), itemDto.BusinessId);
-                break;
-            case 100:
-                SendNotification(CreateMilestoneNotification(100, itemDto), itemDto.BusinessId);
-                break;
-            case 200:
-                SendNotification(CreateMilestoneNotification(200, itemDto), itemDto.BusinessId);
-                break;
-        }
+    public void TriggerMilestoneNotification(StoreItemDto itemDto, int totalSales) {
+        SendNotification(CreateMilestoneNotification(totalSales, itemDto), itemDto.BusinessId);
     }
 
     private void SendNotification(NotificationPatternDto notification, string businessId) {
