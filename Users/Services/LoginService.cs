@@ -29,7 +29,7 @@ public class LoginService : ILoginService {
         
         User userDetails = _userService.FindUserByEmail(email).Result;
 
-        if (!_passwordService.Verify(password, userDetails.Password)) return null;
+        if (string.IsNullOrEmpty(userDetails.Password) || !_passwordService.Verify(password, userDetails.Password)) return null;
         
         _refreshTokenService.CreateToken(new RefreshTokenDto(userDetails));
             
