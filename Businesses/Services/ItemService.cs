@@ -7,6 +7,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Security.Services;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Util.Dto;
 using instock_server_application.Util.Services.Interfaces;
@@ -94,6 +95,17 @@ public class ItemService : IItemService {
             errorNotes.AddError("stockIsZero");
         }
     }
+    
+    private async void ConnectItemToConnectedPlatforms(string userId, string userBusinessId, ItemDto itemDtoCreated) {
+        StoreConnectionDto currentBusinessConnections = await _connectionsService.GetConnections(new GetConnectionsRequestDto(
+            userId, userBusinessId, itemDtoCreated.BusinessId));
+        
+        foreach (ConnectionDto connection in currentBusinessConnections.Connections) {
+            await _itemConnectionService.ConnectItem(new UserAuthorisationDto(userId, itemDtoCreated.BusinessId),
+                new ItemConnectionRequestDto(itemDtoCreated.BusinessId, itemDtoCreated.SKU, connection.PlatformName,
+                    itemDtoCreated.SKU));
+        }
+    }
 
     public async Task<ListOfItemDto> GetItems(UserDto userDto, string businessId) {
         
@@ -108,17 +120,20 @@ public class ItemService : IItemService {
         return new ListOfItemDto(responseItems);
     }
 
-    private async void ConnectItemToConnectedPlatforms(string userId, string userBusinessId, ItemDto itemDtoCreated) {
-        StoreConnectionDto currentBusinessConnections = await _connectionsService.GetConnections(new GetConnectionsRequestDto(
-            userId, userBusinessId, itemDtoCreated.BusinessId));
-        
-        foreach (ConnectionDto connection in currentBusinessConnections.Connections) {
-            await _itemConnectionService.ConnectItem(new UserAuthorisationDto(userId, itemDtoCreated.BusinessId),
-                new ItemConnectionRequestDto(itemDtoCreated.BusinessId, itemDtoCreated.SKU, connection.PlatformName,
-                    itemDtoCreated.SKU));
+    public async Task<ItemDetailsDto> GetItem(UserAuthorisationDto userAuthorisationDto, ItemRequestDto itemRequestDto) {
+        ErrorNotification errorNotes = new ErrorNotification();
+
+        // Validate the user can get the business items
+        if (!UserAuthorisationService.UserCanGetBusinessItems(userAuthorisationDto, itemRequestDto.BusinessId)) {
+            errorNotes.AddError(UserAuthorisationDto.USER_UNAUTHORISED_ERROR);
+            return new ItemDetailsDto(errorNotes);
         }
+
+        ItemDto? itemDto = await _itemRepo.GetItem(itemRequestDto.BusinessId, itemRequestDto.Sku);
+        
+        
     }
-    
+
     // TODO This method is not properly authenticating that the user can edit the business Items
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 
