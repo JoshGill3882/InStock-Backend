@@ -66,7 +66,7 @@ var client = new AmazonDynamoDBClient(
     RegionEndpoint.EUWest2
 );
 builder.Services.AddSingleton<IAmazonDynamoDB>(client);
-builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
+builder.Services.AddSingleton<IDynamoDBContext, DynamoDBContext>(c => new DynamoDBContext(client));
 
 // AWS S3 Credential Setup
 using var s3Client = new AmazonS3Client(
@@ -116,7 +116,8 @@ builder.Services.AddScoped<IItemStockService, ItemStockService>();
 builder.Services.AddScoped<IItemOrderService, ItemOrderService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
-
+builder.Services.AddScoped<IMilestoneService, MilestoneService>();
+builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
 
 // Util Services & Repositories
 builder.Services.AddScoped<IUtilService, UtilService>();
