@@ -27,14 +27,14 @@ public class MilestoneDto : DataTransferObjectSuperType {
         DisplayMilestone = displayMilestone;
     }
     
-    public MilestoneDto(MilestoneModel milestoneDto) {
-        MilestoneId = milestoneDto.MilestoneId;
-        BusinessId = milestoneDto.BusinessId;
-        ItemSku = milestoneDto.ItemSku;
-        ItemName = milestoneDto.ItemName;
-        ImageFilename = milestoneDto.ImageFilename;
-        TotalSales = milestoneDto.TotalSales;
-        DateTime = milestoneDto.DateTime;
-        DisplayMilestone = milestoneDto.DisplayMilestone;
+    public MilestoneDto(MilestoneModel milestoneModel) {
+        MilestoneId = milestoneModel.MilestoneId;
+        BusinessId = milestoneModel.BusinessId;
+        ItemSku = milestoneModel.ItemSku;
+        ItemName = milestoneModel.ItemName;
+        ImageFilename = milestoneModel.ImageFilename;
+        TotalSales = milestoneModel.TotalSales;
+        DateTime = milestoneModel.DateTime;
+        DisplayMilestone = milestoneModel.DisplayMilestone;
     }
 }
