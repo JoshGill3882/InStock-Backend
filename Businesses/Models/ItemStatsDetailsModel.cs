@@ -72,4 +72,8 @@ public class ItemStatsDetailsModel {
     public static ScanCondition ByBusinessId(string businessId) {
         return new ScanCondition(nameof(BusinessId), ScanOperator.Equal, businessId);
     }
+    
+    public static ScanCondition BySKU(string sku) {
+        return new ScanCondition(nameof(SKU), ScanOperator.Equal, sku);
+    }
 }
