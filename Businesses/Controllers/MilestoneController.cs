@@ -46,17 +46,17 @@ public class MilestoneController : ControllerBase {
         }
         
         List<Dictionary<string, object>> returnListOfMilestones = new List<Dictionary<string, object>>();
-        foreach (StoreMilestoneDto milestone in listOfMilestonesDto.ListOfMilestones) {
+        foreach (MilestoneDto milestone in listOfMilestonesDto.ListOfMilestones) {
             returnListOfMilestones.Add(
                 new Dictionary<string, object>(){
-                    { nameof(StoreMilestoneDto.MilestoneId), milestone.MilestoneId },
-                    { nameof(StoreMilestoneDto.BusinessId), milestone.BusinessId },
-                    { nameof(StoreMilestoneDto.ItemSku), milestone.ItemSku },
-                    { nameof(StoreMilestoneDto.ItemName), milestone.ItemName },
+                    { nameof(MilestoneDto.MilestoneId), milestone.MilestoneId },
+                    { nameof(MilestoneDto.BusinessId), milestone.BusinessId },
+                    { nameof(MilestoneDto.ItemSku), milestone.ItemSku },
+                    { nameof(MilestoneDto.ItemName), milestone.ItemName },
                     { "ImageUrl", milestone.ImageFilename != null ? _storageService.GetFilePresignedUrl("instock-item-images", milestone.ImageFilename ?? "").Message : "" },
-                    { nameof(StoreMilestoneDto.TotalSales), milestone.TotalSales },
-                    { nameof(StoreMilestoneDto.DateTime), milestone.DateTime },
-                    { nameof(StoreMilestoneDto.DisplayMilestone), milestone.DisplayMilestone },
+                    { nameof(MilestoneDto.TotalSales), milestone.TotalSales },
+                    { nameof(MilestoneDto.DateTime), milestone.DateTime },
+                    { nameof(MilestoneDto.DisplayMilestone), milestone.DisplayMilestone },
                 });
         }
         
@@ -79,7 +79,7 @@ public class MilestoneController : ControllerBase {
         // Creating new userDto to pass into service
         UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
 
-        StoreMilestoneDto milestoneDto =
+        MilestoneDto milestoneDto =
             await _milestoneService.HideMilestone(currentUserDto, new HideMilestoneDto(milestoneId, currentUserBusinessId));
 
         if (milestoneDto.ErrorNotification.Errors.ContainsKey("otherErrors")) {

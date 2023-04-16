@@ -3,7 +3,7 @@
 namespace instock_server_application.Businesses.Repositories.Interfaces; 
 
 public interface IMilestoneRepository {
-    Task<StoreMilestoneDto> SaveNewMilestone(StoreMilestoneDto milestoneDto);
-    Task<List<StoreMilestoneDto>> GetAllMilestones(string businessId);
-    Task<StoreMilestoneDto> HideMilestone(HideMilestoneDto hideMilestoneDto);
+    Task<MilestoneDto> SaveNewMilestone(MilestoneDto milestoneDto);
+    Task<List<MilestoneDto>> GetAllMilestones(string businessId);
+    Task<MilestoneDto> HideMilestone(HideMilestoneDto hideMilestoneDto);
 }

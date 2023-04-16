@@ -3,7 +3,7 @@ using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Dtos; 
 
-public class StoreMilestoneDto : DataTransferObjectSuperType {
+public class MilestoneDto : DataTransferObjectSuperType {
     public string MilestoneId { get; set; }
     public string BusinessId { get; set; }
     public string ItemSku { get; set; }
@@ -13,10 +13,10 @@ public class StoreMilestoneDto : DataTransferObjectSuperType {
     public long DateTime { get; set; }
     public bool DisplayMilestone { get; set; }
     
-    public StoreMilestoneDto(ErrorNotification errorNotes) : base(errorNotes) {
+    public MilestoneDto(ErrorNotification errorNotes) : base(errorNotes) {
     }
 
-    public StoreMilestoneDto(string milestoneId, string businessId, string itemSku, string itemName, string? imageFilename, int totalSales, long dateTime, bool displayMilestone) {
+    public MilestoneDto(string milestoneId, string businessId, string itemSku, string itemName, string? imageFilename, int totalSales, long dateTime, bool displayMilestone) {
         MilestoneId = milestoneId;
         BusinessId = businessId;
         ItemSku = itemSku;
@@ -27,7 +27,7 @@ public class StoreMilestoneDto : DataTransferObjectSuperType {
         DisplayMilestone = displayMilestone;
     }
     
-    public StoreMilestoneDto(MilestoneModel milestoneDto) {
+    public MilestoneDto(MilestoneModel milestoneDto) {
         MilestoneId = milestoneDto.MilestoneId;
         BusinessId = milestoneDto.BusinessId;
         ItemSku = milestoneDto.ItemSku;

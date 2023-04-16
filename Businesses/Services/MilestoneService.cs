@@ -61,7 +61,7 @@ public class MilestoneService : IMilestoneService {
     private async Task CreateMilestone(StoreItemDto itemDto, int totalSales) {
         Console.Write($"You have hit {totalSales} sales on {itemDto.Name}\n");
         
-        StoreMilestoneDto milestoneDto = new StoreMilestoneDto(
+        MilestoneDto milestoneDto = new MilestoneDto(
             Guid.NewGuid().ToString(),
             itemDto.BusinessId,
             itemDto.SKU,
@@ -83,17 +83,17 @@ public class MilestoneService : IMilestoneService {
             return new ListOfMilestonesDto(errorNotes);
         }
         
-        List<StoreMilestoneDto> responseItems = await _milestoneRepository.GetAllMilestones(businessId);
+        List<MilestoneDto> responseItems = await _milestoneRepository.GetAllMilestones(businessId);
         
         return new ListOfMilestonesDto(responseItems);
     }
 
-    public async Task<StoreMilestoneDto> HideMilestone(UserDto userDto, HideMilestoneDto hideMilestoneDto) {
+    public async Task<MilestoneDto> HideMilestone(UserDto userDto, HideMilestoneDto hideMilestoneDto) {
         
         if (!_utilService.CheckUserBusinessId(userDto.UserBusinessId, hideMilestoneDto.BusinessId)) {
             ErrorNotification errorNotes = new ErrorNotification();
             errorNotes.AddError(ListOfItemDto.ERROR_UNAUTHORISED);
-            return new StoreMilestoneDto(errorNotes);
+            return new MilestoneDto(errorNotes);
         }
 
         return await _milestoneRepository.HideMilestone(hideMilestoneDto);

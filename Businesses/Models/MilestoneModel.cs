@@ -46,7 +46,7 @@ public class MilestoneModel {
         DisplayMilestone = displayMilestone;
     }
 
-    public MilestoneModel(StoreMilestoneDto milestoneDto) {
+    public MilestoneModel(MilestoneDto milestoneDto) {
         MilestoneId = milestoneDto.MilestoneId;
         BusinessId = milestoneDto.BusinessId;
         ItemSku = milestoneDto.ItemSku;

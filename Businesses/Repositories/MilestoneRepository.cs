@@ -12,7 +12,7 @@ public class MilestoneRepository : IMilestoneRepository {
         _context = context;
     }
 
-    public async Task<StoreMilestoneDto> SaveNewMilestone(StoreMilestoneDto milestoneDto) {
+    public async Task<MilestoneDto> SaveNewMilestone(MilestoneDto milestoneDto) {
         MilestoneModel milestone = new MilestoneModel(milestoneDto);
 
         await _context.SaveAsync(milestone);
@@ -20,18 +20,18 @@ public class MilestoneRepository : IMilestoneRepository {
         return milestoneDto;
     }
     
-    public async Task<List<StoreMilestoneDto>> GetAllMilestones(string businessId) {
+    public async Task<List<MilestoneDto>> GetAllMilestones(string businessId) {
         List<MilestoneModel> listOfMilestoneModels = await _context.ScanAsync<MilestoneModel>(
             new [] {
                 MilestoneModel.ByBusinessId(businessId)
             }).GetRemainingAsync();
         
         // Convert list of items
-        List<StoreMilestoneDto> listOfMilestoneDto = new List<StoreMilestoneDto>();
+        List<MilestoneDto> listOfMilestoneDto = new List<MilestoneDto>();
         
         foreach (MilestoneModel milestoneModel in listOfMilestoneModels) {
             listOfMilestoneDto.Add(
-                new StoreMilestoneDto(
+                new MilestoneDto(
                     milestoneModel.MilestoneId,
                     milestoneModel.BusinessId,
                     milestoneModel.ItemSku,
@@ -47,12 +47,12 @@ public class MilestoneRepository : IMilestoneRepository {
         return listOfMilestoneDto;
     }
 
-    public async Task<StoreMilestoneDto> HideMilestone(HideMilestoneDto hideMilestoneDto) {
+    public async Task<MilestoneDto> HideMilestone(HideMilestoneDto hideMilestoneDto) {
         MilestoneModel milestone = await _context.LoadAsync<MilestoneModel>(hideMilestoneDto.MilestoneId, hideMilestoneDto.BusinessId);
         milestone.DisplayMilestone = false;
         await _context.SaveAsync(milestone);
 
-        StoreMilestoneDto milestoneDto = new StoreMilestoneDto(milestone);
+        MilestoneDto milestoneDto = new MilestoneDto(milestone);
 
         return milestoneDto;
     }
