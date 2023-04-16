@@ -18,12 +18,16 @@ public class ItemService : IItemService {
     private readonly IUtilService _utilService;
     private readonly IStorageService _storageService;
     private readonly INotificationService _notificationService;
+    private readonly IConnectionsService _connectionsService;
+    private readonly IItemConnectionService _itemConnectionService;
 
-    public ItemService(IItemRepo itemRepo, IUtilService utilService, IStorageService storageService, INotificationService notificationService) {
+    public ItemService(IItemRepo itemRepo, IUtilService utilService, IStorageService storageService, INotificationService notificationService, IConnectionsService connectionsService, IItemConnectionService itemConnectionService) {
         _itemRepo = itemRepo;
         _utilService = utilService;
         _storageService = storageService;
         _notificationService = notificationService;
+        _connectionsService = connectionsService;
+        _itemConnectionService = itemConnectionService;
     }
     
     private void ValidateItemName(ErrorNotification errorNotes, string itemName) {
@@ -103,7 +107,19 @@ public class ItemService : IItemService {
         
         return new ListOfItemDto(responseItems);
     }
+
+    private async void ConnectItemToConnectedPlatforms(string userId, string userBusinessId, ItemDto itemDtoCreated) {
+        StoreConnectionDto currentBusinessConnections = await _connectionsService.GetConnections(new GetConnectionsRequestDto(
+            userId, userBusinessId, itemDtoCreated.BusinessId));
+        
+        foreach (ConnectionDto connection in currentBusinessConnections.Connections) {
+            await _itemConnectionService.ConnectItem(new UserAuthorisationDto(userId, itemDtoCreated.BusinessId),
+                new ItemConnectionRequestDto(itemDtoCreated.BusinessId, itemDtoCreated.SKU, connection.PlatformName,
+                    itemDtoCreated.SKU));
+        }
+    }
     
+    // TODO This method is not properly authenticating that the user can edit the business Items
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 
         ErrorNotification errorNotes = new ErrorNotification();
@@ -149,6 +165,9 @@ public class ItemService : IItemService {
         );
 
         ItemDto createdItem = await _itemRepo.SaveNewItem(itemToSaveDto);
+        
+        // Connect item to external platforms items if SKU's match
+        ConnectItemToConnectedPlatforms(newItemRequestDto.UserId, newItemRequestDto.BusinessId, createdItem);
 
         return createdItem;
     }

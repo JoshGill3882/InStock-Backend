@@ -4,9 +4,9 @@ public class CreateBusinessForm {
     public string BusinessName { get; set; }
     public string BusinessDescription { get; set; }
     public IFormFile? ImageFile { get; set; }
-    public string? DeviceKey { get; set; }
+    public string DeviceKey { get; set; }
 
-    public CreateBusinessForm(string businessName, string businessDescription, IFormFile? imageFile, string? deviceKey) {
+    public CreateBusinessForm(string businessName, string businessDescription, IFormFile? imageFile, string deviceKey) {
         BusinessName = businessName;
         BusinessDescription = businessDescription;
         ImageFile = imageFile;

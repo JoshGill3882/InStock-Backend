@@ -11,6 +11,7 @@ using instock_server_application.AwsS3.Repositories;
 using instock_server_application.AwsS3.Repositories.Interfaces;
 using instock_server_application.AwsS3.Services;
 using instock_server_application.AwsS3.Services.Interfaces;
+using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services;
@@ -116,6 +117,7 @@ builder.Services.AddScoped<IItemStockService, ItemStockService>();
 builder.Services.AddScoped<IItemOrderService, ItemOrderService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
+builder.Services.AddScoped<IItemConnectionService, ItemConnectionService>();
 builder.Services.AddScoped<IMilestoneService, MilestoneService>();
 builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
 
