@@ -24,7 +24,7 @@ public class LoginController : ControllerBase {
     public async Task<IActionResult> Login([FromBody] Login login) {
         var res = await _loginService.Login(login.Email, login.Password, login.DeviceToken);
         if (res == null) {
-            return NotFound("Invalid Credentials");
+            return Unauthorized("Invalid Credentials");
         }
         return Ok(res);
     }

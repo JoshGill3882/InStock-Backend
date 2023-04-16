@@ -24,9 +24,9 @@ public class LoginService : ILoginService {
     }
     
     public async Task<String?> Login(string email, string password, string deviceToken) {
-        User? userDetails = _userService.FindUserByEmail(email).Result;
-
-        if (userDetails == null) { return null; }
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(deviceToken)) { return null; }
+        
+        User userDetails = _userService.FindUserByEmail(email).Result;
 
         // If password matches, make a token and pass it back
         if (_passwordService.Verify(password, userDetails.Password)) {
