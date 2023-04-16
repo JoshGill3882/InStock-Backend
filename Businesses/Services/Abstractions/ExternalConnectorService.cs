@@ -1,4 +1,6 @@
-﻿using instock_server_application.Businesses.Dtos;
+﻿using System.Text;
+using instock_server_application.Businesses.Dtos;
+using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services.Interfaces; 
 
@@ -15,9 +17,21 @@ public abstract class ExternalShopConnectorService {
     public bool IsAuthenticated() {
         return AuthorisationToken != null;
     }
-    
+
+    public static Task<HttpResponseMessage> PostJsonRequest(string uri, string json) {
+        HttpClient httpClient = new HttpClient();
+        var uriAddress = new Uri(uri);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        return httpClient.PostAsync(uriAddress, content);
+    }
+
+    public static Task<HttpResponseMessage> GetRequest(string uri) {
+        HttpClient httpClient = new HttpClient();
+        var uriAddress = new Uri(uri);
+        return httpClient.GetAsync(uriAddress);
+    }
+
     public abstract Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails);
 
     public abstract Task<bool> HasItemSku(string platformUsername, string platformItemSku);
-    //contains case statements 
 }

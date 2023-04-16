@@ -8,22 +8,20 @@ namespace instock_server_application.Businesses.Services;
 
 public class MockShopConnectorService : ExternalShopConnectorService {
     public override string? AuthorisationToken { get; protected internal set; }
+    private const string UriAddress = "http://instock.eu.pythonanywhere.com/";
 
     public override async Task<ExternalShopAuthenticationTokenDto> LoginToShop(ExternalShopLoginDto loginDetails) {
-        HttpClient httpClient = new HttpClient(); 
-        
-        var uri = new Uri("http://instock.eu.pythonanywhere.com/login");
         
         var loginData = new Dictionary<string, string>
         {
-            { "shopName", loginDetails.ShopUsername },
+            { "username", loginDetails.ShopUsername },
             { "password", loginDetails.ShopUserPassword }
         };
 
-        var json = JsonConvert.SerializeObject(loginData);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        string uri = UriAddress + "login";
+        string json = JsonConvert.SerializeObject(loginData);
 
-        var response = await httpClient.PostAsync(uri, content);
+        HttpResponseMessage response = await PostJsonRequest(uri, json);
         
         if (response.IsSuccessStatusCode)
         {
@@ -36,8 +34,6 @@ public class MockShopConnectorService : ExternalShopConnectorService {
             
             string authToken = jsonDict["authToken"];
             ExternalShopAuthenticationTokenDto authenticationToken = new ExternalShopAuthenticationTokenDto(authToken);
-
-            AuthorisationToken = authToken;
             
             return authenticationToken;
         }
@@ -46,6 +42,30 @@ public class MockShopConnectorService : ExternalShopConnectorService {
             throw new LoginToExternalShopFailedException(response.ReasonPhrase!);
         }
     }
+    
+    public override async Task<bool> HasItemSku(string platformUsername, string platformItemSku) {
+        string uri = UriAddress + "listings";
 
+        HttpResponseMessage response = await GetRequest(uri);
 
+        if (!response.IsSuccessStatusCode) throw new ExternalConnectionFailedException("Null value returned from shop");
+        
+        string resultJson = await response.Content.ReadAsStringAsync();
+        List<Dictionary<string, string>>? dictContent =
+            JsonConvert.DeserializeObject<List<Dictionary<string, String>>>(resultJson);
+
+        if (dictContent == null) {
+            throw new ExternalConnectionFailedException("Null value returned from shop");
+        }
+            
+        foreach (Dictionary<string, string> item in dictContent) {
+            if (item.ContainsKey("shopName") && item.ContainsKey("itemId")) {
+                if (item["shopName"] == platformUsername && item["itemId"] == platformItemSku) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

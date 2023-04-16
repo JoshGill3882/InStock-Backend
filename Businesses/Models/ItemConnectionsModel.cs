@@ -4,7 +4,7 @@ using Amazon.DynamoDBv2.DocumentModel;
 namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Items")]
-public class ItemConnections {
+public class ItemConnectionsModel {
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
     public string Sku { get; set; }
@@ -16,13 +16,15 @@ public class ItemConnections {
     [DynamoDBProperty("ItemConnections")]
     public Dictionary<string, string> Connections { get; set; }
     
-    public ItemConnections() {
+    public ItemConnectionsModel() {
+        Connections = new Dictionary<string, string>();
+
     }
     
-    public ItemConnections(string sku, string businessId, Dictionary<string, string> connections) {
+    public ItemConnectionsModel(string sku, string businessId, Dictionary<string, string>? connections) {
         Sku = sku;
         BusinessId = businessId;
-        Connections = connections;
+        Connections = connections ?? new Dictionary<string, string>();
     }
 
     // Scan conditions used in scans for this model

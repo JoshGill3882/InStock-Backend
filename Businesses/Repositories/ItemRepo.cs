@@ -277,7 +277,7 @@ public class ItemRepo : IItemRepo{
     }
 
     public async Task<ItemConnectionsDto>? GetItemConnections(string businessId, string itemSku) {
-        ItemConnections? existingItem = await _context.LoadAsync<ItemConnections>(itemSku, businessId);
+        ItemConnectionsModel? existingItem = await _context.LoadAsync<ItemConnectionsModel>(itemSku, businessId);
 
         if (existingItem == null) {
             return null!;
@@ -288,10 +288,10 @@ public class ItemRepo : IItemRepo{
     
     public async Task<ItemConnectionsDto> SaveItemConnections(ItemConnectionsDto itemConnectionsDto) {
 
-        ItemConnections itemConnections = new ItemConnections(itemConnectionsDto.Sku,
+        ItemConnectionsModel itemConnectionsModel = new ItemConnectionsModel(itemConnectionsDto.Sku,
             itemConnectionsDto.BusinessId, itemConnectionsDto.Connections);
         
-        await _context.SaveAsync(itemConnections);
+        await _context.SaveAsync(itemConnectionsModel);
         
         return itemConnectionsDto;
     }
