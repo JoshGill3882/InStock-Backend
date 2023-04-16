@@ -88,11 +88,22 @@ public class MilestoneService : IMilestoneService {
         return new ListOfMilestonesDto(responseItems);
     }
 
+    public async Task<StoreMilestoneDto> HideMilestone(UserDto userDto, HideMilestoneDto hideMilestoneDto) {
+        
+        if (!_utilService.CheckUserBusinessId(userDto.UserBusinessId, hideMilestoneDto.BusinessId)) {
+            ErrorNotification errorNotes = new ErrorNotification();
+            errorNotes.AddError(ListOfItemDto.ERROR_UNAUTHORISED);
+            return new StoreMilestoneDto(errorNotes);
+        }
+
+        return await _milestoneRepository.HideMilestone(hideMilestoneDto);
+    }
+
 
     // function that gets all sales 🎉
-    // function is run on every order and stock update if reason is 'sale' 
-    // triggers add milestone to db when milestone is met
+    // function is run on every order and stock update if reason is 'sale' 🎉
+    // triggers add milestone to db when milestone is met 🎉
         // db stores SKU, Item name, milestone number, timestamp achieved, active (bool)
         // send notification when add milestone is triggered
-    // function to deactivate milestone
+    // function to deactivate milestone 🎉
 }

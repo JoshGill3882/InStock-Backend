@@ -20,8 +20,7 @@ public class MilestoneController : ControllerBase {
     
     [HttpGet]
     [Route("{businessId}")]
-    public async Task<IActionResult> GetMilestones([FromRoute] string businessId)
-    {
+    public async Task<IActionResult> GetMilestones([FromRoute] string businessId) {
         // Get our current UserId and BusinessId to validate and pass to the business service
         string? currentUserId = User.FindFirstValue("Id") ?? null;
         string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
@@ -62,5 +61,33 @@ public class MilestoneController : ControllerBase {
         }
         
         return Ok(returnListOfMilestones);
+    }
+
+    [HttpPost]
+    [Route("{milestoneId}/hide")]
+    public async Task<IActionResult> HideMilestone([FromRoute] string milestoneId) {
+        
+        // Get our current UserId and BusinessId to validate and pass to the business service
+        string? currentUserId = User.FindFirstValue("Id") ?? null;
+        string? currentUserBusinessId = User.FindFirstValue("BusinessId") ?? null;
+
+        // Check there are no issues with the userId
+        if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
+            return Unauthorized();
+        }
+        
+        // Creating new userDto to pass into service
+        UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
+
+        StoreMilestoneDto milestoneDto =
+            await _milestoneService.HideMilestone(currentUserDto, new HideMilestoneDto(milestoneId, currentUserBusinessId));
+
+        if (milestoneDto.ErrorNotification.Errors.ContainsKey("otherErrors")) {
+            if (milestoneDto.ErrorNotification.Errors["otherErrors"].Contains(ListOfItemDto.ERROR_UNAUTHORISED)) {
+                return Unauthorized();
+            }
+        }
+
+        return Ok(milestoneDto);
     }
 }

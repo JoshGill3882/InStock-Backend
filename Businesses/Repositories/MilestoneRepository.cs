@@ -2,7 +2,6 @@
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
-using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Repositories; 
 
@@ -14,27 +13,13 @@ public class MilestoneRepository : IMilestoneRepository {
     }
 
     public async Task<StoreMilestoneDto> SaveNewMilestone(StoreMilestoneDto milestoneDto) {
-        MilestoneModel milestone = new MilestoneModel(
-            milestoneDto.MilestoneId,
-            milestoneDto.BusinessId,
-            milestoneDto.ItemSku,
-            milestoneDto.ItemName,
-            milestoneDto.ImageFilename,
-            milestoneDto.TotalSales,
-            milestoneDto.DateTime,
-            milestoneDto.DisplayMilestone
-        );
-        
-        Console.Write(JsonConvert.SerializeObject(milestoneDto));
-        
+        MilestoneModel milestone = new MilestoneModel(milestoneDto);
+
         await _context.SaveAsync(milestone);
 
         return milestoneDto;
     }
     
-    // deactivate milestone method
-    
-    // get current milestones
     public async Task<List<StoreMilestoneDto>> GetAllMilestones(string businessId) {
         List<MilestoneModel> listOfMilestoneModels = await _context.ScanAsync<MilestoneModel>(
             new [] {
@@ -60,5 +45,15 @@ public class MilestoneRepository : IMilestoneRepository {
         }
         
         return listOfMilestoneDto;
+    }
+
+    public async Task<StoreMilestoneDto> HideMilestone(HideMilestoneDto hideMilestoneDto) {
+        MilestoneModel milestone = await _context.LoadAsync<MilestoneModel>(hideMilestoneDto.MilestoneId, hideMilestoneDto.BusinessId);
+        milestone.DisplayMilestone = false;
+        await _context.SaveAsync(milestone);
+
+        StoreMilestoneDto milestoneDto = new StoreMilestoneDto(milestone);
+
+        return milestoneDto;
     }
 }

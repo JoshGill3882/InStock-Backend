@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using instock_server_application.Businesses.Dtos;
 
 namespace instock_server_application.Businesses.Models; 
 
@@ -43,6 +44,17 @@ public class MilestoneModel {
         TotalSales = totalSales;
         DateTime = dateTime;
         DisplayMilestone = displayMilestone;
+    }
+
+    public MilestoneModel(StoreMilestoneDto milestoneDto) {
+        MilestoneId = milestoneDto.MilestoneId;
+        BusinessId = milestoneDto.BusinessId;
+        ItemSku = milestoneDto.ItemSku;
+        ItemName = milestoneDto.ItemName;
+        ImageFilename = milestoneDto.ImageFilename;
+        TotalSales = milestoneDto.TotalSales;
+        DateTime = milestoneDto.DateTime;
+        DisplayMilestone = milestoneDto.DisplayMilestone;
     }
     
     public static ScanCondition ByBusinessId(string businessId) {
