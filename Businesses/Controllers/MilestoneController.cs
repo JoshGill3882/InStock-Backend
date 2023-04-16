@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Util.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace instock_server_application.Businesses.Controllers; 
@@ -26,8 +27,11 @@ public class MilestoneController : ControllerBase {
         if (string.IsNullOrEmpty(currentUserId) | string.IsNullOrEmpty(currentUserBusinessId)) {
             return Unauthorized();
         }
-
-        ListOfMilestonesDto listOfMilestonesDto = _milestoneService.GetAllMilestones(businessId).Result;
+        
+        // Creating new userDto to pass into service
+        UserDto currentUserDto = new UserDto(currentUserId, currentUserBusinessId);
+        
+        ListOfMilestonesDto listOfMilestonesDto = _milestoneService.GetAllMilestones(currentUserDto, businessId).Result;
 
         if (listOfMilestonesDto.ErrorNotification.Errors.ContainsKey("otherErrors")) {
             if (listOfMilestonesDto.ErrorNotification.Errors["otherErrors"].Contains(ListOfItemDto.ERROR_UNAUTHORISED)) {

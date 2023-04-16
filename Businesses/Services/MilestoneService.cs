@@ -1,8 +1,9 @@
 ﻿using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Shared.Dto;
+using instock_server_application.Util.Dto;
 using instock_server_application.Util.Services.Interfaces;
-using Newtonsoft.Json;
 
 namespace instock_server_application.Businesses.Services; 
 
@@ -10,11 +11,13 @@ public class MilestoneService : IMilestoneService {
     private readonly IItemRepo _itemRepo;
     private readonly IMilestoneRepository _milestoneRepository;
     private readonly INotificationService _notificationService;
+    private readonly IUtilService _utilService;
 
-    public MilestoneService(IItemRepo itemRepo, IMilestoneRepository milestoneRepository, INotificationService notificationService) {
+    public MilestoneService(IItemRepo itemRepo, IMilestoneRepository milestoneRepository, INotificationService notificationService, IUtilService utilService) {
         _itemRepo = itemRepo;
         _milestoneRepository = milestoneRepository;
         _notificationService = notificationService;
+        _utilService = utilService;
     }
 
     private async Task<int> GetTotalSales(StoreItemDto itemDto) {
@@ -71,7 +74,14 @@ public class MilestoneService : IMilestoneService {
         await _milestoneRepository.SaveNewMilestone(milestoneDto);
     }
 
-    public async Task<ListOfMilestonesDto> GetAllMilestones(string businessId) {
+    public async Task<ListOfMilestonesDto> GetAllMilestones(UserDto userDto, string businessId) {
+        
+        if (!_utilService.CheckUserBusinessId(userDto.UserBusinessId, businessId)) {
+            ErrorNotification errorNotes = new ErrorNotification();
+            errorNotes.AddError(ListOfItemDto.ERROR_UNAUTHORISED);
+            return new ListOfMilestonesDto(errorNotes);
+        }
+        
         List<StoreMilestoneDto> responseItems = await _milestoneRepository.GetAllMilestones(businessId);
         
         return new ListOfMilestonesDto(responseItems);
