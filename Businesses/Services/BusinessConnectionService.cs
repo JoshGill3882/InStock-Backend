@@ -20,7 +20,14 @@ public class BusinessConnectionService : IBusinessConnectionService {
     public async void SyncAllBusinessesItemsToConnections(object? callingObject) {
         
         // Get all items with a connection
-        List<ItemConnectionsDto> listOfConnections = await _itemRepo.GetAllItemsWithConnections();
+        List<ItemConnectionsDto> listOfConnections;
+        try {
+            listOfConnections = await _itemRepo.GetAllItemsWithConnections();
+        }
+        catch (Exception e) {
+            Console.WriteLine(e);
+            return;
+        }
 
         // Looping ever item
         foreach (ItemConnectionsDto connection in listOfConnections) {
