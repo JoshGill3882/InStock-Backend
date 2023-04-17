@@ -119,10 +119,10 @@ public class StatisticsService : IStatisticsService
 
         public StatsSuggestionsDto GetSuggestions(List<StatItemDto> statItemDtos)
         {
-            SortedDictionary<int, StatItemDto> itemSalesDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
-            SortedDictionary<int, StatItemDto> itemReturnsDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
-            SortedDictionary<int, StatItemDto> timeNoSalesDict = new SortedDictionary<int, StatItemDto>() { {0, null} };
-            Dictionary<string, int> categorySalesDict = new Dictionary<string, int>() { {"No Categories Found", 0} };
+            SortedDictionary<int, StatItemDto> itemSalesDict = new();
+            SortedDictionary<int, StatItemDto> itemReturnsDict = new();
+            SortedDictionary<int, StatItemDto> timeNoSalesDict = new();
+            Dictionary<string, int> categorySalesDict = new();
             Dictionary<string, StatItemDto> salesStockRatioDict = new();
             // Loop through items
             foreach (var statItemDto in statItemDtos)
@@ -186,16 +186,18 @@ public class StatisticsService : IStatisticsService
             Dictionary<int, StatItemDto> bestSellingItem = itemSalesDict.Last().Key > 0 
                 ? new Dictionary<int, StatItemDto> { { itemSalesDict.Last().Key, itemSalesDict.Last().Value } }
                 : new Dictionary<int, StatItemDto>();
+            
+            Dictionary<int, StatItemDto> worstSellingItem = itemSalesDict.Count > 0 
+                ? new Dictionary<int, StatItemDto> { { itemSalesDict.First().Key, itemSalesDict.First().Value } }
+                : new Dictionary<int, StatItemDto>();
 
-            Dictionary<int, StatItemDto> worstSellingItem = new Dictionary<int, StatItemDto> { { itemSalesDict.First().Key, 
-                itemSalesDict.First().Value } };
-
-            Dictionary<int, string> bestSellingCategory = sortedCategoryDict.Last().Value > 0
+            Dictionary<int, string> bestSellingCategory = sortedCategoryDict.First().Value > 0
                 ? new Dictionary<int, string> { { sortedCategoryDict.First().Value, sortedCategoryDict.First().Key } }
                 : new Dictionary<int, string>();
 
-            Dictionary<int, string> worstSellingCategory = new Dictionary<int, string> { { sortedCategoryDict.Last().Value, 
-                sortedCategoryDict.Last().Key } };
+            Dictionary<int, string> worstSellingCategory = sortedCategoryDict.Count > 0
+                ? new Dictionary<int, string> { { sortedCategoryDict.Last().Value, sortedCategoryDict.Last().Key } }
+                : new Dictionary<int, string>();
 
             Dictionary<int, StatItemDto> mostReturnedItem = itemReturnsDict.Last().Key > 0 
                 ? new Dictionary<int, StatItemDto> { { itemReturnsDict.Last().Key, itemReturnsDict.Last().Value } }
