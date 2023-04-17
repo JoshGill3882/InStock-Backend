@@ -15,7 +15,7 @@ public class ExternalShopPollingService : IHostedService {
             _businessConnectionService.SyncAllBusinessesItemsToConnections,
             null,
             TimeSpan.Zero,
-            TimeSpan.FromMilliseconds(10000));
+            TimeSpan.FromMilliseconds(1000));
 
         return Task.CompletedTask;
     }
