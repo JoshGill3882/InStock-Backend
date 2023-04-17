@@ -28,9 +28,14 @@ public class BusinessConnectionService : IBusinessConnectionService {
             // Looping each connection within an item
             foreach (string platformName in connection.Connections.Keys) {
                 ExternalShopConnectorService externalConnection = ExternalServiceConnectorFactory.CreateConnector(platformName);
+                
                 // Getting the connected item's details and adding it to the sum
                 ConnectedItemDetailsDto connectedItemDetails = await externalConnection.GetConnectedItemDetails(connection.Sku);
                 totalOrderSum += Int32.Parse(connectedItemDetails.TotalOrders);
+                
+                // Setting the shops stock to match the businesses inventory
+                ItemDto itemDto = await _itemRepo.GetItem(connection.BusinessId, connection.Sku) ?? new ItemDto("","","","",0,0,0,"");
+                externalConnection.SetItemStock(connection.BusinessId, connection.Sku, itemDto.TotalStock);
             }
             // Saving the new total orders of the item
             _itemOrderService.SetItemTotalOrders(connection.BusinessId, connection.Sku, totalOrderSum);

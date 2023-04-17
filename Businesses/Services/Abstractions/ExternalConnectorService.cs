@@ -24,6 +24,13 @@ public abstract class ExternalShopConnectorService {
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         return httpClient.PostAsync(uriAddress, content);
     }
+    
+    public static Task<HttpResponseMessage> PutJsonRequest(string uri, string json) {
+        HttpClient httpClient = new HttpClient();
+        var uriAddress = new Uri(uri);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        return httpClient.PutAsync(uriAddress, content);
+    }
 
     public static Task<HttpResponseMessage> GetRequest(string uri) {
         HttpClient httpClient = new HttpClient();
@@ -36,4 +43,6 @@ public abstract class ExternalShopConnectorService {
     public abstract Task<bool> HasItemSku(string platformUsername, string platformItemSku);
 
     public abstract Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string itemSku);
+
+    public abstract void SetItemStock(string businessId, string itemSku, int totalStock);
 }
