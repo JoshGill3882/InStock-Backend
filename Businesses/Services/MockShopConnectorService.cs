@@ -94,9 +94,14 @@ public class MockShopConnectorService : ExternalShopConnectorService {
             totalStock.ToString(),
             availableStock.ToString(),
             totalOrders.ToString(),
-            DateTime.Now
+            DateTime.Now,
+            GetPlatformImageUrl()
         );
 
         return connectedItemDetailsDto;
+    }
+    
+    public override string GetPlatformImageUrl() {
+        return "https://instock-shop-connection-icons.s3.eu-west-2.amazonaws.com/etsyLogo.jpeg";
     }
 }
