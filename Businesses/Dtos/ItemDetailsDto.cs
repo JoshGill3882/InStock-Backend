@@ -8,32 +8,20 @@ public class ItemDetailsDto : DataTransferObjectSuperType {
     public int TotalStock { get; }
     public int? AvailableStock { get; }
     public int TotalOrders { get; }
-    
     public int TotalSales { get; }
-    public string? ImageFilename { get; }
+    public string ImageUrl { get; }
     public List<ConnectedItemDetailsDto> ConnectedItems { get; }
 
     public ItemDetailsDto(ErrorNotification errorNotes) : base(errorNotes) {}
     
-    public ItemDetailsDto(string sku, string name, int totalStock, int? availableStock, int totalOrders, string? imageFilename, List<ConnectedItemDetailsDto> connectedItems, int totalSales) {
+    public ItemDetailsDto(string sku, string name, int totalStock, int? availableStock, int totalOrders, string imageUrl, List<ConnectedItemDetailsDto> connectedItems, int totalSales) {
         Sku = sku;
         Name = name;
         TotalStock = totalStock;
         AvailableStock = availableStock;
         TotalOrders = totalOrders;
-        ImageFilename = imageFilename;
+        ImageUrl = imageUrl;
         ConnectedItems = connectedItems;
-        TotalSales = totalSales;
-    }
-
-    public ItemDetailsDto(ItemDto itemDto, List<ConnectedItemDetailsDto> connectedItemDetailsDtos, int totalSales) {
-        Sku = itemDto.SKU;
-        Name = itemDto.Name;
-        TotalStock = itemDto.TotalStock;
-        AvailableStock = itemDto.AvailableStock;
-        TotalOrders = itemDto.TotalOrders;
-        ImageFilename = itemDto.ImageFilename;
-        ConnectedItems = connectedItemDetailsDtos;
         TotalSales = totalSales;
     }
 }

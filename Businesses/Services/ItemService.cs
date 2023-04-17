@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using FirebaseAdmin.Messaging;
 using instock_server_application.AwsS3.Dtos;
@@ -162,8 +163,15 @@ public class ItemService : IItemService {
         }
         
         // Returning the data
-        ItemDetailsDto itemDetailsDto = new ItemDetailsDto(itemDto!,
-            listOfConnectedItemDetailsDto.ListOfConnectedItemDetails, totalSales);
+        ItemDetailsDto itemDetailsDto = new ItemDetailsDto(
+            itemDto.SKU,
+            itemDto.Name,
+            itemDto.TotalStock,
+            itemDto.AvailableStock,
+            itemDto.TotalOrders,
+            itemDto.ImageFilename != null ? _storageService.GetFilePresignedUrl("instock-item-images", itemDto.ImageFilename ?? "").Message : "",
+            listOfConnectedItemDetailsDto.ListOfConnectedItemDetails,
+            totalSales);
 
         return itemDetailsDto;
     }
