@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Amazon.DynamoDBv2.Model;
 using FirebaseAdmin.Messaging;
 using instock_server_application.AwsS3.Dtos;
@@ -7,6 +8,7 @@ using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
 using instock_server_application.Businesses.Services.Interfaces;
+using instock_server_application.Security.Services;
 using instock_server_application.Shared.Dto;
 using instock_server_application.Util.Dto;
 using instock_server_application.Util.Services.Interfaces;
@@ -94,6 +96,17 @@ public class ItemService : IItemService {
             errorNotes.AddError("stockIsZero");
         }
     }
+    
+    private async void ConnectItemToConnectedPlatforms(string userId, string userBusinessId, ItemDto itemDtoCreated) {
+        StoreConnectionDto currentBusinessConnections = await _connectionsService.GetConnections(new GetConnectionsRequestDto(
+            userId, userBusinessId, itemDtoCreated.BusinessId));
+        
+        foreach (ConnectionDto connection in currentBusinessConnections.Connections) {
+            await _itemConnectionService.ConnectItem(new UserAuthorisationDto(userId, itemDtoCreated.BusinessId),
+                new ItemConnectionRequestDto(itemDtoCreated.BusinessId, itemDtoCreated.SKU, connection.PlatformName,
+                    itemDtoCreated.SKU));
+        }
+    }
 
     public async Task<ListOfItemDto> GetItems(UserDto userDto, string businessId) {
         
@@ -108,17 +121,61 @@ public class ItemService : IItemService {
         return new ListOfItemDto(responseItems);
     }
 
-    private async void ConnectItemToConnectedPlatforms(string userId, string userBusinessId, ItemDto itemDtoCreated) {
-        StoreConnectionDto currentBusinessConnections = await _connectionsService.GetConnections(new GetConnectionsRequestDto(
-            userId, userBusinessId, itemDtoCreated.BusinessId));
-        
-        foreach (ConnectionDto connection in currentBusinessConnections.Connections) {
-            await _itemConnectionService.ConnectItem(new UserAuthorisationDto(userId, itemDtoCreated.BusinessId),
-                new ItemConnectionRequestDto(itemDtoCreated.BusinessId, itemDtoCreated.SKU, connection.PlatformName,
-                    itemDtoCreated.SKU));
+    public async Task<ItemDetailsDto> GetItem(UserAuthorisationDto userAuthorisationDto, ItemRequestDto itemRequestDto) {
+        ErrorNotification errorNotes = new ErrorNotification();
+
+        // Validate the user can get the business items
+        if (!UserAuthorisationService.UserCanGetBusinessItems(userAuthorisationDto, itemRequestDto.BusinessId)) {
+            errorNotes.AddError(UserAuthorisationDto.USER_UNAUTHORISED_ERROR);
+            return new ItemDetailsDto(errorNotes);
         }
+
+        // Getting our item details
+        ItemDto? itemDto = await _itemRepo.GetItem(itemRequestDto.BusinessId, itemRequestDto.Sku);
+
+        if (itemDto == null) {
+            errorNotes.AddError("That item does not exist");
+        }
+
+        if (errorNotes.HasErrors) {
+            return new ItemDetailsDto(errorNotes);
+        }
+        
+        // Getting external platform item details
+        ListOfConnectedItemDetailsDto listOfConnectedItemDetailsDto = await _itemConnectionService.GetItemConnectionsDetails(userAuthorisationDto, itemRequestDto);
+
+        if (listOfConnectedItemDetailsDto.ErrorNotification.HasErrors) {
+            return new ItemDetailsDto(listOfConnectedItemDetailsDto.ErrorNotification);
+        }
+        
+        // Calculating Total Sales shamelessly taken from Abdul's Milestones <3
+        int totalSales = itemDto.TotalOrders;
+
+        List<StatItemDto> statItemDtos = await _itemRepo.GetItemStatsDetails(itemDto.SKU);
+
+        foreach (var statItemDto in statItemDtos) {
+            foreach (var statStockDto in statItemDto.StockUpdates ?? Enumerable.Empty<StatStockDto>()) {
+                if (statStockDto.ReasonForChange == "Sale") {
+                    int amountChanged = Math.Abs(statStockDto.AmountChanged);
+                    totalSales += amountChanged;
+                }
+            }
+        }
+        
+        // Returning the data
+        ItemDetailsDto itemDetailsDto = new ItemDetailsDto(
+            itemDto.SKU,
+            itemDto.Name,
+            itemDto.TotalStock,
+            itemDto.AvailableStock,
+            itemDto.TotalOrders,
+            itemDto.ImageFilename != null ? _storageService.GetFilePresignedUrl("instock-item-images", itemDto.ImageFilename ?? "").Message : "",
+            listOfConnectedItemDetailsDto.ListOfConnectedItemDetails,
+            totalSales);
+
+        return itemDetailsDto;
     }
-    
+
     // TODO This method is not properly authenticating that the user can edit the business Items
     public async Task<ItemDto> CreateItem(CreateItemRequestDto newItemRequestDto) {
 
