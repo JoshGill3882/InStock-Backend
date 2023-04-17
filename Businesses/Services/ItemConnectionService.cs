@@ -122,4 +122,6 @@ public class ItemConnectionService : IItemConnectionService {
         return new ListOfConnectedItemDetailsDto(connectedItemDetailsDtos);
     }
     
+    
+    
 }

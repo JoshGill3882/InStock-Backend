@@ -120,6 +120,7 @@ builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
 builder.Services.AddScoped<IItemConnectionService, ItemConnectionService>();
 builder.Services.AddScoped<IMilestoneService, MilestoneService>();
 builder.Services.AddScoped<IMilestoneRepository, MilestoneRepository>();
+builder.Services.AddScoped<IBusinessConnectionService, BusinessConnectionService>();
 
 // Util Services & Repositories
 builder.Services.AddScoped<IUtilService, UtilService>();
@@ -128,6 +129,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 // AwsS3 Services & Repositories
 builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddScoped<IStorageRepository, StorageRepository>();
+
+// External Connection Polling Service
+builder.Services.AddHostedService<ExternalShopPollingService>();
 
 // Email Services & Repositories
 var smtpClient = new SmtpClient("smtp.gmail.com", 587) {
