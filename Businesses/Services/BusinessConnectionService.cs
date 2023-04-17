@@ -17,7 +17,7 @@ public class BusinessConnectionService : IBusinessConnectionService {
         _itemOrderService = itemOrderService;
     }
 
-    public async void SyncAllBusinessesItemOrders(object? callingObject) {
+    public async void SyncAllBusinessesItemsToConnections(object? callingObject) {
         
         // Get all items with a connection
         List<ItemConnectionsDto> listOfConnections = await _itemRepo.GetAllItemsWithConnections();
@@ -35,10 +35,6 @@ public class BusinessConnectionService : IBusinessConnectionService {
             // Saving the new total orders of the item
             _itemOrderService.SetItemTotalOrders(connection.BusinessId, connection.Sku, totalOrderSum);
         }
-    }
-
-    public void SyncAllBusinessesItemStock(object? callingObject) {
-        Console.Out.WriteLine("ItemStock");
     }
 
 }

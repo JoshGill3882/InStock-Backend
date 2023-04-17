@@ -6,6 +6,5 @@ using instock_server_application.Shared.Dto;
 namespace instock_server_application.Businesses.Services; 
 
 public interface IBusinessConnectionService {
-    void SyncAllBusinessesItemOrders(object? callingObject);
-    void SyncAllBusinessesItemStock(object? callingObject);
+    void SyncAllBusinessesItemsToConnections(object? callingObject);
 }

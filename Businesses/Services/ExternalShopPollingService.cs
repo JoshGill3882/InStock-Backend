@@ -3,8 +3,7 @@
 // https://stacksecrets.com/dot-net-core/scheduled-repeating-task-with-net-core#Introduction
 public class ExternalShopPollingService : IHostedService {
     private IBusinessConnectionService _businessConnectionService;
-    private Timer? _syncOrderstimer;
-    private Timer? _syncStocktimer;
+    private Timer? _syncTimer;
 
     public ExternalShopPollingService(IServiceScopeFactory scopeFactory) {
         using var scope = scopeFactory.CreateScope();
@@ -12,24 +11,17 @@ public class ExternalShopPollingService : IHostedService {
     }
 
     public Task StartAsync(CancellationToken cancellationToken) {
-        _syncOrderstimer = new Timer(
-            _businessConnectionService.SyncAllBusinessesItemOrders,
+        _syncTimer = new Timer(
+            _businessConnectionService.SyncAllBusinessesItemsToConnections,
             null,
             TimeSpan.Zero,
-            TimeSpan.FromMilliseconds(1000));
-
-        _syncStocktimer = new Timer(
-            _businessConnectionService.SyncAllBusinessesItemStock,
-            null,
-            TimeSpan.Zero,
-            TimeSpan.FromMilliseconds(1000));
+            TimeSpan.FromMilliseconds(10000));
 
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken) {
-        _syncOrderstimer?.Change(Timeout.Infinite, 0);
-        _syncStocktimer?.Change(Timeout.Infinite, 0);
+        _syncTimer?.Change(Timeout.Infinite, 0);
         
         return Task.CompletedTask;
     }
