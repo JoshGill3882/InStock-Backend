@@ -21,6 +21,6 @@ public interface IItemRepo {
     Task<ItemConnectionsDto>? GetItemConnections(string businessId, string itemSku);
     Task<ItemConnectionsDto> SaveItemConnections(ItemConnectionsDto itemConnectionsDto);
     
-    Task<List<ItemConnectionsDto>> GetAllItemsWithConnections(string businessId);
+    Task<List<ItemConnectionsDto>> GetAllItemsWithConnections();
 
 }

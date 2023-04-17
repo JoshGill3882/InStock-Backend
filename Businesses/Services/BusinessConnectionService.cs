@@ -1,33 +1,40 @@
 ﻿using instock_server_application.Businesses.Dtos;
 using instock_server_application.Businesses.Models;
 using instock_server_application.Businesses.Repositories.Interfaces;
+using instock_server_application.Businesses.Services.Abstractions;
+using instock_server_application.Businesses.Services.Interfaces;
 using instock_server_application.Security.Services;
 using instock_server_application.Shared.Dto;
 
 namespace instock_server_application.Businesses.Services; 
 
 public class BusinessConnectionService : IBusinessConnectionService {
-    private IBusinessRepository _businessRepository;
     private IItemRepo _itemRepo;
+    private IItemOrderService _itemOrderService;
 
-    public BusinessConnectionService(IItemRepo itemRepo, IBusinessRepository businessRepository) {
+    public BusinessConnectionService(IItemRepo itemRepo, IItemOrderService itemOrderService) {
         _itemRepo = itemRepo;
-        _businessRepository = businessRepository;
+        _itemOrderService = itemOrderService;
     }
 
     public async void SyncAllBusinessesItemOrders(object? callingObject) {
-        // TODO Get all BusinessIds
-        // List<string> listOfBusinessIds
         
-        List<ItemConnectionsDto> listOfConnections = await _itemRepo.GetAllItemsWithConnections("asd");
+        // Get all items with a connection
+        List<ItemConnectionsDto> listOfConnections = await _itemRepo.GetAllItemsWithConnections();
 
-        // TODO Get all items with a connection
-        // TODO Loop all items
-            // TODO Loop the connection
-                // TODO Create the ExternalConnector
-                // TODO Get the live orders of the items
-            // TODO Sum the total orders from connections
-            // TODO Add order update of the difference between our total and the sum'd total
+        // Looping ever item
+        foreach (ItemConnectionsDto connection in listOfConnections) {
+            int totalOrderSum = 0;
+            // Looping each connection within an item
+            foreach (string platformName in connection.Connections.Keys) {
+                ExternalShopConnectorService externalConnection = ExternalServiceConnectorFactory.CreateConnector(platformName);
+                // Getting the connected item's details and adding it to the sum
+                ConnectedItemDetailsDto connectedItemDetails = await externalConnection.GetConnectedItemDetails(connection.Sku);
+                totalOrderSum += Int32.Parse(connectedItemDetails.TotalOrders);
+            }
+            // Saving the new total orders of the item
+            _itemOrderService.SetItemTotalOrders(connection.BusinessId, connection.Sku, totalOrderSum);
+        }
     }
 
     public void SyncAllBusinessesItemStock(object? callingObject) {

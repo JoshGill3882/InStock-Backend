@@ -333,7 +333,7 @@ public class ItemRepo : IItemRepo{
         return itemConnectionsDto;
     }
 
-    public async Task<List<ItemConnectionsDto>> GetAllItemsWithConnections(string businessId) {
+    public async Task<List<ItemConnectionsDto>> GetAllItemsWithConnections() {
         List<ItemConnectionsModel> listOfItemConnectionModels = await
             _context.ScanAsync<ItemConnectionsModel>(
                 new [] {
