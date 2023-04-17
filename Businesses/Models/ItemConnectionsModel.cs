@@ -28,7 +28,7 @@ public class ItemConnectionsModel {
     }
 
     // Scan conditions used in scans for this model
-    public static ScanCondition ByBusinessId(string businessId) {
-        return new ScanCondition(nameof(BusinessId), ScanOperator.Equal, businessId);
+    public static ScanCondition ByValidConnection() {
+        return new ScanCondition(nameof(Connections), ScanOperator.IsNotNull);
     }
 }
