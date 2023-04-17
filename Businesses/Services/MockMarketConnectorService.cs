@@ -71,7 +71,7 @@ public class MockMarketConnectorService : ExternalShopConnectorService {
 
     }
     
-    public override async Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string platformUsername, string itemSku) {
+    public override async Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string itemSku) {
         string uri = UriAddress + "listings/"+itemSku;
 
         HttpResponseMessage response = await GetRequest(uri);

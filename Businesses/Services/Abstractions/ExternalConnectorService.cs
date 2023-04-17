@@ -35,5 +35,5 @@ public abstract class ExternalShopConnectorService {
 
     public abstract Task<bool> HasItemSku(string platformUsername, string platformItemSku);
 
-    public abstract Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string platformUsername, string itemSku);
+    public abstract Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string itemSku);
 }

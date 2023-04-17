@@ -98,25 +98,11 @@ public class ItemConnectionService : IItemConnectionService {
             return new ListOfConnectedItemDetailsDto(new List<ConnectedItemDetailsDto>());
         }
 
-        // Getting all the business connections for their usernames
-        StoreConnectionDto businessConnections = await _connections.GetConnections(
-            new GetConnectionsRequestDto(userAuthorisationDto.UserId, userAuthorisationDto.UserBusinessId,
-                itemRequestDto.BusinessId));
-        
-        // Adding all the connections to a lookup table so that we can grab them when looping the item's connections
-        Dictionary<string, string> platformUsernameLookup = new Dictionary<string, string>();
-        foreach (ConnectionDto connection in businessConnections.Connections) {
-            if (!platformUsernameLookup.ContainsKey(connection.PlatformName)) {
-                platformUsernameLookup.Add(connection.PlatformName, connection.ShopUsername);
-            }
-        }
-
         List<ConnectedItemDetailsDto> connectedItemDetailsDtos = new List<ConnectedItemDetailsDto>();
 
         foreach (string connection in existingItemConnections.Connections.Keys) {
             ExternalShopConnectorService externalConnection = ExternalServiceConnectorFactory.CreateConnector(connection);
-            connectedItemDetailsDtos.Add(await externalConnection.GetConnectedItemDetails(platformUsernameLookup[connection],
-                existingItemConnections.Connections[connection]));
+            connectedItemDetailsDtos.Add(await externalConnection.GetConnectedItemDetails(existingItemConnections.Connections[connection]));
         }
 
         return new ListOfConnectedItemDetailsDto(connectedItemDetailsDtos);
