@@ -95,7 +95,8 @@ public class MockMarketConnectorService : ExternalShopConnectorService {
             totalStock.ToString(),
             availableStock.ToString(),
             totalOrders.ToString(),
-            DateTime.Now
+            DateTime.Now,
+            GetPlatformImageUrl()
         );
 
         return connectedItemDetailsDto;
@@ -113,5 +114,9 @@ public class MockMarketConnectorService : ExternalShopConnectorService {
         HttpResponseMessage response = await PutJsonRequest(uri, json);
         
         if (!response.IsSuccessStatusCode) throw new ExternalConnectionFailedException("Null value returned from shop");
+    }
+
+    public override string GetPlatformImageUrl() {
+        return "https://instock-shop-connection-icons.s3.eu-west-2.amazonaws.com/shopifyLogo.png";
     }
 }

@@ -45,4 +45,6 @@ public abstract class ExternalShopConnectorService {
     public abstract Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string itemSku);
 
     public abstract void SetItemStock(string businessId, string itemSku, int totalStock);
+    
+    public abstract string GetPlatformImageUrl();
 }
