@@ -98,9 +98,14 @@ public class ItemService : IItemService {
     }
     
     private async void ConnectItemToConnectedPlatforms(string userId, string userBusinessId, ItemDto itemDtoCreated) {
-        StoreConnectionDto currentBusinessConnections = await _connectionsService.GetConnections(new GetConnectionsRequestDto(
+        StoreConnectionDto? currentBusinessConnections = await _connectionsService.GetConnections(new GetConnectionsRequestDto(
             userId, userBusinessId, itemDtoCreated.BusinessId));
-        
+
+        // If business doesnt have any items then no need to continue
+        if (currentBusinessConnections == null) {
+            return;
+        }
+
         foreach (ConnectionDto connection in currentBusinessConnections.Connections) {
             await _itemConnectionService.ConnectItem(new UserAuthorisationDto(userId, itemDtoCreated.BusinessId),
                 new ItemConnectionRequestDto(itemDtoCreated.BusinessId, itemDtoCreated.SKU, connection.PlatformName,

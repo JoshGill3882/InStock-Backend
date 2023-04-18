@@ -64,7 +64,7 @@ public class ConnectionsService : IConnectionsService {
     }
     
     
-    public async Task<StoreConnectionDto> GetConnections(GetConnectionsRequestDto getConnectionsRequestDto) {
+    public async Task<StoreConnectionDto?> GetConnections(GetConnectionsRequestDto getConnectionsRequestDto) {
         // Validation
         // Check if the user and business Ids are valid, they should be validated by this point so throw exception
         if (string.IsNullOrEmpty(getConnectionsRequestDto.UserId)) {
