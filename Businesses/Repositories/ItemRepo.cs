@@ -333,18 +333,17 @@ public class ItemRepo : IItemRepo{
         return itemConnectionsDto;
     }
 
-    public async Task<List<ItemConnectionsDto>> GetAllItemsWithConnections() {
+    public async Task<List<ItemSyncConnectionsDto>> GetAllItemsWithConnections() {
         List<ItemConnectionsModel> listOfItemConnectionModels = await
             _context.ScanAsync<ItemConnectionsModel>(
                 new [] {
-                    // ItemConnectionsModel.ByBusinessId(businessId),
                     ItemConnectionsModel.ByValidConnection()
                 }).GetRemainingAsync();
 
-        List<ItemConnectionsDto> listOfItemConnectionsDtos = new List<ItemConnectionsDto>();
+        List<ItemSyncConnectionsDto> listOfItemConnectionsDtos = new List<ItemSyncConnectionsDto>();
 
         foreach (ItemConnectionsModel connectionModel in listOfItemConnectionModels) {
-            listOfItemConnectionsDtos.Add(new ItemConnectionsDto(connectionModel.Sku, connectionModel.BusinessId, connectionModel.Connections));
+            listOfItemConnectionsDtos.Add(new ItemSyncConnectionsDto(connectionModel.Sku, connectionModel.BusinessId, connectionModel.GetTotalStock(), connectionModel.Connections));
         }
 
         return listOfItemConnectionsDtos;

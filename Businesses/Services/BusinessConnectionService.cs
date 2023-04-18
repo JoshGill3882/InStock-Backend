@@ -20,7 +20,7 @@ public class BusinessConnectionService : IBusinessConnectionService {
     public async void SyncAllBusinessesItemsToConnections(object? callingObject) {
         
         // Get all items with a connection
-        List<ItemConnectionsDto> listOfConnections;
+        List<ItemSyncConnectionsDto> listOfConnections;
         try {
             listOfConnections = await _itemRepo.GetAllItemsWithConnections();
         }
@@ -30,7 +30,7 @@ public class BusinessConnectionService : IBusinessConnectionService {
         }
 
         // Looping ever item
-        foreach (ItemConnectionsDto connection in listOfConnections) {
+        foreach (ItemSyncConnectionsDto connection in listOfConnections) {
             int totalOrderSum = 0;
             // Looping each connection within an item
             foreach (string platformName in connection.Connections.Keys) {
@@ -41,8 +41,8 @@ public class BusinessConnectionService : IBusinessConnectionService {
                 totalOrderSum += Int32.Parse(connectedItemDetails.TotalOrders);
                 
                 // Setting the shops stock to match the businesses inventory
-                ItemDto itemDto = await _itemRepo.GetItem(connection.BusinessId, connection.Sku) ?? new ItemDto("","","","",0,0,0,"");
-                externalConnection.SetItemStock(connection.BusinessId, connection.Sku, itemDto.TotalStock);
+                // ItemDto itemDto = await _itemRepo.GetItem(connection.BusinessId, connection.Sku) ?? new ItemDto("","","","",0,0,0,"");
+                externalConnection.SetItemStock(connection.BusinessId, connection.Sku, connection.TotalStock);
             }
             // Saving the new total orders of the item
             _itemOrderService.SetItemTotalOrders(connection.BusinessId, connection.Sku, totalOrderSum);
