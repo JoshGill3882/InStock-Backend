@@ -69,7 +69,7 @@ public class MockShopConnectorService : ExternalShopConnectorService {
         return false;
     }
 
-    public override async Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string platformUsername, string itemSku) {
+    public override async Task<ConnectedItemDetailsDto> GetConnectedItemDetails(string itemSku) {
         string uri = UriAddress + "listings/"+itemSku;
 
         HttpResponseMessage response = await GetRequest(uri);
@@ -99,6 +99,20 @@ public class MockShopConnectorService : ExternalShopConnectorService {
         );
 
         return connectedItemDetailsDto;
+    }
+
+    public override async void SetItemStock(string businessId, string itemSku, int totalStock) {
+        string uri = UriAddress + $"listings/{itemSku}/stock";
+
+        var loginData = new Dictionary<string, int> {
+            { "stock", totalStock},
+        };
+
+        string json = JsonConvert.SerializeObject(loginData);
+
+        HttpResponseMessage response = await PutJsonRequest(uri, json);
+        
+        if (!response.IsSuccessStatusCode) throw new ExternalConnectionFailedException("Null value returned from shop");
     }
     
     public override string GetPlatformImageUrl() {

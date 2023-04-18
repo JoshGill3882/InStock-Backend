@@ -335,4 +335,20 @@ public class ItemRepo : IItemRepo{
         
         return itemConnectionsDto;
     }
+
+    public async Task<List<ItemSyncConnectionsDto>> GetAllItemsWithConnections() {
+        List<ItemConnectionsModel> listOfItemConnectionModels = await
+            _context.ScanAsync<ItemConnectionsModel>(
+                new [] {
+                    ItemConnectionsModel.ByValidConnection()
+                }).GetRemainingAsync();
+
+        List<ItemSyncConnectionsDto> listOfItemConnectionsDtos = new List<ItemSyncConnectionsDto>();
+
+        foreach (ItemConnectionsModel connectionModel in listOfItemConnectionModels) {
+            listOfItemConnectionsDtos.Add(new ItemSyncConnectionsDto(connectionModel.Sku, connectionModel.BusinessId, connectionModel.GetTotalStock(), connectionModel.Connections));
+        }
+
+        return listOfItemConnectionsDtos;
+    }
 }
