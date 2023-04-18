@@ -63,7 +63,7 @@ public class LoginControllerTest {
         
         // Assert
         var objectResult = result as ObjectResult;
-        Assert.Equal(404, objectResult!.StatusCode);
+        Assert.Equal(401, objectResult!.StatusCode);
     }
     
     [Fact]
@@ -83,6 +83,6 @@ public class LoginControllerTest {
         
         // Assert
         var objectResult = result as ObjectResult;
-        Assert.Equal(404, objectResult!.StatusCode);
+        Assert.Equal(401, objectResult!.StatusCode);
     }
 }
