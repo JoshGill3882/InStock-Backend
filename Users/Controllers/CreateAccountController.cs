@@ -21,7 +21,7 @@ public class CreateAccountController : ControllerBase {
         NewAccountDto newAccountDto = new NewAccountDto(
             accountForm.FirstName,
             accountForm.LastName,
-            accountForm.Email,
+            accountForm.Email.ToLower(),
             accountForm.Password,
             accountForm.ImageFile
         );
