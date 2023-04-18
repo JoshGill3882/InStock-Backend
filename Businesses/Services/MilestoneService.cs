@@ -23,7 +23,7 @@ public class MilestoneService : IMilestoneService {
     private async Task<int> GetTotalSales(StoreItemDto itemDto) {
         int totalSales = itemDto.TotalOrders;
 
-        List<StatItemDto> statItemDtos = await _itemRepo.GetItemStatsDetails(itemDto.SKU);
+        List<StatItemDto> statItemDtos = await _itemRepo.GetItemStatsDetails(itemDto.BusinessId, itemDto.SKU);
 
         foreach (var statItemDto in statItemDtos) {
             foreach (var statStockDto in statItemDto.StockUpdates ?? Enumerable.Empty<StatStockDto>()) {

@@ -10,6 +10,6 @@ public interface IBusinessRepository {
     Task UpdateBusinessDeviceTokens(BusinessDeviceKeysUpdateModel businessDeviceKeysUpdateModel);
     Task<StoreConnectionDto> SaveNewConnection(StoreConnectionDto storeConnectionDto);
     
-    Task<StoreConnectionDto> GetConnections(String businessId);
+    Task<StoreConnectionDto?> GetConnections(String businessId);
 
 }

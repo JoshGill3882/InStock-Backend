@@ -139,7 +139,7 @@ public class BusinessRepository : IBusinessRepository {
         return allConnections;
     }
     
-    public async Task<StoreConnectionDto> GetConnections(string businessId)
+    public async Task<StoreConnectionDto?> GetConnections(string businessId)
     {
         // Validating details
         if (string.IsNullOrEmpty(businessId)) 
@@ -150,6 +150,11 @@ public class BusinessRepository : IBusinessRepository {
         // Getting the existing connections
         ConnectionModel connection = new ConnectionModel(businessId);
         ConnectionModel existingConnections = await _context.LoadAsync<ConnectionModel>(connection.BusinessId);
+
+        if (existingConnections == null) {
+            return null;
+        }
+        
         StoreConnectionDto allConnections = existingConnections.ToStoreConnectionDto();
         // Returning the DTOs
         return allConnections;
