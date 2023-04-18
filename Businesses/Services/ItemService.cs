@@ -84,7 +84,7 @@ public class ItemService : IItemService {
     private async Task ValidateDuplicateSKU(ErrorNotification errorNotes, CreateItemRequestDto newItemRequestDto)
     {
         const string errorKey = "duplicateSKU";
-        var isDuplicate = await _itemRepo.IsSkuInUse(newItemRequestDto.SKU);
+        var isDuplicate = await _itemRepo.IsSkuInUse(newItemRequestDto.BusinessId, newItemRequestDto.SKU);
         if (isDuplicate)
         {
             errorNotes.AddError(errorKey, "You already have an item with that SKU");
@@ -151,7 +151,7 @@ public class ItemService : IItemService {
         // Calculating Total Sales shamelessly taken from Abdul's Milestones <3
         int totalSales = itemDto.TotalOrders;
 
-        List<StatItemDto> statItemDtos = await _itemRepo.GetItemStatsDetails(itemDto.SKU);
+        List<StatItemDto> statItemDtos = await _itemRepo.GetItemStatsDetails(itemDto.BusinessId, itemDto.SKU);
 
         foreach (var statItemDto in statItemDtos) {
             foreach (var statStockDto in statItemDto.StockUpdates ?? Enumerable.Empty<StatStockDto>()) {

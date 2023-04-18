@@ -79,12 +79,13 @@ public class ItemRepo : IItemRepo{
         return listOfStatItemDto;
     }
     
-    public async Task<List<StatItemDto>> GetItemStatsDetails(string sku) {
+    public async Task<List<StatItemDto>> GetItemStatsDetails(string businessId, string itemSku) {
         
         // Get List of items
         List<ItemStatsDetailsModel> listOfItemModel = await _context.ScanAsync<ItemStatsDetailsModel>(
             new [] {
-                ItemStatsDetailsModel.BySKU(sku)
+                ItemStatsDetailsModel.ByBusinessId(businessId),
+                ItemStatsDetailsModel.BySKU(itemSku)
             }).GetRemainingAsync();
 
         // Convert list of items
@@ -152,16 +153,18 @@ public class ItemRepo : IItemRepo{
     public async Task<bool> IsNameInUse(CreateItemRequestDto createItemRequestDto) {
         var response = await _context.ScanAsync<Item>(
             new[] {
+                Item.ByBusinessId(createItemRequestDto.BusinessId),
                 Item.ByBusinessName(createItemRequestDto.Name)
             }).GetRemainingAsync();
         
         return response.Count > 0;
     }
     
-    public async Task<bool> IsSkuInUse(string sku) {
+    public async Task<bool> IsSkuInUse(string businessId, string itemSku) {
         var response = await _context.ScanAsync<Item>(
             new[] {
-                Item.ByItemSku(sku)
+                Item.ByBusinessId(businessId),
+                Item.ByItemSku(itemSku)
             }).GetRemainingAsync();
     
         return response.Count > 0;
