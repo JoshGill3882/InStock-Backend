@@ -6,6 +6,7 @@ namespace instock_server_application.Businesses.Models;
 [DynamoDBTable("Items")]
 public class ItemConnectionsModel {
     private int _totalStock;
+    private int _totalOrders;
 
     [DynamoDBHashKey]
     [DynamoDBProperty("SKU")]
@@ -32,6 +33,23 @@ public class ItemConnectionsModel {
         }
     }
     
+    [DynamoDBProperty("TotalOrders")]
+    public String TotalOrders {
+        get => _totalOrders.ToString();
+        set {
+            if (value.Length > int.MaxValue.ToString().Length) {
+                _totalOrders = value.Contains('-') ? int.MinValue : int.MaxValue;
+            } else if ( long.Parse(value) >= int.MaxValue) {
+                _totalOrders = int.MaxValue;
+            } else if (long.Parse(value) <= int.MinValue) {
+                _totalOrders = int.MinValue;
+            }
+            else {
+                _totalOrders = int.Parse(value);
+            }
+        }
+    }
+    
     [DynamoDBProperty("ItemConnections")]
     public Dictionary<string, string> Connections { get; set; }
     
@@ -48,6 +66,10 @@ public class ItemConnectionsModel {
     
     public int GetTotalStock() {
         return _totalStock;
+    }
+    
+    public int GetTotalOrders() {
+        return _totalOrders;
     }
 
     // Scan conditions used in scans for this model
