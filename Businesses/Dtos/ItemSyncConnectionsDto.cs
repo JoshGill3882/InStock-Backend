@@ -10,13 +10,13 @@ public class ItemSyncConnectionsDto : DataTransferObjectSuperType {
 
     public string BusinessId { get; }
     
-    public int TotalStock { get; }
+    public int AvailableStock { get; }
     public Dictionary<string, string> Connections { get; }
 
-    public ItemSyncConnectionsDto(string sku, string businessId, int totalStock, Dictionary<string, string> connections) {
+    public ItemSyncConnectionsDto(string sku, string businessId, int availableStock, Dictionary<string, string> connections) {
         Sku = sku;
         BusinessId = businessId;
-        TotalStock = totalStock;
+        AvailableStock = availableStock;
         Connections = connections;
     }
     

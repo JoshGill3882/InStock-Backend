@@ -101,14 +101,14 @@ public class MockShopConnectorService : ExternalShopConnectorService {
         return connectedItemDetailsDto;
     }
 
-    public override async void SetItemStock(string businessId, string itemSku, int totalStock) {
+    public override async void SetItemStock(string businessId, string itemSku, int availableStock) {
         string uri = UriAddress + $"listings/{itemSku}/stock";
 
-        var loginData = new Dictionary<string, int> {
-            { "stock", totalStock},
+        var stockData = new Dictionary<string, int> {
+            { "stock", availableStock},
         };
 
-        string json = JsonConvert.SerializeObject(loginData);
+        string json = JsonConvert.SerializeObject(stockData);
 
         HttpResponseMessage response = await PutJsonRequest(uri, json);
         

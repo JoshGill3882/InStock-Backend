@@ -42,7 +42,7 @@ public class BusinessConnectionService : IBusinessConnectionService {
                 
                 // Setting the shops stock to match the businesses inventory
                 // ItemDto itemDto = await _itemRepo.GetItem(connection.BusinessId, connection.Sku) ?? new ItemDto("","","","",0,0,0,"");
-                externalConnection.SetItemStock(connection.BusinessId, connection.Sku, connection.TotalStock);
+                externalConnection.SetItemStock(connection.BusinessId, connection.Sku, connection.AvailableStock);
             }
             // Saving the new total orders of the item
             _itemOrderService.SetItemTotalOrders(connection.BusinessId, connection.Sku, totalOrderSum);

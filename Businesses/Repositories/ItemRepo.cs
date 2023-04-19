@@ -346,7 +346,8 @@ public class ItemRepo : IItemRepo{
         List<ItemSyncConnectionsDto> listOfItemConnectionsDtos = new List<ItemSyncConnectionsDto>();
 
         foreach (ItemConnectionsModel connectionModel in listOfItemConnectionModels) {
-            listOfItemConnectionsDtos.Add(new ItemSyncConnectionsDto(connectionModel.Sku, connectionModel.BusinessId, connectionModel.GetTotalStock(), connectionModel.Connections));
+            int availableStock = connectionModel.GetTotalStock() - connectionModel.GetTotalOrders();
+            listOfItemConnectionsDtos.Add(new ItemSyncConnectionsDto(connectionModel.Sku, connectionModel.BusinessId, availableStock, connectionModel.Connections));
         }
 
         return listOfItemConnectionsDtos;
