@@ -25,9 +25,15 @@ public class LoginService : ILoginService {
     }
     
     public async Task<string?> Login(string email, string password, string deviceToken) {
+        email = email.ToLower();
+        
         if (!ValidateEmail(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(deviceToken)) { return null; }
         
-        User userDetails = _userService.FindUserByEmail(email).Result;
+        User? userDetails = _userService.FindUserByEmail(email).Result;
+
+        if (userDetails == null) {
+            return null;
+        }
 
         if (string.IsNullOrEmpty(userDetails.Password) || !_passwordService.Verify(password, userDetails.Password)) return null;
         

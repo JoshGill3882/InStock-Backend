@@ -20,7 +20,7 @@ public class UserService : IUserService {
     /// </summary>
     /// <param name="email"> User's Email </param>
     /// <returns> Returns User's Data, or "null" if the User is not found </returns>
-    public async Task<User> FindUserByEmail(string email) {
+    public async Task<User?> FindUserByEmail(string email) {
         User userDetails = _userRepo.GetByEmail(email).Result;
         return userDetails;
     }
