@@ -11,7 +11,7 @@ To get started with the InStock backend, please clone this repository:
 https://git.cardiff.ac.uk/cm6331-2022-23-1/instock-backend.git
 ```
 
-There are two ways to build and run the application: using Docker or .NET (ensure you have [Set Up User Secrets](#Setting-Up-User-Secrets) before running these commands).
+There are two ways to build and run the application: using Docker or .NET (ensure you have [Set Up User Secrets](#setting-up-user-secrets) before running these commands).
 
 ### Building and Running with Docker
 
