@@ -47,7 +47,7 @@ In order to keep sensitive information such as database connection strings and A
 
 To set up app secrets for the project, please refer to the [official Microsoft documentation](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-7.0&tabs=windows).
 
-Your `secrets.json` should something like this:
+Your `secrets.json` should look something like this:
 ```
 {
   "jwt:SecretKey": "JWT_SECRET_KEY",
