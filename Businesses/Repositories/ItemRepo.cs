@@ -317,7 +317,7 @@ public class ItemRepo : IItemRepo{
     }
 
     public async Task<ItemConnectionsDto>? GetItemConnections(string businessId, string itemSku) {
-        ItemConnectionsModel? existingItem = await _context.LoadAsync<ItemConnectionsModel>(itemSku, businessId);
+        GetItemConnectionsModel? existingItem = await _context.LoadAsync<GetItemConnectionsModel>(itemSku, businessId);
 
         if (existingItem == null) {
             return null!;
@@ -328,7 +328,7 @@ public class ItemRepo : IItemRepo{
     
     public async Task<ItemConnectionsDto> SaveItemConnections(ItemConnectionsDto itemConnectionsDto) {
 
-        ItemConnectionsModel itemConnectionsModel = new ItemConnectionsModel(itemConnectionsDto.Sku,
+        SaveItemConnectionsModel itemConnectionsModel = new SaveItemConnectionsModel(itemConnectionsDto.Sku,
             itemConnectionsDto.BusinessId, itemConnectionsDto.Connections);
         
         await _context.SaveAsync(itemConnectionsModel);
@@ -337,15 +337,15 @@ public class ItemRepo : IItemRepo{
     }
 
     public async Task<List<ItemSyncConnectionsDto>> GetAllItemsWithConnections() {
-        List<ItemConnectionsModel> listOfItemConnectionModels = await
-            _context.ScanAsync<ItemConnectionsModel>(
+        List<GetItemConnectionsModel> listOfItemConnectionModels = await
+            _context.ScanAsync<GetItemConnectionsModel>(
                 new [] {
-                    ItemConnectionsModel.ByValidConnection()
+                    GetItemConnectionsModel.ByValidConnection()
                 }).GetRemainingAsync();
 
         List<ItemSyncConnectionsDto> listOfItemConnectionsDtos = new List<ItemSyncConnectionsDto>();
 
-        foreach (ItemConnectionsModel connectionModel in listOfItemConnectionModels) {
+        foreach (GetItemConnectionsModel connectionModel in listOfItemConnectionModels) {
             int availableStock = connectionModel.GetTotalStock() - connectionModel.GetTotalOrders();
             listOfItemConnectionsDtos.Add(new ItemSyncConnectionsDto(connectionModel.Sku, connectionModel.BusinessId, availableStock, connectionModel.Connections));
         }
