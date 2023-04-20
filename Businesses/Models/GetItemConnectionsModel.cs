@@ -4,7 +4,7 @@ using Amazon.DynamoDBv2.DocumentModel;
 namespace instock_server_application.Businesses.Models;
 
 [DynamoDBTable("Items")]
-public class ItemConnectionsModel {
+public class GetItemConnectionsModel {
     private int _totalStock;
     private int _totalOrders;
 
@@ -53,12 +53,12 @@ public class ItemConnectionsModel {
     [DynamoDBProperty("ItemConnections")]
     public Dictionary<string, string> Connections { get; set; }
     
-    public ItemConnectionsModel() {
+    public GetItemConnectionsModel() {
         Connections = new Dictionary<string, string>();
 
     }
     
-    public ItemConnectionsModel(string sku, string businessId, int totalStock, int totalOrders, Dictionary<string, string>? connections) {
+    public GetItemConnectionsModel(string sku, string businessId, int totalStock, int totalOrders, Dictionary<string, string>? connections) {
         Sku = sku;
         BusinessId = businessId;
         _totalStock = totalStock;
