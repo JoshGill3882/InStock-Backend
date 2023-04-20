@@ -58,9 +58,11 @@ public class ItemConnectionsModel {
 
     }
     
-    public ItemConnectionsModel(string sku, string businessId, Dictionary<string, string>? connections) {
+    public ItemConnectionsModel(string sku, string businessId, int totalStock, int totalOrders, Dictionary<string, string>? connections) {
         Sku = sku;
         BusinessId = businessId;
+        _totalStock = totalStock;
+        _totalOrders = totalOrders;
         Connections = connections ?? new Dictionary<string, string>();
     }
     

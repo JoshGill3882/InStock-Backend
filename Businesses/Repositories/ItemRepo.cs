@@ -328,7 +328,7 @@ public class ItemRepo : IItemRepo{
     
     public async Task<ItemConnectionsDto> SaveItemConnections(ItemConnectionsDto itemConnectionsDto) {
 
-        ItemConnectionsModel itemConnectionsModel = new ItemConnectionsModel(itemConnectionsDto.Sku,
+        SaveItemConnectionsModel itemConnectionsModel = new SaveItemConnectionsModel(itemConnectionsDto.Sku,
             itemConnectionsDto.BusinessId, itemConnectionsDto.Connections);
         
         await _context.SaveAsync(itemConnectionsModel);
