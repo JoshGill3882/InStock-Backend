@@ -1,4 +1,4 @@
-﻿# InStock Backend
+# InStock Backend
 
 Welcome to the repository for the InStock Backend. This is a web API built using ASP .NET Core 6.0. The API is responsible for managing the data for the InStock mobile application, including user information, inventory data, and sales data. The API relies on several key third-party dependencies, including Firebase for their messaging service, AWS DynamoDB for data storage, and AWS S3 for image storage.
 
@@ -45,7 +45,9 @@ _Ensure you have the required dependencies installed. Please note that using .NE
 
 In order to keep sensitive information such as database connection strings and API keys secure, it is important to set up app secrets for your application. App secrets are stored in a secure storage location and can be accessed by the application at runtime.
 
-To set up app secrets for the project, please refer to the [official Microsoft documentation](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-7.0&tabs=windows).
+To set up app secrets for the project built via .Net commands (So without Docker), please refer to the [official Microsoft documentation](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-7.0&tabs=windows).
+
+For setting up secrets for a docker container, please refer to the [Docker Compose File Overview](https://docs.docker.com/compose/compose-file/) where you can find details on loading secret's as environment variables and build a compose file to suit your needs. Alternativly you can set the envornment variavles via the command line when starting the container (Not Recommended).
 
 Your `secrets.json` should look something like this:
 ```
